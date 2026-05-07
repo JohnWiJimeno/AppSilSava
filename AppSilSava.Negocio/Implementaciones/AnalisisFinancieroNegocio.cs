@@ -7,7 +7,7 @@ using System.Text;
 
 namespace AppSilSava.Negocio.Implementaciones
 {
-    public class AnalisisFinancieroNegocio
+    public class AnalisisFinancieroNegocio : IAnalisisFinancieroNegocio
     {
         private IAnalisisFinancieroRespositorio _repositorio;
         public AnalisisFinancieroNegocio(IAnalisisFinancieroRespositorio repositorio)

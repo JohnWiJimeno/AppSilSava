@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AppSilSava.DTO.Response;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,5 +7,6 @@ namespace AppSilSava.Negocio.Interfaces
 {
     public interface IEstadoContratoNegocio
     {
+        Task<List<EstadoContratoResponse>> lista();
     }
 }

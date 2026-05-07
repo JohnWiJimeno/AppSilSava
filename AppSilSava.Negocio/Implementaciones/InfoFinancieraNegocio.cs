@@ -1,4 +1,5 @@
 ﻿using AppSilSava.DTO.Response.InfoFinanciera;
+using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace AppSilSava.Negocio.Implementaciones
 {
-    public class InfoFinancieraNegocio
+    public class InfoFinancieraNegocio: IInfoFinancieraNegocio
     {
         private IInfoFinancieraRepositorio _repositorio;
         public InfoFinancieraNegocio(IInfoFinancieraRepositorio repositorio)

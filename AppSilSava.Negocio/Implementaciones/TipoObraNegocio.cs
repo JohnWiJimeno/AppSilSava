@@ -1,4 +1,5 @@
 ﻿using AppSilSava.DTO.Response;
+using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace AppSilSava.Negocio.Implementaciones
 {
-    public class TipoObraNegocio
+    public class TipoObraNegocio: ITipoObraNegocio
     {
         private ITipoObraRepositorio _repositorio;
         public TipoObraNegocio(ITipoObraRepositorio repositorio)

@@ -1,4 +1,5 @@
 ﻿using AppSilSava.DTO.Response.Accionista;
+using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace AppSilSava.Negocio.Implementaciones
 {
-    public class AccionistaNegocio
+    public class AccionistaNegocio: IAccionistaNegocio
     {
         private IAccionistaRepositorio _repositorio;
         public AccionistaNegocio(IAccionistaRepositorio repositorio)

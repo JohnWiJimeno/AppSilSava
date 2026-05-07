@@ -8,7 +8,7 @@ using System.Text;
 
 namespace AppSilSava.Repositorio.Implementaciones
 {
-    public class LicitacionRepositorio: ILicitacionRepositorio
+    public class LicitacionRepositorio : ILicitacionRepositorio
     {
         private readonly InfraCoreDbContext _bd; //variable de la base de datos
 
@@ -22,4 +22,5 @@ namespace AppSilSava.Repositorio.Implementaciones
             //se conencta a la base de datos y trae la lista 
             return await _bd.Licitacions.ToListAsync();
         }
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using AppSilSava.DTO.Response.Permiso;
+using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace AppSilSava.Negocio.Implementaciones
 {
-    public class PermisoNegocio
+    public class PermisoNegocio: IPermisoNegocio
     {
         private IPermisoRepositorio _repositorio;
         public PermisoNegocio(IPermisoRepositorio repositorio)

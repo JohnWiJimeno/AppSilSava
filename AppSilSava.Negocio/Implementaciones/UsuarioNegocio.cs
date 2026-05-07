@@ -1,4 +1,5 @@
 ﻿using AppSilSava.DTO.Response.Usuario;
+using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace AppSilSava.Negocio.Implementaciones
 {
-    public class UsuarioNegocio
+    public class UsuarioNegocio: IUsuarioNegocio
     {
         private IUsuarioRepositorio _repositorio;
         public UsuarioNegocio(IUsuarioRepositorio repositorio)

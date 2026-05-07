@@ -1,4 +1,5 @@
 ﻿using AppSilSava.DTO.Response.Contrato;
+using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace AppSilSava.Negocio.Implementaciones
 {
-    public class ContratoNegocio
+    public class ContratoNegocio: IContratoNegocio
     {
         private IContratoRepositorio _repositorio;
         public ContratoNegocio(IContratoRepositorio repositorio)

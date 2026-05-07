@@ -7,7 +7,7 @@ using System.Text;
 
 namespace AppSilSava.Negocio.Implementaciones
 {
-    public class CapacidadTecnica5BNegocio
+    public class CapacidadTecnica5BNegocio: ICapacidadTecnica5BNegocio
     {
         private ICapacidadTecnica5BRepositorio _repositorio;
         public CapacidadTecnica5BNegocio (ICapacidadTecnica5BRepositorio repositorio)

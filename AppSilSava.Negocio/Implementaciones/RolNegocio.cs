@@ -1,4 +1,5 @@
 ﻿using AppSilSava.DTO.Response.Rol;
+using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace AppSilSava.Negocio.Implementaciones
 {
-    public class RolNegocio
+    public class RolNegocio: IRolNegocio
     {
         private IRolRepositorio _repositorio;
         

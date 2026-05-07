@@ -7,7 +7,7 @@ using System.Text;
 
 namespace AppSilSava.Negocio.Implementaciones
 {
-    public class RolPermisoNegocio
+    public class RolPermisoNegocio: IRolPermisoNegocio
     {
         private IRolPermisoRepositorio _repositorio;
         public RolPermisoNegocio(IRolPermisoRepositorio repositorio)
