@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/01. Capa Acceso a Datos/">
+    <Project Path="AppSilSava.AccesoDatos/AppSilSava.AccesoDatos.csproj" />
+    <Project Path="AppSilSava.Entities/AppSilSava.Entities.csproj" />
+    <Project Path="AppSilSava.Repositorio/AppSilSava.Repositorio.csproj" />
+  </Folder>
+  <Folder Name="/02. Capa de Negocio/">
+    <Project Path="AppSilSava.Negocio/AppSilSava.Negocio.csproj" Id="0c90ad20-ea8a-4d9c-9723-4d8c4515135a" />
+  </Folder>
+  <Folder Name="/03. Capa Transversal/">
+    <Project Path="AppSilSava.DTO/AppSilSava.DTO.csproj" />
+  </Folder>
+  <Folder Name="/04. Capa Servidor/">
+    <Project Path="AppSilSava.API/AppSilSava.API.csproj" />
+  </Folder>
+  <Folder Name="/05. Capa Cliente/">
+    <Project Path="AppSilSava.Cliente/AppSilSava.Cliente.csproj" />
+  </Folder>
+</Solution>
