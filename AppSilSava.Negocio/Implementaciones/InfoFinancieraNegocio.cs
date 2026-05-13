@@ -1,4 +1,6 @@
-﻿using AppSilSava.DTO.Response.InfoFinanciera;
+﻿using AppSilSava.DTO.Response.Accionista;
+using AppSilSava.DTO.Response.Generic;
+using AppSilSava.DTO.Response.InfoFinanciera;
 using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
@@ -14,28 +16,39 @@ namespace AppSilSava.Negocio.Implementaciones
         {
             _repositorio = repositorio;
         }
-        public async Task<List<InfoFinancieraResponse>> listar()
+        public async Task<RepuestaBase<List<InfoFinancieraResponse>>> listar()
         {
-            var lista = await _repositorio.Listar();
-            return lista.Select(p=> new InfoFinancieraResponse
+            RepuestaBase<List<InfoFinancieraResponse>> rpta = new RepuestaBase<List<InfoFinancieraResponse>>();
+            try
             {
-                EmpresaId = p.EmpresaId,
-                AnioFiscal = p.AnioFiscal,
-                ActivoCorriente = p.ActivoCorriente,
-                ActivoTotal = p.ActivoTotal,
-                PasivoCorriente = p.PasivoCorriente,
-                PasivoTotal = p.PasivoTotal,
-                Patrimonio = p.Patrimonio,
-                IngresosOperacionales = p.IngresosOperacionales,
-                UtilidadPerdida = p.UtilidadPerdida,
-                GastosInteres = p.GastosInteres,
-                CapitalTrabajo = p.CapitalTrabajo,
-                IndiceLiquidez = p.IndiceLiquidez,
-                IndiceEndeudamiento = p.IndiceEndeudamiento,
-                RazonCobertura = p.RazonCobertura,
-                RentaPatrimonio = p.RentaPatrimonio,
-                RentaActivo = p.RentaActivo
-            }).ToList();
+                var lista = await _repositorio.Listar();
+                var listaFinanciera = lista.Select(p => new InfoFinancieraResponse
+                {
+                    EmpresaId = p.EmpresaId,
+                    AnioFiscal = p.AnioFiscal,
+                    ActivoCorriente = p.ActivoCorriente,
+                    ActivoTotal = p.ActivoTotal,
+                    PasivoCorriente = p.PasivoCorriente,
+                    PasivoTotal = p.PasivoTotal,
+                    Patrimonio = p.Patrimonio,
+                    IngresosOperacionales = p.IngresosOperacionales,
+                    UtilidadPerdida = p.UtilidadPerdida,
+                    GastosInteres = p.GastosInteres,
+                    CapitalTrabajo = p.CapitalTrabajo,
+                    IndiceLiquidez = p.IndiceLiquidez,
+                    IndiceEndeudamiento = p.IndiceEndeudamiento,
+                    RazonCobertura = p.RazonCobertura,
+                    RentaPatrimonio = p.RentaPatrimonio,
+                    RentaActivo = p.RentaActivo
+                }).ToList();
+                rpta.Data = listaFinanciera;
+                rpta.Exito = true;
+            }
+            catch (Exception ex) { 
+                rpta.Mensaje = ex.Message;
+            
+            }
+            return rpta;
         }
     }
 }

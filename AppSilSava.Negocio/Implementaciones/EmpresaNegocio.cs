@@ -1,4 +1,6 @@
-﻿using AppSilSava.DTO.Response.Empresa;
+﻿using AppSilSava.DTO.Response.Accionista;
+using AppSilSava.DTO.Response.Empresa;
+using AppSilSava.DTO.Response.Generic;
 using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
@@ -14,34 +16,45 @@ namespace AppSilSava.Negocio.Implementaciones
         {
             _repositorio = repositorio;
         }
-        public async Task<List<EmpresaResponse>> Listar()
+        public async Task<RepuestaBase<List<EmpresaResponse>>> Listar()
         {
-            var lista=await _repositorio.Listar();
-            return lista.Select(p=> new EmpresaResponse
+            RepuestaBase<List<EmpresaResponse>> rpta = new RepuestaBase<List<EmpresaResponse>>();
+            try
             {
-                EmpresaId = p.EmpresaId,
-                RazonSocial = p.RazonSocial,
-                Sigla = p.Sigla,
-                Departamento = p.Departamento,
-                Ciudad = p.Ciudad,
-                MatriculaNo = p.MatriculaNo,
-                FechaMatricula = p.FechaMatricula,
-                DireccionDomiclio = p.DireccionDomiclio,
-                Correo = p.Correo,
-                Telefono = p.Telefono,
-                TamanoEmpresa = p.TamanoEmpresa,
-                NombreRepLegal = p.NombreRepLegal,
-                IdentificacionRl = p.IdentificacionRl,
-                NombreSuplente = p.NombreSuplente,
-                IdentificacionS = p.IdentificacionS,
-                RevisorFiscal = p.RevisorFiscal,
-                IdentificacionRf = p.IdentificacionRf,
-                Discapacitado = p.Discapacitado,
-                EmpredimientoMujer = p.EmpredimientoMujer,
-                Mipyme = p.Mipyme,
-                Logo = p.Logo,
-                TipoEmpresaId = p.TipoEmpresaId
-            }).ToList();
+                var lista = await _repositorio.Listar();
+                var ListaEmpresa= lista.Select(p => new EmpresaResponse
+                {
+                    EmpresaId = p.EmpresaId,
+                    RazonSocial = p.RazonSocial,
+                    Sigla = p.Sigla,
+                    Departamento = p.Departamento,
+                    Ciudad = p.Ciudad,
+                    MatriculaNo = p.MatriculaNo,
+                    FechaMatricula = p.FechaMatricula,
+                    DireccionDomiclio = p.DireccionDomiclio,
+                    Correo = p.Correo,
+                    Telefono = p.Telefono,
+                    TamanoEmpresa = p.TamanoEmpresa,
+                    NombreRepLegal = p.NombreRepLegal,
+                    IdentificacionRl = p.IdentificacionRl,
+                    NombreSuplente = p.NombreSuplente,
+                    IdentificacionS = p.IdentificacionS,
+                    RevisorFiscal = p.RevisorFiscal,
+                    IdentificacionRf = p.IdentificacionRf,
+                    Discapacitado = p.Discapacitado,
+                    EmpredimientoMujer = p.EmpredimientoMujer,
+                    Mipyme = p.Mipyme,
+                    Logo = p.Logo,
+                    TipoEmpresaId = p.TipoEmpresaId
+                }).ToList();
+                rpta.Data = ListaEmpresa;
+                rpta.Exito = true;
+            }
+            catch (Exception ex) {
+                rpta.Mensaje = ex.Message;
+
+            }
+            return rpta;
         }
     }
 }

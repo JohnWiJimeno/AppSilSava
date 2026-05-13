@@ -1,4 +1,6 @@
-﻿using AppSilSava.DTO.Response.Usuario;
+﻿using AppSilSava.DTO.Response.Accionista;
+using AppSilSava.DTO.Response.Generic;
+using AppSilSava.DTO.Response.Usuario;
 using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
@@ -15,21 +17,32 @@ namespace AppSilSava.Negocio.Implementaciones
             _repositorio = repositorio;
         }
 
-        public async Task<List<UsuarioResponse>> Listar()
+        public async Task<RepuestaBase<List<UsuarioResponse>>> Listar()
         {
-            var lista = await _repositorio.Listar();
-            return lista.Select(x => new UsuarioResponse
+            RepuestaBase<List<UsuarioResponse>> rpta = new RepuestaBase<List<UsuarioResponse>>();
+            try
             {
-               UsuarioId = x.UsuarioId,
-               EmpresaId = x.EmpresaId,
-               RolId = x.RolId,
-               NombreCompleto = x.NombreCompleto,
-               NombreUsuario = x.NombreUsuario,
-               Correo = x.Correo,
-               PasswordHash = x.PasswordHash,
-               FechaRegistro = x.FechaRegistro,
-               UltimoAcceso = x.UltimoAcceso,
-            }).ToList();
+                var lista = await _repositorio.Listar();
+                var listaUsuario = lista.Select(x => new UsuarioResponse
+                {
+                    UsuarioId = x.UsuarioId,
+                    EmpresaId = x.EmpresaId,
+                    RolId = x.RolId,
+                    NombreCompleto = x.NombreCompleto,
+                    NombreUsuario = x.NombreUsuario,
+                    Correo = x.Correo,
+                    PasswordHash = x.PasswordHash,
+                    FechaRegistro = x.FechaRegistro,
+                    UltimoAcceso = x.UltimoAcceso,
+                }).ToList();
+                rpta.Data = listaUsuario;
+                rpta.Exito = true;
+            }
+            catch (Exception ex) 
+            { 
+            rpta.Mensaje=ex.Message;
+            }
+            return rpta;
         }
     }
 }

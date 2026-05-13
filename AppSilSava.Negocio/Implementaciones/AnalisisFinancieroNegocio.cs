@@ -1,4 +1,6 @@
 ﻿using AppSilSava.DTO.Response;
+using AppSilSava.DTO.Response.Accionista;
+using AppSilSava.DTO.Response.Generic;
 using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
@@ -15,22 +17,40 @@ namespace AppSilSava.Negocio.Implementaciones
             _repositorio = repositorio;
         }
 
-        public async Task<List<AnalisisFinancieroResponse>> Listar()
+        public async Task<RepuestaBase<List<AnalisisFinancieroResponse>>> Listar()
         {
-            var lista = await _repositorio.Listar();
-            return lista.Select(p => new AnalisisFinancieroResponse
-            { 
-                LicitacionId=p.LicitacionId,
-                EmpresaId=p.EmpresaId,
-                IndicadorId=p.IndicadorId,
-                IndiceLiquidez=p.IndiceLiquidez,
-                RazonCobertura=p.RazonCobertura,
-                CapitalTrabajo=p.CapitalTrabajo,
-                Patrimonio=p.Patrimonio,
-                RentaPatrimonio=p.RentaPatrimonio,
-                RentaActivo=p.RentaActivo,
+            RepuestaBase<List<AnalisisFinancieroResponse>> rpta = new RepuestaBase<List<AnalisisFinancieroResponse>>();
+            try
+            {
+                var lista = await _repositorio.Listar();
+                var listaAnalisisFinanciero = lista.Select(p => new AnalisisFinancieroResponse
+                {
+                    LicitacionId = p.LicitacionId,
+                    EmpresaId = p.EmpresaId,
+                    IndicadorId = p.IndicadorId,
+                    IndiceLiquidez = p.IndiceLiquidez,
+                    RazonCobertura = p.RazonCobertura,
+                    CapitalTrabajo = p.CapitalTrabajo,
+                    Patrimonio = p.Patrimonio,
+                    RentaPatrimonio = p.RentaPatrimonio,
+                    RentaActivo = p.RentaActivo,
 
-            }).ToList();
-    }
+                }).ToList();
+                rpta.Data = listaAnalisisFinanciero;
+                rpta.Exito = true;
+            }
+
+            catch (Exception ex) 
+            {
+               
+                rpta.Mensaje = ex.Message;
+
+            }
+            return rpta;
+
+
+
+
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AppSilSava.DTO.Response.Accionista;
+using AppSilSava.DTO.Response.Generic;
 using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
@@ -14,19 +15,33 @@ namespace AppSilSava.Negocio.Implementaciones
         {
             _repositorio = repositorio;
         }
-        public async Task<List<AccionistaResponse>> Listar()
+        public async Task<RepuestaBase<List<AccionistaResponse>>> Listar()
         {
-            var lista= await _repositorio.Listar();
-            return lista.Select(p=> new AccionistaResponse
-            {
-                AccionistaId = p.AccionistaId,
-                EmpresaId = p.EmpresaId,
-                EmpresaAccionistaId = p.EmpresaAccionistaId,
-                PorcentajePart = p.PorcentajePart,
-                VrAccion = p.VrAccion,
-                NoAcciones = p.NoAcciones
-            }).ToList();
+            RepuestaBase<List<AccionistaResponse>> rpta = new RepuestaBase<List<AccionistaResponse>>();
+              try
+                {
+                var lista = await _repositorio.Listar();
+                var listaAccionista=lista.Select(p => new AccionistaResponse
+                {
+                    AccionistaId = p.AccionistaId,
+                    EmpresaId = p.EmpresaId,
+                    EmpresaAccionistaId = p.EmpresaAccionistaId,
+                    PorcentajePart = p.PorcentajePart,
+                    VrAccion = p.VrAccion,
+                    NoAcciones = p.NoAcciones
+                }).ToList();
+                rpta.Data = listaAccionista;
+                rpta.Exito = true;
+              }
+                catch (Exception ex)
+                {
+                    //rpta.Exito = false;
+                    rpta.Mensaje = ex.Message;
+                }
+                return rpta;
+            
         }
 
+        
     }
 }

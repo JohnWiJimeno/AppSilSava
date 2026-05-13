@@ -1,4 +1,6 @@
 ﻿using AppSilSava.DTO.Response;
+using AppSilSava.DTO.Response.Accionista;
+using AppSilSava.DTO.Response.Generic;
 using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
@@ -14,14 +16,27 @@ namespace AppSilSava.Negocio.Implementaciones
         {
             _repositorio = repositorio;
         }
-        public async Task<List<TablaSalarioResponse>> List()
+        public async Task<RepuestaBase<List<TablaSalarioResponse>>> List()
         {
-            var lista = await _repositorio.Listar();
-            return lista.Select(p => new TablaSalarioResponse
+            RepuestaBase<List<TablaSalarioResponse>> rpta = new RepuestaBase<List<TablaSalarioResponse>>();
+            try
             {
-                Anio = p.Anio,
-                VrSalario = p.VrSalario
-            }).ToList();
-        }
+                var lista = await _repositorio.Listar();
+                var listaSalario = lista.Select(p => new TablaSalarioResponse
+                {
+                    Anio = p.Anio,
+                    VrSalario = p.VrSalario
+                }).ToList();
+                rpta.Data = listaSalario;
+                rpta.Exito = true;
+
+            }
+            catch (Exception ex) { 
+            
+            rpta.Mensaje=ex.Message;
+            }
+            return rpta;
+            }
+            
     }
 }

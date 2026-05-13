@@ -1,4 +1,6 @@
 ﻿using AppSilSava.DTO.Response;
+using AppSilSava.DTO.Response.Accionista;
+using AppSilSava.DTO.Response.Generic;
 using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
@@ -14,23 +16,34 @@ namespace AppSilSava.Negocio.Implementaciones
         {
             _repositorio = repositorio;
         }
-        public async Task<List<SaldoContratoEjec5CResponse>> Listar()
+        public async Task<RepuestaBase<List<SaldoContratoEjec5CResponse>>> Listar()
         {
-             var lista = await _repositorio.Listar();
-             return lista.Select(p=> new SaldoContratoEjec5CResponse
-             {
-                 EmpresaId = p.EmpresaId,
-                 ContratoId = p.ContratoId,
-                 FechaCalculo = p.FechaCalculo,
-                 SaldoPendienteEjec = p.SaldoPendienteEjec,
-                 FechaInicioReinicio = p.FechaInicioReinicio,
-                 FechaCierreProceso = p.FechaCierreProceso,
-                 DiasEjecutados = p.DiasEjecutados,
-                 DiasXejecutar = p.DiasXejecutar,
-                 SaldoDiarioContrato = p.SaldoDiarioContrato,
-                 SaldoContratoEjec = p.SaldoContratoEjec,
-                 EstadoSce = p.EstadoSce
-             }).ToList();
+            RepuestaBase<List<SaldoContratoEjec5CResponse>> rpta = new RepuestaBase<List<SaldoContratoEjec5CResponse>>();
+            try
+            {
+                var lista = await _repositorio.Listar();
+                var listaSCE = lista.Select(p => new SaldoContratoEjec5CResponse
+                {
+                    EmpresaId = p.EmpresaId,
+                    ContratoId = p.ContratoId,
+                    FechaCalculo = p.FechaCalculo,
+                    SaldoPendienteEjec = p.SaldoPendienteEjec,
+                    FechaInicioReinicio = p.FechaInicioReinicio,
+                    FechaCierreProceso = p.FechaCierreProceso,
+                    DiasEjecutados = p.DiasEjecutados,
+                    DiasXejecutar = p.DiasXejecutar,
+                    SaldoDiarioContrato = p.SaldoDiarioContrato,
+                    SaldoContratoEjec = p.SaldoContratoEjec,
+                    EstadoSce = p.EstadoSce
+                }).ToList();
+                rpta.Data = listaSCE;
+                rpta.Exito = true;
+            }
+            catch (Exception ex)
+            {
+               rpta.Mensaje = ex.Message;
+            }
+           return rpta;
         }
             
     }

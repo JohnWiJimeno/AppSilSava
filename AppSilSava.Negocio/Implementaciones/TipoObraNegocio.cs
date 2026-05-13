@@ -1,4 +1,6 @@
 ﻿using AppSilSava.DTO.Response;
+using AppSilSava.DTO.Response.Accionista;
+using AppSilSava.DTO.Response.Generic;
 using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
@@ -15,14 +17,26 @@ namespace AppSilSava.Negocio.Implementaciones
             _repositorio = repositorio;
         }
 
-        public async Task<List<TipoObraResponse>> Listar()
+        public async Task<RepuestaBase<List<TipoObraResponse>>> Listar()
         {
-            var lista = await _repositorio.Listar();
-            return lista.Select(x => new TipoObraResponse
+            RepuestaBase<List<TipoObraResponse>> rpta = new RepuestaBase<List<TipoObraResponse>>();
+            try {
+                var lista = await _repositorio.Listar();
+                var listaObra =lista.Select(x => new TipoObraResponse
+                {
+                    Codigo = x.Codigo,
+                    Descripcion = x.Descripcion
+                }).ToList();
+                rpta.Data = listaObra;
+                rpta.Exito = true;
+
+            }
+            catch (Exception ex)
             {
-                Codigo = x.Codigo,
-                Descripcion = x.Descripcion
-            }).ToList();
+                //rpta.Exito = false;
+                rpta.Mensaje = ex.Message;
+            }
+            return rpta;
         }
     }
 }

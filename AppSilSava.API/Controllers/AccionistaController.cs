@@ -18,7 +18,7 @@ namespace AppSilSava.API.Controllers
         public async Task<IActionResult> Listar()
         {
             var rpta = await _repositorio.Listar();
-            return Ok(rpta);
+            return rpta.Exito ? Ok(rpta) : BadRequest(rpta);
         }
 
     }

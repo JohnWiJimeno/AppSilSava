@@ -1,4 +1,6 @@
 ﻿using AppSilSava.DTO.Response;
+using AppSilSava.DTO.Response.Accionista;
+using AppSilSava.DTO.Response.Generic;
 using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
@@ -14,15 +16,26 @@ namespace AppSilSava.Negocio.Implementaciones
         {
             _repositorio = repositorio;
         }
-        public async Task<List<EstadoContratoResponse>> lista()
+        public async Task<RepuestaBase<List<EstadoContratoResponse>>> lista()
         {
-            var lista = await _repositorio.Listar();
-            return lista.Select(p => new EstadoContratoResponse
+            RepuestaBase<List<EstadoContratoResponse>> rpta = new RepuestaBase<List<EstadoContratoResponse>>();
+            try
             {
-                EstadoContratoId = p.EstadoContratoId,
-                Codigo = p.Codigo,
-                Descripcion = p.Descripcion
-            }).ToList();
+                var lista = await _repositorio.Listar();
+                var listaEstado = lista.Select(p => new EstadoContratoResponse
+                {
+                    EstadoContratoId = p.EstadoContratoId,
+                    Codigo = p.Codigo,
+                    Descripcion = p.Descripcion
+                }).ToList();
+                rpta.Data = listaEstado;
+                rpta.Exito = true;
+            }
+            catch (Exception ex) { 
+               //rpta.Exito = false;
+                rpta.Mensaje = ex.Message;
+            }
+            return rpta;
         }
     }
 }

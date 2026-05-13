@@ -1,4 +1,5 @@
 ﻿using AppSilSava.DTO.Response;
+using AppSilSava.DTO.Response.Generic;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,6 +8,6 @@ namespace AppSilSava.Negocio.Interfaces
 {
     public interface IRolPermisoNegocio
     {
-        Task<List<RolPermisoResponse>> Listar();
+        Task<RepuestaBase<List<RolPermisoResponse>>> Listar();
     }
 }

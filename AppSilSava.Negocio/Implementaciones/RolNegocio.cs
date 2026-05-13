@@ -1,4 +1,6 @@
-﻿using AppSilSava.DTO.Response.Rol;
+﻿using AppSilSava.DTO.Response.Accionista;
+using AppSilSava.DTO.Response.Generic;
+using AppSilSava.DTO.Response.Rol;
 using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;
@@ -16,15 +18,27 @@ namespace AppSilSava.Negocio.Implementaciones
             _repositorio = repositorio;
         }
 
-        public async Task<List<RolResponse>> Listar()
+        public async Task<RepuestaBase<List<RolResponse>>> Listar()
         {
-            var lista = await _repositorio.Listar();
-            return lista.Select(p => new RolResponse
+            RepuestaBase<List<RolResponse>> rpta = new RepuestaBase<List<RolResponse>>();
+            try
             {
-                NombreRol = p.NombreRol,
-                Descripcion = p.Descripcion,
-                FechaRegistro = p.FechaRegistro,
-            }).ToList();
+                var lista = await _repositorio.Listar();
+                var listaRol = lista.Select(p => new RolResponse
+                {
+                    NombreRol = p.NombreRol,
+                    Descripcion = p.Descripcion,
+                    FechaRegistro = p.FechaRegistro,
+                }).ToList();
+                rpta.Data = listaRol;
+                rpta.Exito = true;
+            }
+            catch (Exception ex) { 
+                rpta.Mensaje = ex.Message;
+
+            }
+            return rpta;
+            
         }
     }
 }

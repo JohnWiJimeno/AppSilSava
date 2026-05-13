@@ -1,4 +1,5 @@
-﻿using AppSilSava.DTO.Response.InfoFinanciera;
+﻿using AppSilSava.DTO.Response.Generic;
+using AppSilSava.DTO.Response.InfoFinanciera;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,6 +8,6 @@ namespace AppSilSava.Negocio.Interfaces
 {
     public interface IInfoFinancieraNegocio
     {
-        Task<List<InfoFinancieraResponse>> listar();
+        Task<RepuestaBase<List<InfoFinancieraResponse>>> listar();
     }
 }
