@@ -6,12 +6,12 @@
         <Content>
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon3">Ingrese CC/NIT</span>
-                <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+                <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3" @bind="NombreCompleto">
             </div>
             <div class="text-center>">
-                <button class="btn btn-primary">Buscar</button>
-                <buttton class="btn btn-danger">Limpiar</buttton>
-                <button class="btn btn-success" @onclick="Nuevo">Nuevo</button>
+                <button class="btn btn-primary" @onclick="()=>buscar()">Buscar</button>
+                <buttton class="btn btn-danger" @onclick="()=>limpiar()">Limpiar</buttton>
+                <button class="btn btn-success" @onclick="()=>Nuevo()">Nuevo</button>
 
             </div>
         </Content>
@@ -27,10 +27,22 @@
   </div>
     
 @code {
-
+    //captrar el nombre en la barra e busqueda y hacer la consulta a la base de datos
+    public string NombreCompleto { get; set; } = default!;
+    //pasa pagina para agregar empresa
     private void Nuevo()
     {
         navigationManager.NavigateTo("/empresa/add");
+    }
+
+    private void buscar()
+    {
+        //logica para buscar empresa por nombre completo
+        Console.WriteLine($"Buscar empresa por nombre completo: {NombreCompleto}");
+    }
+    private void limpiar()
+    {
+        NombreCompleto = string.Empty;
     }
 
 }
