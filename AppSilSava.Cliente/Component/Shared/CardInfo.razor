@@ -1,0 +1,21 @@
+﻿<div class="container">
+    <div class="card mb-3">
+        <div class="card-header bg-dark text-white">@Titulo</div>
+        <div class="card-body">
+            @Content
+        </div>
+    </div>
+</div>
+
+
+@code {
+//para mostar los titulos usando un solo codigo que sea dinamico
+    [EditorRequired]
+    [Parameter]
+    public string Titulo { get; set; } = string.Empty;
+    //agrega la barra de busqueda  
+    [Parameter]
+    public RenderFragment Content { get; set; } = default!;
+
+}
+

@@ -1,0 +1,36 @@
+﻿@page "/empresa"
+@inject NavigationManager navigationManager
+
+<div class="container">
+    <CardInfo Titulo="Lista de Empresas">
+        <Content>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon3">Ingrese CC/NIT</span>
+                <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+            </div>
+            <div class="text-center>">
+                <button class="btn btn-primary">Buscar</button>
+                <buttton class="btn btn-danger">Limpiar</buttton>
+                <button class="btn btn-success" @onclick="Nuevo">Nuevo</button>
+
+            </div>
+        </Content>
+
+    </CardInfo>
+</div>
+  <div class="mt-5">
+    <CardInfo Titulo="Lista de Empresas">
+        <Content>
+
+        </Content>
+    </CardInfo>
+  </div>
+    
+@code {
+
+    private void Nuevo()
+    {
+        navigationManager.NavigateTo("/empresa/add");
+    }
+
+}
