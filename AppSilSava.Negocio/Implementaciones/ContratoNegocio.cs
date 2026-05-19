@@ -50,7 +50,7 @@ namespace AppSilSava.Negocio.Implementaciones
                     LinkContrato = p.LinkContrato,
                     DetallesAdicionales = p.DetallesAdicionales,
                     DocumentoPdf = p.DocumentoPdf,
-                    SalarioId = p.SalarioId
+                    //SalarioId = p.SalarioId
                 }).ToList();
                 rpta.Data = listaContrato;
                 rpta.Exito = true;

@@ -24,7 +24,9 @@ namespace AppSilSava.DTO.Response.Contrato
 
         public decimal? PorcentajePart { get; set; }
 
-        public int? TipoObraId { get; set; }
+        public string? NombreTipoObra { get; set; } = string.Empty; // busca el nombre del tipo de obra en lugar del id para mostrarlo en la consulta
+
+        //public int? TipoObraId { get; set; } // esta lo puedo cambiar por el nombre del tipo de obra para mostrarlo en la consulta
 
         public DateOnly? FechaInicio { get; set; }
 
@@ -40,7 +42,9 @@ namespace AppSilSava.DTO.Response.Contrato
 
         public decimal? VrTotalContrato { get; set; }
 
-        public int? EstadoContratoId { get; set; }
+        public string NombreEstadoContrato { get; set; } = string.Empty; // busca el nombre del estado del contrato en lugar del id para mostrarlo en la consulta
+
+        //public int? EstadoContratoId { get; set; }
 
         public string? DatosTecnicos { get; set; }
 
@@ -60,6 +64,6 @@ namespace AppSilSava.DTO.Response.Contrato
 
         public byte[]? DocumentoPdf { get; set; }
 
-        public int? SalarioId { get; set; }
+        //public int? SalarioId { get; set; }
     }
 }
