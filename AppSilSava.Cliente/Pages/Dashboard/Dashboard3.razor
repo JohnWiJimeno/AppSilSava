@@ -1,0 +1,904 @@
+@page "/d2"
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<PageTitle>Dashboard — AppSilSava</PageTitle>
+
+@* ── ESTILOS GLOBALES ── *@
+<style>
+    :root {
+        --sil-navy:      #0d1b2a;
+        --sil-navy2:     #1b2d42;
+        --sil-blue:      #1565c0;
+        --sil-blue-lt:   #1976d2;
+        --sil-accent:    #00bcd4;
+        --sil-accent2:   #26c6da;
+        --sil-green:     #00c853;
+        --sil-amber:     #ffab00;
+        --sil-red:       #ef5350;
+        --sil-purple:    #7c4dff;
+        --sil-text:      #ffffff;
+        --sil-muted:     #90a4c8;
+        --sil-border:    rgba(100,160,255,.13);
+        --sil-card:      rgba(27,45,66,.72);
+        --sil-card2:     rgba(21,101,192,.10);
+        --radius-lg:     16px;
+        --radius-md:     10px;
+        --radius-sm:     6px;
+        --font-main:     'Sora', sans-serif;
+        --font-mono:     'JetBrains Mono', monospace;
+    }
+
+    .sil-body {
+        font-family: var(--font-main);
+        background: var(--sil-navy);
+        color: #ffffff;
+        min-height: 100vh;
+    }
+    .sil-body * { color: inherit; }
+    .sil-nav-link { color: #b8c8e8 !important; }
+    .sil-nav-link:hover { color: #ffffff !important; }
+    .sil-nav-link.active { color: var(--sil-accent) !important; }
+    .sil-brand-text { color: #ffffff !important; }
+    .sil-brand-sub  { color: #b8c8e8 !important; }
+    .sil-nav-section { color: #7a90b8 !important; }
+
+    /* ── FONDO ANIMADO ── */
+    .sil-bg {
+        position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    }
+    .sil-bg::before {
+        content: '';
+        position: absolute; inset: 0;
+        background:
+            radial-gradient(ellipse 80% 60% at 10% 20%, rgba(21,101,192,.35) 0%, transparent 60%),
+            radial-gradient(ellipse 60% 50% at 85% 80%, rgba(0,188,212,.18) 0%, transparent 55%),
+            radial-gradient(ellipse 50% 40% at 50% 50%, rgba(124,77,255,.10) 0%, transparent 60%);
+        animation: bgPulse 10s ease-in-out infinite alternate;
+    }
+    @@keyframes bgPulse {
+        0%   { opacity: .7; transform: scale(1); }
+        100% { opacity: 1; transform: scale(1.04); }
+    }
+    .sil-grid-lines {
+        position: absolute; inset: 0;
+        background-image:
+            linear-gradient(rgba(100,160,255,.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(100,160,255,.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+    }
+
+    /* ── SIDEBAR ── */
+    .sil-sidebar {
+        width: 240px;
+        min-height: 100vh;
+        background: rgba(13,27,42,.92);
+        border-right: 1px solid var(--sil-border);
+        backdrop-filter: blur(20px);
+        position: fixed; left: 0; top: 0; bottom: 0;
+        z-index: 100;
+        display: flex; flex-direction: column;
+        padding: 0;
+        transition: width .3s ease;
+    }
+    .sil-sidebar-brand {
+        padding: 1.5rem 1.25rem 1rem;
+        border-bottom: 1px solid var(--sil-border);
+        display: flex; align-items: center; gap: .75rem;
+    }
+    .sil-brand-icon {
+        width: 38px; height: 38px;
+        background: linear-gradient(135deg, var(--sil-blue), var(--sil-accent));
+        border-radius: var(--radius-sm);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.1rem;
+        animation: iconGlow 3s ease-in-out infinite alternate;
+    }
+    @@keyframes iconGlow {
+        0%  { box-shadow: 0 0 8px rgba(0,188,212,.4); }
+        100% { box-shadow: 0 0 20px rgba(0,188,212,.8); }
+    }
+    .sil-brand-text { font-size: .95rem; font-weight: 600; color: var(--sil-text); }
+    .sil-brand-sub  { font-size: .7rem; color: var(--sil-muted); font-weight: 300; }
+
+    .sil-nav-section {
+        padding: .9rem 1.25rem .3rem;
+        font-size: .62rem; font-weight: 600;
+        color: var(--sil-muted);
+        text-transform: uppercase; letter-spacing: .1em;
+    }
+    .sil-nav-link {
+        display: flex; align-items: center; gap: .75rem;
+        padding: .6rem 1.25rem;
+        color: var(--sil-muted);
+        text-decoration: none;
+        font-size: .82rem;
+        border-left: 3px solid transparent;
+        transition: all .2s ease;
+        cursor: pointer;
+        border-right: none; border-top: none; border-bottom: none;
+        background: none; width: 100%; text-align: left;
+    }
+    .sil-nav-link:hover {
+        color: var(--sil-text);
+        background: rgba(100,160,255,.06);
+        border-left-color: rgba(0,188,212,.4);
+    }
+    .sil-nav-link.active {
+        color: var(--sil-accent);
+        background: rgba(0,188,212,.08);
+        border-left-color: var(--sil-accent);
+        font-weight: 500;
+    }
+    .sil-nav-link .nav-icon { font-size: 1rem; width: 18px; text-align: center; }
+    .sil-nav-badge {
+        margin-left: auto;
+        font-size: .6rem; padding: 2px 7px;
+        border-radius: 20px;
+        font-family: var(--font-mono);
+        font-weight: 500;
+    }
+    .badge-cyan  { background: rgba(0,188,212,.2); color: var(--sil-accent); }
+    .badge-amber { background: rgba(255,171,0,.2);  color: var(--sil-amber); }
+    .badge-green { background: rgba(0,200,83,.2);   color: var(--sil-green); }
+
+    /* ── TOPBAR ── */
+    .sil-topbar {
+        height: 64px;
+        background: rgba(13,27,42,.85);
+        border-bottom: 1px solid var(--sil-border);
+        backdrop-filter: blur(20px);
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 1.75rem;
+        position: sticky; top: 0; z-index: 50;
+    }
+    .sil-topbar-title { font-size: 1.15rem; font-weight: 600; }
+    .sil-topbar-sub   { font-size: .72rem; color: var(--sil-muted); }
+    .sil-topbar-actions { display: flex; align-items: center; gap: .75rem; }
+
+    .sil-btn-primary {
+        background: linear-gradient(135deg, var(--sil-blue), var(--sil-blue-lt));
+        color: #fff; border: none;
+        padding: .45rem 1rem;
+        border-radius: var(--radius-sm);
+        font-size: .78rem; font-family: var(--font-main);
+        font-weight: 500; cursor: pointer;
+        transition: all .2s ease;
+        display: flex; align-items: center; gap: .4rem;
+    }
+    .sil-btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(21,101,192,.45);
+    }
+    .sil-btn-outline {
+        background: transparent;
+        color: var(--sil-muted);
+        border: 1px solid var(--sil-border);
+        padding: .4rem .75rem;
+        border-radius: var(--radius-sm);
+        font-size: .78rem; font-family: var(--font-main);
+        cursor: pointer; transition: all .2s ease;
+    }
+    .sil-btn-outline:hover { color: var(--sil-text); border-color: rgba(100,160,255,.35); }
+
+    /* ── LAYOUT PRINCIPAL ── */
+    .sil-main { margin-left: 240px; position: relative; z-index: 1; }
+    .sil-content { padding: 1.5rem 1.75rem; }
+
+    /* ── MÉTRICAS ── */
+    .sil-metric {
+        background: var(--sil-card);
+        border: 1px solid var(--sil-border);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem 1.4rem;
+        position: relative; overflow: hidden;
+        backdrop-filter: blur(12px);
+        animation: fadeSlideUp .5s ease both;
+        transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .sil-metric:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(0,0,0,.4);
+    }
+    .sil-metric::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    }
+    .sil-metric.m-blue::before   { background: linear-gradient(90deg, var(--sil-blue), var(--sil-accent)); }
+    .sil-metric.m-green::before  { background: linear-gradient(90deg, var(--sil-green), #69f0ae); }
+    .sil-metric.m-amber::before  { background: linear-gradient(90deg, var(--sil-amber), #ffd54f); }
+    .sil-metric.m-purple::before { background: linear-gradient(90deg, var(--sil-purple), #b388ff); }
+
+    .sil-metric-icon {
+        width: 40px; height: 40px;
+        border-radius: var(--radius-sm);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.1rem; margin-bottom: .85rem;
+    }
+    .icon-blue   { background: rgba(21,101,192,.25);  color: var(--sil-accent); }
+    .icon-green  { background: rgba(0,200,83,.2);     color: var(--sil-green); }
+    .icon-amber  { background: rgba(255,171,0,.2);    color: var(--sil-amber); }
+    .icon-purple { background: rgba(124,77,255,.2);   color: #b388ff; }
+
+    .sil-metric-label { font-size: .72rem; color: var(--sil-muted); font-weight: 400; margin-bottom: .25rem; text-transform: uppercase; letter-spacing: .06em; }
+    .sil-metric-val   { font-size: 2rem; font-weight: 700; font-family: var(--font-mono); line-height: 1; }
+    .sil-metric-trend {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: .7rem; margin-top: .4rem;
+        padding: 2px 8px; border-radius: 20px;
+    }
+    .trend-up   { background: rgba(0,200,83,.15);  color: var(--sil-green); }
+    .trend-down { background: rgba(239,83,80,.15); color: var(--sil-red); }
+
+    /* ── CARDS ── */
+    .sil-card {
+        background: var(--sil-card);
+        border: 1px solid var(--sil-border);
+        border-radius: var(--radius-lg);
+        backdrop-filter: blur(12px);
+        animation: fadeSlideUp .6s ease both;
+        overflow: hidden;
+    }
+    .sil-card-header {
+        padding: 1rem 1.4rem .75rem;
+        border-bottom: 1px solid var(--sil-border);
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .sil-card-title {
+        font-size: .88rem; font-weight: 600;
+        display: flex; align-items: center; gap: .5rem;
+    }
+    .sil-card-title .dot {
+        width: 7px; height: 7px; border-radius: 50%;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    @@keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: .5; transform: scale(.8); }
+    }
+    .dot-blue   { background: var(--sil-accent); box-shadow: 0 0 6px var(--sil-accent); }
+    .dot-green  { background: var(--sil-green);  box-shadow: 0 0 6px var(--sil-green); }
+    .dot-amber  { background: var(--sil-amber);  box-shadow: 0 0 6px var(--sil-amber); }
+    .sil-card-body { padding: 1.1rem 1.4rem; }
+
+    /* ── TABLA ── */
+    .sil-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    .sil-table thead th {
+        padding: .5rem .75rem;
+        color: var(--sil-muted);
+        font-size: .65rem; font-weight: 600;
+        text-transform: uppercase; letter-spacing: .07em;
+        border-bottom: 1px solid var(--sil-border);
+        text-align: left;
+    }
+    .sil-table tbody td {
+        padding: .7rem .75rem;
+        border-bottom: 1px solid rgba(100,160,255,.05);
+        color: var(--sil-text);
+        vertical-align: middle;
+    }
+    .sil-table tbody tr { transition: background .15s ease; }
+    .sil-table tbody tr:hover td { background: rgba(100,160,255,.05); }
+    .sil-table tbody tr:last-child td { border-bottom: none; }
+    .sil-code { font-family: var(--font-mono); font-size: .72rem; color: var(--sil-accent); }
+
+    /* ── CHIPS ── */
+    .sil-chip {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: .65rem; padding: 3px 10px;
+        border-radius: 20px; font-weight: 500;
+    }
+    .sil-chip::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+    .chip-adj  { background: rgba(0,200,83,.15);  color: #69f0ae; }
+    .chip-adj::before  { background: var(--sil-green); }
+    .chip-eval { background: rgba(255,171,0,.15);  color: #ffd54f; }
+    .chip-eval::before { background: var(--sil-amber); }
+    .chip-open { background: rgba(0,188,212,.15);  color: var(--sil-accent2); }
+    .chip-open::before { background: var(--sil-accent); }
+    .chip-des  { background: rgba(239,83,80,.15);  color: #ef9a9a; }
+    .chip-des::before  { background: var(--sil-red); }
+    .chip-ejec { background: rgba(21,101,192,.2);  color: #90caf9; }
+    .chip-ejec::before { background: var(--sil-blue-lt); }
+
+    /* ── DONUT / ESTADOS ── */
+    .sil-donut-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
+    .sil-donut-label {
+        position: absolute;
+        text-align: center;
+    }
+    .sil-donut-label .big { font-size: 1.6rem; font-weight: 700; font-family: var(--font-mono); display: block; }
+    .sil-donut-label .sm  { font-size: .62rem; color: var(--sil-muted); }
+
+    .sil-legend-item {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: .45rem 0;
+        border-bottom: 1px solid rgba(100,160,255,.06);
+        font-size: .78rem;
+    }
+    .sil-legend-item:last-child { border-bottom: none; }
+    .sil-legend-dot {
+        width: 8px; height: 8px; border-radius: 2px;
+        flex-shrink: 0; margin-right: .55rem;
+    }
+    .sil-legend-name { color: var(--sil-muted); display: flex; align-items: center; }
+    .sil-legend-count { font-weight: 600; font-family: var(--font-mono); font-size: .78rem; }
+    .sil-legend-pct { color: var(--sil-muted); font-size: .68rem; margin-left: .35rem; }
+
+    /* ── BARRAS INDICADORES ── */
+    .sil-bar-row { display: flex; align-items: center; gap: .75rem; margin-bottom: .65rem; font-size: .75rem; }
+    .sil-bar-label { width: 110px; color: var(--sil-muted); text-align: right; flex-shrink: 0; font-size: .7rem; }
+    .sil-bar-track {
+        flex: 1; height: 6px;
+        background: rgba(100,160,255,.1);
+        border-radius: 3px; overflow: hidden;
+    }
+    .sil-bar-fill {
+        height: 100%; border-radius: 3px;
+        transform-origin: left;
+        animation: barGrow .8s cubic-bezier(.22,1,.36,1) both;
+    }
+    @@keyframes barGrow {
+        from { transform: scaleX(0); }
+        to   { transform: scaleX(1); }
+    }
+    .sil-bar-val { width: 36px; font-family: var(--font-mono); font-size: .7rem; color: var(--sil-text); }
+
+    /* ── STAT MINI ── */
+    .sil-stat-row {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: .5rem 0;
+        border-bottom: 1px solid rgba(100,160,255,.06);
+        font-size: .78rem;
+    }
+    .sil-stat-row:last-child { border-bottom: none; }
+    .sil-stat-label { color: var(--sil-muted); display: flex; align-items: center; gap: .4rem; }
+
+    /* ── ACTIVIDAD RECIENTE ── */
+    .sil-activity-item {
+        display: flex; align-items: flex-start; gap: .75rem;
+        padding: .6rem 0;
+        border-bottom: 1px solid rgba(100,160,255,.05);
+        animation: fadeSlideUp .4s ease both;
+    }
+    .sil-activity-item:last-child { border-bottom: none; }
+    .sil-activity-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        margin-top: 5px; flex-shrink: 0;
+    }
+    .sil-activity-text { font-size: .77rem; line-height: 1.45; }
+    .sil-activity-time { font-size: .65rem; color: var(--sil-muted); margin-top: 2px; }
+
+    /* ── ANIMACIONES ENTRADA ── */
+    @@keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .sil-metric:nth-child(1) { animation-delay: .05s; }
+    .sil-metric:nth-child(2) { animation-delay: .10s; }
+    .sil-metric:nth-child(3) { animation-delay: .15s; }
+    .sil-metric:nth-child(4) { animation-delay: .20s; }
+
+    /* ── SKELETON LOADING ── */
+    .skel {
+        background: linear-gradient(90deg, rgba(100,160,255,.07) 25%, rgba(100,160,255,.14) 50%, rgba(100,160,255,.07) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.4s infinite;
+        border-radius: 4px;
+    }
+    @@keyframes shimmer {
+        0%   { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+    .skel-line { height: 12px; margin-bottom: 8px; }
+    .skel-val  { height: 28px; width: 80px; margin-bottom: 6px; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(100,160,255,.2); border-radius: 10px; }
+
+    /* ── RESPONSIVE ── */
+    @@media (max-width: 991px) {
+        .sil-sidebar { width: 60px; }
+        .sil-sidebar .sil-brand-text,
+        .sil-sidebar .sil-brand-sub,
+        .sil-sidebar .nav-label,
+        .sil-sidebar .sil-nav-badge,
+        .sil-sidebar .sil-nav-section { display: none; }
+        .sil-main { margin-left: 60px; }
+    }
+</style>
+
+<div class="sil-body">
+    @* Fondo animado *@
+    <div class="sil-bg">
+        <div class="sil-grid-lines"></div>
+    </div>
+
+    @* ── SIDEBAR ── *@
+    <aside class="sil-sidebar">
+        <div class="sil-sidebar-brand">
+            <div class="sil-brand-icon">🏛️</div>
+            <div>
+                <div class="sil-brand-text">AppSilSava</div>
+                <div class="sil-brand-sub">Gestión licitaciones</div>
+            </div>
+        </div>
+
+        <nav class="mt-2 flex-grow-1">
+            <div class="sil-nav-section">Principal</div>
+            <button class="sil-nav-link active">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Dashboard</span>
+            </button>
+            <button class="sil-nav-link" @onclick='()=>Nav.NavigateTo("/licitaciones")'>
+                <span class="nav-icon">📄</span>
+                <span class="nav-label">Licitaciones</span>
+                <span class="sil-nav-badge badge-cyan">@(stats?.LicitacionesActivas ?? 0)</span>
+            </button>
+            <button class="sil-nav-link" @onclick='()=>Nav.NavigateTo("/contratos")'>
+                <span class="nav-icon">📋</span>
+                <span class="nav-label">Contratos</span>
+                <span class="sil-nav-badge badge-green">@(stats?.ContratosEjecucion ?? 0)</span>
+            </button>
+            <button class="sil-nav-link" @onclick='()=>Nav.NavigateTo("/empresas")'>
+                <span class="nav-icon">🏢</span>
+                <span class="nav-label">Empresas</span>
+            </button>
+
+            <div class="sil-nav-section">Análisis</div>
+            <button class="sil-nav-link" @onclick='()=>Nav.NavigateTo("/analisis/financiero")'>
+                <span class="nav-icon">💹</span>
+                <span class="nav-label">Financiero</span>
+            </button>
+            <button class="sil-nav-link" @onclick='()=>Nav.NavigateTo("/analisis/tecnico")'>
+                <span class="nav-icon">🔧</span>
+                <span class="nav-label">Análisis técnico</span>
+            </button>
+            <button class="sil-nav-link" @onclick='()=>Nav.NavigateTo("/accionistas")'>
+                <span class="nav-icon">👥</span>
+                <span class="nav-label">Accionistas</span>
+            </button>
+            <button class="sil-nav-link" @onclick='()=>Nav.NavigateTo("/salarios")'>
+                <span class="nav-icon">💰</span>
+                <span class="nav-label">Tabla salarios</span>
+            </button>
+
+            <div class="sil-nav-section">Configuración</div>
+            <button class="sil-nav-link" @onclick='()=>Nav.NavigateTo("/roles")'>
+                <span class="nav-icon">🔐</span>
+                <span class="nav-label">Roles y permisos</span>
+                <span class="sil-nav-badge badge-amber">3</span>
+            </button>
+            <button class="sil-nav-link" @onclick='()=>Nav.NavigateTo("/usuarios")'>
+                <span class="nav-icon">👤</span>
+                <span class="nav-label">Usuarios</span>
+            </button>
+        </nav>
+
+        <div class="p-3 border-top" style="border-color:var(--sil-border) !important;">
+            <div class="d-flex align-items-center gap-2">
+                <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--sil-blue),var(--sil-accent));display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:600;">AD</div>
+                <div class="nav-label">
+                    <div style="font-size:.75rem;font-weight:500;">Admin</div>
+                    <div style="font-size:.65rem;color:var(--sil-muted);">Superusuario</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    @* ── MAIN ── *@
+    <div class="sil-main">
+
+        @* TOPBAR *@
+        <div class="sil-topbar">
+            <div>
+                <div class="sil-topbar-title">Dashboard</div>
+                <div class="sil-topbar-sub">@DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy")</div>
+            </div>
+            <div class="sil-topbar-actions">
+                <button class="sil-btn-outline" @onclick="RecargarDatos">
+                    🔄 Actualizar
+                </button>
+                <button class="sil-btn-primary" @onclick='()=>Nav.NavigateTo("/licitaciones/nueva")'>
+                    ＋ Nueva licitación
+                </button>
+            </div>
+        </div>
+
+        @* CONTENIDO *@
+        <div class="sil-content">
+
+            @if (cargando)
+            {
+                @* SKELETON LOADING *@
+                <div class="row g-3 mb-4">
+                    @for (int i = 0; i < 4; i++)
+                    {
+                        <div class="col-xl-3 col-md-6">
+                            <div class="sil-card p-3">
+                                <div class="skel skel-val mb-2"></div>
+                                <div class="skel skel-line" style="width:60%"></div>
+                                <div class="skel skel-line" style="width:40%"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                @* ── MÉTRICAS ── *@
+                <div class="row g-3 mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="sil-metric m-blue">
+                            <div class="sil-metric-icon icon-blue">📄</div>
+                            <div class="sil-metric-label">Licitaciones activas</div>
+                            <div class="sil-metric-val" style="color:var(--sil-accent);">
+                                @stats.LicitacionesActivas
+                            </div>
+                            <div class="sil-metric-trend trend-up">▲ +8 este mes</div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="sil-metric m-green">
+                            <div class="sil-metric-icon icon-green">✅</div>
+                            <div class="sil-metric-label">Contratos en ejecución</div>
+                            <div class="sil-metric-val" style="color:var(--sil-green);">
+                                @stats.ContratosEjecucion
+                            </div>
+                            <div class="sil-metric-trend trend-up">▲ +3 este mes</div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="sil-metric m-amber">
+                            <div class="sil-metric-icon icon-amber">💰</div>
+                            <div class="sil-metric-label">Valor total contratos</div>
+                            <div class="sil-metric-val" style="color:var(--sil-amber);">
+                                @stats.ValorTotalFormat
+                            </div>
+                            <div class="sil-metric-trend trend-up">▲ +12% vs año ant.</div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="sil-metric m-purple">
+                            <div class="sil-metric-icon icon-purple">🏢</div>
+                            <div class="sil-metric-label">Empresas registradas</div>
+                            <div class="sil-metric-val" style="color:#b388ff;">
+                                @stats.Empresas
+                            </div>
+                            <div class="sil-metric-trend trend-down">▼ −2 desactivadas</div>
+                        </div>
+                    </div>
+                </div>
+
+                @* ── FILA 2: TABLA + ESTADOS ── *@
+                <div class="row g-3 mb-4">
+                    <div class="col-xl-7">
+                        <div class="sil-card h-100">
+                            <div class="sil-card-header">
+                                <div class="sil-card-title">
+                                    <span class="dot dot-blue"></span>
+                                    Licitaciones recientes
+                                </div>
+                                <button class="sil-btn-outline" style="font-size:.7rem;padding:.3rem .7rem;"
+                                        @onclick='()=>Nav.NavigateTo("/licitaciones")'>
+                                    Ver todas →
+                                </button>
+                            </div>
+                            <div class="p-0">
+                                <table class="sil-table">
+                                    <thead>
+                                        <tr>
+                                            <th>No. proceso</th>
+                                            <th>Objeto</th>
+                                            <th>Tipo pliego</th>
+                                            <th>Valor</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var l in licitaciones)
+                                        {
+                                            <tr>
+                                                <td><span class="sil-code">@l.NoProceso</span></td>
+                                                <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                                                    @l.Objeto
+                                                </td>
+                                                <td style="color:var(--sil-muted);font-size:.72rem;">@l.TipoPliego</td>
+                                                <td style="font-family:var(--font-mono);font-size:.73rem;">
+                                                    @l.ValorProceso.ToString("C0")
+                                                </td>
+                                                <td>
+                                                    <span class="sil-chip @ChipClass(l.Estado)">@l.Estado</span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-5">
+                        <div class="sil-card h-100">
+                            <div class="sil-card-header">
+                                <div class="sil-card-title">
+                                    <span class="dot dot-amber"></span>
+                                    Estado de contratos
+                                </div>
+                            </div>
+                            <div class="sil-card-body">
+                                <div class="sil-donut-wrap mb-3">
+                                    <svg width="140" height="140" viewBox="0 0 140 140">
+                                        @{ var donutData = GetDonutSegments(); }
+                                        @foreach (var seg in donutData)
+                                        {
+                                            <circle cx="70" cy="70" r="52"
+                                                    fill="none"
+                                                    stroke="@seg.Color"
+                                                    stroke-width="16"
+                                                    stroke-dasharray="@seg.Dash @seg.Gap"
+                                                    stroke-dashoffset="@seg.Offset"
+                                                    stroke-linecap="round"
+                                                    style="transition:stroke-dasharray .8s ease;" />
+                                        }
+                                    </svg>
+                                    <div class="sil-donut-label">
+                                        <span class="big">@TotalContratos</span>
+                                        <span class="sm">total</span>
+                                    </div>
+                                </div>
+                                @foreach (var e in estadosContrato)
+                                {
+                                    <div class="sil-legend-item">
+                                        <div class="sil-legend-name">
+                                            <div class="sil-legend-dot" style="background:@e.Color;"></div>
+                                            @e.Estado
+                                        </div>
+                                        <div>
+                                            <span class="sil-legend-count">@e.Cantidad</span>
+                                            <span class="sil-legend-pct">@e.Porcentaje%</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* ── FILA 3: INDICADORES + CAPACIDAD + ACTIVIDAD ── *@
+                <div class="row g-3">
+                    <div class="col-xl-5">
+                        <div class="sil-card h-100">
+                            <div class="sil-card-header">
+                                <div class="sil-card-title">
+                                    <span class="dot dot-green"></span>
+                                    Indicadores financieros promedio
+                                </div>
+                                <button class="sil-btn-outline" style="font-size:.7rem;padding:.3rem .7rem;"
+                                        @onclick='()=>Nav.NavigateTo("/analisis/financiero")'>
+                                    Detalle →
+                                </button>
+                            </div>
+                            <div class="sil-card-body">
+                                <div class="sil-bar-row">
+                                    <div class="sil-bar-label">Índice liquidez</div>
+                                    <div class="sil-bar-track">
+                                        <div class="sil-bar-fill" style="width:74%;background:var(--sil-accent);animation-delay:.1s"></div>
+                                    </div>
+                                    <div class="sil-bar-val">1.74</div>
+                                </div>
+                                <div class="sil-bar-row">
+                                    <div class="sil-bar-label">Razón cobertura</div>
+                                    <div class="sil-bar-track">
+                                        <div class="sil-bar-fill" style="width:61%;background:#26c6da;animation-delay:.2s"></div>
+                                    </div>
+                                    <div class="sil-bar-val">3.2x</div>
+                                </div>
+                                <div class="sil-bar-row">
+                                    <div class="sil-bar-label">Endeudamiento</div>
+                                    <div class="sil-bar-track">
+                                        <div class="sil-bar-fill" style="width:43%;background:var(--sil-amber);animation-delay:.3s"></div>
+                                    </div>
+                                    <div class="sil-bar-val">43%</div>
+                                </div>
+                                <div class="sil-bar-row">
+                                    <div class="sil-bar-label">Renta activo</div>
+                                    <div class="sil-bar-track">
+                                        <div class="sil-bar-fill" style="width:18%;background:var(--sil-green);animation-delay:.4s"></div>
+                                    </div>
+                                    <div class="sil-bar-val">18%</div>
+                                </div>
+                                <div class="sil-bar-row">
+                                    <div class="sil-bar-label">Renta patrimonio</div>
+                                    <div class="sil-bar-track">
+                                        <div class="sil-bar-fill" style="width:22%;background:var(--sil-green);animation-delay:.5s"></div>
+                                    </div>
+                                    <div class="sil-bar-val">22%</div>
+                                </div>
+                                <div class="sil-bar-row">
+                                    <div class="sil-bar-label">Capital trabajo</div>
+                                    <div class="sil-bar-track">
+                                        <div class="sil-bar-fill" style="width:55%;background:#b388ff;animation-delay:.6s"></div>
+                                    </div>
+                                    <div class="sil-bar-val">$55M</div>
+                                </div>
+                                <p style="font-size:.65rem;color:var(--sil-muted);margin-top:.75rem;">
+                                    Basado en @stats.LicitacionesActivas análisis del período actual
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3">
+                        <div class="sil-card h-100">
+                            <div class="sil-card-header">
+                                <div class="sil-card-title">
+                                    <span class="dot" style="background:#b388ff;box-shadow:0 0 6px #b388ff;animation:pulse 2s infinite;"></span>
+                                    Capacidad técnica
+                                </div>
+                            </div>
+                            <div class="sil-card-body">
+                                <div class="sil-stat-row">
+                                    <div class="sil-stat-label">👷 Profesionales activos</div>
+                                    <span style="font-family:var(--font-mono);font-size:.82rem;font-weight:600;color:var(--sil-accent);">142</span>
+                                </div>
+                                <div class="sil-stat-row">
+                                    <div class="sil-stat-label">🏢 Empresas habilitadas</div>
+                                    <span style="font-family:var(--font-mono);font-size:.82rem;font-weight:600;">76</span>
+                                </div>
+                                <div class="sil-stat-row">
+                                    <div class="sil-stat-label">🌱 MiPymes</div>
+                                    <span class="sil-chip chip-adj">34 activas</span>
+                                </div>
+                                <div class="sil-stat-row">
+                                    <div class="sil-stat-label">♿ Discapacitados</div>
+                                    <span class="sil-chip chip-open">12</span>
+                                </div>
+                                <div class="sil-stat-row">
+                                    <div class="sil-stat-label">👩‍💼 Emprend. mujer</div>
+                                    <span class="sil-chip chip-open">9</span>
+                                </div>
+                                <div class="sil-stat-row">
+                                    <div class="sil-stat-label">⏳ Análisis pend.</div>
+                                    <span class="sil-chip chip-eval">7</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4">
+                        <div class="sil-card h-100">
+                            <div class="sil-card-header">
+                                <div class="sil-card-title">
+                                    <span class="dot dot-blue"></span>
+                                    Actividad reciente
+                                </div>
+                            </div>
+                            <div class="sil-card-body">
+                                @foreach (var a in actividades)
+                                {
+                                    <div class="sil-activity-item" style="animation-delay:@(actividades.IndexOf(a) * .07)s">
+                                        <div class="sil-activity-dot" style="background:@a.Color;box-shadow:0 0 5px @a.Color;"></div>
+                                        <div>
+                                            <div class="sil-activity-text">@a.Texto</div>
+                                            <div class="sil-activity-time">@a.Tiempo</div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    bool cargando = true;
+    DashboardStatsDto stats = new();
+    List<LicitacionDto> licitaciones = new();
+    List<EstadoContratoResumen> estadosContrato = new();
+    int TotalContratos => estadosContrato.Sum(e => e.Cantidad);
+
+    /* ── Actividad mock (reemplazar con datos reales) ── */
+    List<ActividadItem> actividades = new()
+    {
+        new("Nueva licitación LIC-2024-048 creada", "Hace 5 min", "#00bcd4"),
+        new("Contrato CON-156 adjudicado a Constructora XYZ", "Hace 18 min", "#00c853"),
+        new("Empresa Ingeniería ABC actualiza documentos", "Hace 1h", "#90a4c8"),
+        new("Análisis financiero aprobado — 3 empresas", "Hace 2h", "#7c4dff"),
+        new("Usuario Juan Pérez inicia sesión", "Hace 3h", "#90a4c8"),
+        new("Licitación LIC-2024-031 declarada desierta", "Hace 5h", "#ef5350"),
+        new("MiPyme ID-882 habilitada técnicamente", "Hace 6h", "#ffab00"),
+    };
+
+    protected override async Task OnInitializedAsync() => await CargarTodo();
+
+    async Task CargarTodo()
+    {
+        cargando = true;
+        try
+        {
+            var t1 = Http.GetFromJsonAsync<DashboardStatsDto>("api/dashboard/stats");
+            var t2 = Http.GetFromJsonAsync<List<LicitacionDto>>("api/dashboard/licitaciones?top=6");
+            var t3 = Http.GetFromJsonAsync<List<EstadoContratoResumen>>("api/dashboard/contratos/estados");
+            await Task.WhenAll(t1, t2, t3);
+            stats          = t1.Result ?? new();
+            licitaciones   = t2.Result ?? DatosDemo();
+            estadosContrato = t3.Result ?? EstadosDemo();
+        }
+        catch
+        {
+            licitaciones    = DatosDemo();
+            estadosContrato = EstadosDemo();
+            stats = new() { LicitacionesActivas=47, ContratosEjecucion=23, ValorTotal=2_400_000_000, Empresas=184 };
+        }
+        finally { cargando = false; }
+    }
+
+    async Task RecargarDatos() => await CargarTodo();
+
+    string ChipClass(string estado) => estado switch
+    {
+        "Adjudicada"    => "chip-adj",
+        "En evaluación" => "chip-eval",
+        "Abierta"       => "chip-open",
+        "Desierta"      => "chip-des",
+        "En ejecución"  => "chip-ejec",
+        _               => "chip-open"
+    };
+
+    /* Donut SVG — genera segmentos */
+    record DonutSeg(string Color, double Dash, double Gap, double Offset);
+    List<DonutSeg> GetDonutSegments()
+    {
+        double circum = 2 * Math.PI * 52;
+        double offset = 0;
+        var segs = new List<DonutSeg>();
+        foreach (var e in estadosContrato)
+        {
+            double frac = TotalContratos > 0 ? (double)e.Cantidad / TotalContratos : 0;
+            double dash = frac * circum * .92;
+            double gap  = circum - dash;
+            segs.Add(new(e.Color, Math.Round(dash,1), Math.Round(gap,1), Math.Round(-offset,1)));
+            offset += frac * circum;
+        }
+        return segs;
+    }
+
+    /* ── Datos de demostración (fallback sin API) ── */
+    List<LicitacionDto> DatosDemo() => new()
+    {
+        new("LIC-2024-001","Construcción vía terciaria","Licitación pública",850_000_000,"Adjudicada"),
+        new("LIC-2024-002","Suministro equipos TI","Selección abreviada",120_000_000,"En evaluación"),
+        new("LIC-2024-003","Consultoría financiera","Concurso de méritos",45_000_000,"Abierta"),
+        new("LIC-2024-004","Infraestructura de redes","Licitación pública",310_000_000,"En evaluación"),
+        new("LIC-2024-005","Mantenimiento edificio","Mínima cuantía",18_000_000,"Desierta"),
+        new("LIC-2024-006","Adquisición vehículos","Selección abreviada",95_000_000,"Adjudicada"),
+    };
+
+    List<EstadoContratoResumen> EstadosDemo() => new()
+    {
+        new("En ejecución", 23, 49, "#1976d2"),
+        new("Terminados",   14, 30, "#00c853"),
+        new("Suspendidos",   7, 15, "#ffab00"),
+        new("Liquidados",    3,  6, "#7c4dff"),
+    };
+
+    /* ── DTOs locales ── */
+    record DashboardStatsDto
+    {
+        public int     LicitacionesActivas { get; init; }
+        public int     ContratosEjecucion  { get; init; }
+        public decimal ValorTotal          { get; init; }
+        public int     Empresas            { get; init; }
+        public string  ValorTotalFormat    => ValorTotal >= 1_000_000_000
+            ? $"${ValorTotal/1_000_000_000:F1}B"
+            : $"${ValorTotal/1_000_000:F0}M";
+    }
+    record LicitacionDto(string NoProceso, string Objeto, string TipoPliego, decimal ValorProceso, string Estado);
+    record EstadoContratoResumen(string Estado, int Cantidad, int Porcentaje, string Color);
+    record ActividadItem(string Texto, string Tiempo, string Color);
+}

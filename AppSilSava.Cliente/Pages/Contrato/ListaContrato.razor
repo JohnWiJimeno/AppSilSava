@@ -1,42 +1,36 @@
-﻿@page "/empresa"
+﻿@page "/contrato"
 @inject NavigationManager navigationManager
 
 <div class="container">
-    <CardInfo Titulo="Lista de Empresas">
+    <CardInfo Titulo="Lista de Contratos">
         <Content>
             <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon3">Ingrese CC/NIT</span>
+                <span class="input-group-text" id="basic-addon3">Ingrese NIT</span>
                 <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3" @bind="NombreCompleto">
             </div>
 
             <ButtonsHeader OnBuscar="()=>buscar()" OnLimpiar="()=>limpiar()" OnNuevo="()=>Nuevo()" />
 
 
-            @* <div class="text-center>">
-                <button class="btn btn-primary" @onclick="()=>buscar()">Buscar</button>
-                <buttton class="btn btn-danger" @onclick="()=>limpiar()">Limpiar</buttton>
-                <button class="btn btn-success" @onclick="()=>Nuevo()">Nuevo</button>
-
-            </div> *@
+           
         </Content>
-
     </CardInfo>
 </div>
-  <div class="mt-5">
-    <CardInfo Titulo="Lista de Empresas">
+
+<div class="mt-5">
+    <CardInfo Titulo="Lista de Contratos">
         <Content>
 
         </Content>
     </CardInfo>
-  </div>
-    
+</div>
+
 @code {
-    //captrar el nombre en la barra e busqueda y hacer la consulta a la base de datos
     public string NombreCompleto { get; set; } = default!;
     //pasa pagina para agregar empresa
     private void Nuevo()
     {
-        navigationManager.NavigateTo("/empresa/add");
+        navigationManager.NavigateTo("/contrato/add");
     }
 
     private void buscar()

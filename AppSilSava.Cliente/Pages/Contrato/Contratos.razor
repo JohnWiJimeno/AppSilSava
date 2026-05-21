@@ -1,0 +1,645 @@
+@page "/contratos"
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<PageTitle>Contratos — AppSilSava</PageTitle>
+
+<style>
+    .con-page { font-family: 'Sora', sans-serif; color: #ffffff; }
+
+    .con-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.1rem; }
+    .con-title  { font-size:1.15rem; font-weight:600; color:#ffffff; }
+    .con-sub    { font-size:.72rem; color:#90a4c8; margin-top:1px; }
+    .con-actions{ display:flex; gap:.6rem; align-items:center; }
+
+    .btn-pri { background:linear-gradient(135deg,#1565c0,#1976d2); color:#fff; border:none; padding:.45rem 1.1rem; border-radius:6px; font-size:.78rem; font-family:'Sora',sans-serif; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:.4rem; transition:all .2s; }
+    .btn-pri:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(21,101,192,.4); }
+    .btn-sec { background:transparent; color:#90a4c8; border:1px solid rgba(100,160,255,.2); padding:.4rem .85rem; border-radius:6px; font-size:.78rem; font-family:'Sora',sans-serif; cursor:pointer; transition:all .2s; }
+    .btn-sec:hover { color:#ffffff; border-color:rgba(100,160,255,.4); }
+
+    /* KPIs */
+    .con-kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:1rem; }
+    .kpi { background:rgba(27,45,66,.7); border:1px solid rgba(100,160,255,.1); border-radius:10px; padding:.9rem 1rem; position:relative; overflow:hidden; transition:transform .2s,box-shadow .2s; }
+    .kpi:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,.35); }
+    .kpi::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+    .kb::before { background:linear-gradient(90deg,#1565c0,#00bcd4); }
+    .kg::before { background:linear-gradient(90deg,#00c853,#69f0ae); }
+    .ka::before { background:linear-gradient(90deg,#ffab00,#ffd54f); }
+    .kp::before { background:linear-gradient(90deg,#7c4dff,#b388ff); }
+    .kr::before { background:linear-gradient(90deg,#ef5350,#ef9a9a); }
+    .kpi-icon { position:absolute; right:.9rem; top:.9rem; font-size:1.3rem; opacity:.2; }
+    .kpi-lbl  { font-size:.67rem; color:#90a4c8; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.2rem; }
+    .kpi-val  { font-size:1.7rem; font-weight:700; font-family:'JetBrains Mono',monospace; line-height:1.1; }
+    .kpi-sub  { font-size:.68rem; margin-top:.3rem; color:#90a4c8; }
+
+    /* Filtros */
+    .con-filters { background:rgba(27,45,66,.65); border:1px solid rgba(100,160,255,.1); border-radius:10px; padding:.85rem 1.1rem; margin-bottom:1rem; display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr 1fr auto; gap:.65rem; align-items:end; }
+    .fg  { display:flex; flex-direction:column; gap:.3rem; }
+    .fl  { font-size:.66rem; color:#90a4c8; font-weight:500; text-transform:uppercase; letter-spacing:.06em; }
+    .fi,.fs { background:rgba(13,27,42,.7); border:1px solid rgba(100,160,255,.15); border-radius:6px; color:#ffffff; padding:.4rem .7rem; font-size:.77rem; font-family:'Sora',sans-serif; transition:border-color .2s; width:100%; }
+    .fi:focus,.fs:focus { outline:none; border-color:rgba(0,188,212,.5); box-shadow:0 0 0 3px rgba(0,188,212,.07); }
+    .fi::placeholder { color:#3d5875; }
+    .fs option { background:#0d1b2a; }
+    .btn-clr { background:transparent; color:#5a7498; border:1px solid rgba(100,160,255,.12); padding:.4rem .75rem; border-radius:6px; font-size:.75rem; font-family:'Sora',sans-serif; cursor:pointer; white-space:nowrap; transition:all .2s; }
+    .btn-clr:hover { color:#90a4c8; border-color:rgba(100,160,255,.3); }
+
+    /* Tabs vista */
+    .view-tabs { display:flex; gap:.4rem; margin-bottom:.75rem; }
+    .vtab { padding:.4rem .9rem; border-radius:6px; border:1px solid rgba(100,160,255,.15); background:transparent; color:#5a7498; font-size:.76rem; font-family:'Sora',sans-serif; cursor:pointer; transition:all .18s; }
+    .vtab.on { background:rgba(0,188,212,.09); color:#00bcd4; border-color:rgba(0,188,212,.45); font-weight:500; }
+
+    /* Tabla */
+    .tcard { background:rgba(27,45,66,.65); border:1px solid rgba(100,160,255,.1); border-radius:10px; overflow:hidden; }
+    .tbar  { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1.1rem; border-bottom:1px solid rgba(100,160,255,.08); }
+    .tinfo { font-size:.74rem; color:#90a4c8; }
+    .tinfo strong { color:#ffffff; }
+
+    table.ct { width:100%; border-collapse:collapse; font-size:.78rem; }
+    table.ct th { padding:.5rem .9rem; color:#5a7498; font-size:.67rem; font-weight:600; text-transform:uppercase; letter-spacing:.07em; border-bottom:1px solid rgba(100,160,255,.07); text-align:left; white-space:nowrap; cursor:pointer; user-select:none; transition:color .15s; }
+    table.ct th:hover { color:#90a4c8; }
+    table.ct th.srt { color:#00bcd4; }
+    table.ct td { padding:.7rem .9rem; border-bottom:1px solid rgba(100,160,255,.04); color:#f0f4ff; vertical-align:middle; }
+    table.ct tbody tr { transition:background .12s; cursor:pointer; }
+    table.ct tbody tr:hover td { background:rgba(0,188,212,.04); }
+    table.ct tbody tr.sel td { background:rgba(0,188,212,.06); }
+    table.ct tbody tr:last-child td { border-bottom:none; }
+
+    .mono  { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:#00bcd4; }
+    .money { font-family:'JetBrains Mono',monospace; font-size:.74rem; }
+    .dt    { font-family:'JetBrains Mono',monospace; font-size:.7rem; color:#90a4c8; }
+    .obj   { font-size:.78rem; max-width:155px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .emp   { font-size:.74rem; color:#90a4c8; max-width:135px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+    .chip { display:inline-flex; align-items:center; gap:4px; font-size:.65rem; padding:3px 9px; border-radius:20px; font-weight:500; white-space:nowrap; }
+    .chip::before { content:''; width:5px; height:5px; border-radius:50%; }
+    .ejec { background:rgba(21,101,192,.2);  color:#90caf9; } .ejec::before { background:#1976d2; }
+    .ter  { background:rgba(100,160,255,.12);color:#90c4f8; } .ter::before  { background:#5b9bd5; }
+    .sus  { background:rgba(124,77,255,.15); color:#ce93d8; } .sus::before  { background:#7c4dff; }
+    .liq  { background:rgba(0,188,212,.12);  color:#26c6da; } .liq::before  { background:#00bcd4; }
+    .res  { background:rgba(239,83,80,.13);  color:#ef9a9a; } .res::before  { background:#ef5350; }
+
+    .prog-wrap { display:flex; align-items:center; gap:6px; }
+    .prog-bar  { flex:1; height:5px; background:rgba(100,160,255,.08); border-radius:3px; overflow:hidden; min-width:55px; }
+    .prog-fill { height:100%; border-radius:3px; }
+    .prog-pct  { font-size:.68rem; font-family:'JetBrains Mono',monospace; color:#90a4c8; width:28px; text-align:right; flex-shrink:0; }
+
+    .sok { color:#69f0ae; } .smid { color:#ffd54f; } .sbad { color:#ef9a9a; }
+    .venc { color:#ef9a9a !important; }
+
+    .ra { display:flex; gap:.3rem; opacity:0; transition:opacity .15s; }
+    table.ct tbody tr:hover .ra { opacity:1; }
+    .rb { font-size:.65rem; padding:2px 8px; border-radius:4px; border:1px solid rgba(100,160,255,.18); background:transparent; color:#90a4c8; cursor:pointer; font-family:'Sora',sans-serif; transition:all .15s; }
+    .rb:hover { color:#00bcd4; border-color:rgba(0,188,212,.4); }
+
+    /* Detalle expandido */
+    .det { background:rgba(13,27,42,.96); border:1px solid rgba(100,160,255,.15); border-radius:8px; padding:1rem 1.1rem; margin:.1rem .5rem .5rem; animation:sd .22s ease; }
+    @@keyframes sd { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    .det-g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:.65rem; margin-top:.5rem; }
+    .det-g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:.65rem; margin-top:.5rem; }
+    .df { display:flex; flex-direction:column; gap:.2rem; }
+    .dl { font-size:.63rem; color:#5a7498; text-transform:uppercase; letter-spacing:.06em; }
+    .dv { font-size:.8rem; color:#ffffff; font-weight:500; }
+    .det-sec { font-size:.68rem; font-weight:600; color:#5a7498; margin-top:.7rem; padding-bottom:.3rem; border-bottom:1px solid rgba(100,160,255,.07); text-transform:uppercase; letter-spacing:.06em; }
+    .det-btns { display:flex; gap:.5rem; margin-top:.8rem; flex-wrap:wrap; }
+
+    /* Kanban */
+    .kanban { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+    .kan-col { background:rgba(27,45,66,.5); border:1px solid rgba(100,160,255,.08); border-radius:10px; padding:.75rem; }
+    .kan-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:.6rem; padding-bottom:.45rem; border-bottom:1px solid rgba(100,160,255,.07); }
+    .kan-title { font-size:.74rem; font-weight:500; color:#90a4c8; display:flex; align-items:center; gap:.4rem; }
+    .kan-dot { width:7px; height:7px; border-radius:50%; }
+    .kan-cnt { font-size:.68rem; font-family:'JetBrains Mono',monospace; color:#5a7498; }
+    .kan-card { background:rgba(13,27,42,.7); border:1px solid rgba(100,160,255,.1); border-radius:7px; padding:.65rem .75rem; margin-bottom:.5rem; cursor:pointer; transition:all .18s; }
+    .kan-card:hover { border-color:rgba(0,188,212,.3); transform:translateY(-1px); }
+    .kan-card:last-child { margin-bottom:0; }
+    .kc-no  { font-size:.68rem; font-family:'JetBrains Mono',monospace; color:#00bcd4; margin-bottom:2px; }
+    .kc-emp { font-size:.72rem; color:#f0f4ff; font-weight:500; margin-bottom:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .kc-val { font-size:.7rem; font-family:'JetBrains Mono',monospace; color:#90a4c8; }
+    .kc-bar { height:3px; background:rgba(100,160,255,.08); border-radius:2px; margin-top:5px; overflow:hidden; }
+    .kc-bf  { height:100%; border-radius:2px; }
+
+    /* Paginación */
+    .pag { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1.1rem; border-top:1px solid rgba(100,160,255,.07); }
+    .pi  { font-size:.72rem; color:#5a7498; }
+    .pbs { display:flex; gap:.3rem; }
+    .pb  { width:28px; height:28px; border-radius:5px; border:1px solid rgba(100,160,255,.15); background:transparent; color:#90a4c8; font-size:.72rem; font-family:'JetBrains Mono',monospace; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+    .pb:hover:not([disabled]) { color:#00bcd4; border-color:rgba(0,188,212,.4); background:rgba(0,188,212,.06); }
+    .pb[disabled] { opacity:.3; cursor:not-allowed; }
+    .pb.cur { background:rgba(0,188,212,.12); color:#00bcd4; border-color:rgba(0,188,212,.45); font-weight:600; }
+    .pg-sz { background:rgba(13,27,42,.7); border:1px solid rgba(100,160,255,.15); border-radius:5px; color:#90a4c8; padding:.22rem .45rem; font-size:.72rem; font-family:'Sora',sans-serif; cursor:pointer; }
+
+    .skel { background:linear-gradient(90deg,rgba(100,160,255,.06) 25%,rgba(100,160,255,.12) 50%,rgba(100,160,255,.06) 75%); background-size:200% 100%; animation:sh 1.4s infinite; border-radius:4px; }
+    @@keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    .empty { text-align:center; padding:3rem 1rem; }
+    .empty-ico { font-size:2.5rem; opacity:.4; margin-bottom:.6rem; }
+    .empty-txt { font-size:.88rem; color:#5a7498; }
+    .empty-sub { font-size:.75rem; color:#3d5875; margin-top:.3rem; }
+
+    .scroll { overflow-x:auto; }
+    .scroll::-webkit-scrollbar { height:4px; }
+    .scroll::-webkit-scrollbar-thumb { background:rgba(100,160,255,.15); border-radius:10px; }
+</style>
+
+<div class="con-page">
+
+    <div class="con-topbar">
+        <div>
+            <div class="con-title">Contratos</div>
+            <div class="con-sub">Seguimiento de contratos, ejecución presupuestal y saldos</div>
+        </div>
+        <div class="con-actions">
+            <button class="btn-sec" @onclick="ExportarExcel">📥 Exportar</button>
+            <button class="btn-sec" @onclick="() => ToggleVista()">
+                @(vistaActual=="tabla" ? "🗂 Vista kanban" : "📋 Vista tabla")
+            </button>
+            <button class="btn-pri" @onclick='() => Nav.NavigateTo("/contratos/nuevo")'>
+                ＋ Nuevo contrato
+            </button>
+        </div>
+    </div>
+
+    <div class="con-kpis">
+        <div class="kpi kb">
+            <div class="kpi-icon">📋</div>
+            <div class="kpi-lbl">Total contratos</div>
+            <div class="kpi-val" style="color:#00bcd4;">@todos.Count</div>
+            <div class="kpi-sub">registrados</div>
+        </div>
+        <div class="kpi kg">
+            <div class="kpi-icon">⚙️</div>
+            <div class="kpi-lbl">En ejecución</div>
+            <div class="kpi-val" style="color:#00c853;">@todos.Count(c=>c.Estado=="En ejecución")</div>
+            <div class="kpi-sub" style="color:#69f0ae;">▲ activos hoy</div>
+        </div>
+        <div class="kpi ka">
+            <div class="kpi-icon">💰</div>
+            <div class="kpi-lbl">Valor total</div>
+            <div class="kpi-val" style="color:#ffab00;">@FormatVal(todos.Sum(c=>c.ValorContrato))</div>
+            <div class="kpi-sub">contratos vigentes</div>
+        </div>
+        <div class="kpi kp">
+            <div class="kpi-icon">📉</div>
+            <div class="kpi-lbl">Saldo por ejecutar</div>
+            <div class="kpi-val" style="color:#b388ff;">@FormatVal(todos.Sum(c=>c.SaldoPendiente))</div>
+            <div class="kpi-sub">pendiente</div>
+        </div>
+        <div class="kpi kr">
+            <div class="kpi-icon">⏰</div>
+            <div class="kpi-lbl">Vencen este mes</div>
+            <div class="kpi-val" style="color:#ef9a9a;">
+                @todos.Count(c=>c.FechaFinal.Month==DateTime.Now.Month&&c.FechaFinal.Year==DateTime.Now.Year)
+            </div>
+            <div class="kpi-sub" style="color:#ef9a9a;">⚠ revisar</div>
+        </div>
+    </div>
+
+    <div class="con-filters">
+        <div class="fg">
+            <label class="fl">🔍 Buscar</label>
+            <input class="fi" type="text" placeholder="No. contrato, empresa, objeto…"
+                   value="@busqueda"
+                   @oninput="@(e => { busqueda = e.Value?.ToString() ?? ""; OnFiltroChanged(); })" />
+        </div>
+        <div class="fg">
+            <label class="fl">📌 Estado</label>
+            <select class="fs" @bind="filtEstado" @bind:after="() => OnFiltroChanged()">
+                <option value="">Todos</option>
+                <option>En ejecución</option>
+                <option>Terminado</option>
+                <option>Suspendido</option>
+                <option>Liquidado</option>
+                <option>Rescindido</option>
+            </select>
+        </div>
+        <div class="fg">
+            <label class="fl">🏢 Empresa</label>
+            <input class="fi" type="text" placeholder="Razón social…"
+                   value="@filtEmpresa"
+                   @oninput="@(e => { filtEmpresa = e.Value?.ToString() ?? ""; OnFiltroChanged(); })" />
+        </div>
+        <div class="fg">
+            <label class="fl">📅 Inicio desde</label>
+            <input class="fi" type="date" @bind="filtDesde" @bind:after="() => OnFiltroChanged()"/>
+        </div>
+        <div class="fg">
+            <label class="fl">📅 Vence hasta</label>
+            <input class="fi" type="date" @bind="filtHasta" @bind:after="() => OnFiltroChanged()"/>
+        </div>
+        <button class="btn-clr" @onclick="Limpiar">✕ Limpiar</button>
+    </div>
+
+    <div class="view-tabs">
+        <button class="vtab @(vistaActual=="tabla"?"on":"")"  @onclick='()=>vistaActual="tabla"'>📋 Tabla</button>
+        <button class="vtab @(vistaActual=="kanban"?"on":"")" @onclick='()=>vistaActual="kanban"'>🗂 Kanban</button>
+    </div>
+
+    @* ═══ VISTA TABLA ═══ *@
+    @if (vistaActual == "tabla")
+    {
+        <div class="tcard">
+            <div class="tbar">
+                <div class="tinfo">
+                    Mostrando <strong>@pagItems.Count</strong> de <strong>@filtrados.Count</strong> contratos
+                    @if (filtrados.Count != todos.Count)
+                    { <span style="color:#ffab00;margin-left:.4rem;">· filtros activos</span> }
+                </div>
+                <div style="display:flex;gap:.35rem;">
+                    @foreach (var (col,lbl) in new[]{("NoRup","# RUP"),("ValorContrato","Valor"),("FechaInicio","Inicio"),("FechaFinal","Vence")})
+                    {
+                        <button class="rb @(campoOrden==col?"srt":"")" style="font-size:.68rem;"
+                                @onclick="()=>CambiarOrden(col)">
+                            @lbl @IconOrden(col)
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <div class="scroll">
+                <table class="ct">
+                    <thead>
+                        <tr>
+                            <th @onclick='()=>CambiarOrden("NoRup")' class="@(campoOrden=="NoRup"?"srt":"")">No. RUP</th>
+                            <th>Objeto</th>
+                            <th>Empresa contratista</th>
+                            <th @onclick='()=>CambiarOrden("ValorContrato")' class="@(campoOrden=="ValorContrato"?"srt":"")">Valor</th>
+                            <th>Saldo pendiente</th>
+                            <th>% Ejec.</th>
+                            <th @onclick='()=>CambiarOrden("FechaInicio")' class="@(campoOrden=="FechaInicio"?"srt":"")">Inicio</th>
+                            <th @onclick='()=>CambiarOrden("FechaFinal")' class="@(campoOrden=="FechaFinal"?"srt":"")">Vence</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (cargando)
+                        {
+                            @for (int i = 0; i < paginaTam; i++)
+                            {
+                                <tr>
+                                    @for (int j = 0; j < 10; j++)
+                                    {
+                                        <td><div class="skel" style="height:10px;width:@(j==1||j==2?120:65)px;border-radius:3px;"></div></td>
+                                    }
+                                </tr>
+                            }
+                        }
+                        else if (!pagItems.Any())
+                        {
+                            <tr>
+                                <td colspan="10">
+                                    <div class="empty">
+                                        <div class="empty-ico">📋</div>
+                                        <div class="empty-txt">Sin contratos</div>
+                                        <div class="empty-sub">Cambia los filtros de búsqueda</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var c in pagItems)
+                            {
+                                <tr class="@(seleccionado?.ContratoID==c.ContratoID?"sel":"")"
+                                    @onclick="()=>Seleccionar(c)">
+                                    <td><span class="mono">@c.NoRup</span></td>
+                                    <td><span class="obj" title="@c.ObjetoContrato">@c.ObjetoContrato</span></td>
+                                    <td><span class="emp" title="@c.NombreContratista">@c.NombreContratista</span></td>
+                                    <td><span class="money" style="color:#ffffff;">@c.ValorContrato.ToString("C0")</span></td>
+                                    <td><span class="money @SaldoColor(c)">@c.SaldoPendiente.ToString("C0")</span></td>
+                                    <td>
+                                        <div class="prog-wrap">
+                                            <div class="prog-bar">
+                                                <div class="prog-fill" style="width:@c.PorcEjecucion%;background:@ProgColor(c.PorcEjecucion);"></div>
+                                            </div>
+                                            <span class="prog-pct">@c.PorcEjecucion%</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="dt">@c.FechaInicio.ToString("dd/MM/yy")</span></td>
+                                    <td>
+                                        <span class="dt @(c.FechaFinal<DateTime.Now&&c.Estado=="En ejecución"?"venc":"")">
+                                            @c.FechaFinal.ToString("dd/MM/yy")
+                                        </span>
+                                    </td>
+                                    <td><span class="chip @ChipClass(c.Estado)">@c.Estado</span></td>
+                                    <td>
+                                        <div class="ra" @onclick:stopPropagation="true">
+                                            <button class="rb" @onclick="() => IrVerContrato(c.ContratoID)">Ver</button>
+                                            <button class="rb" @onclick="() => IrEditarContrato(c.ContratoID)">Editar</button>
+                                            <button class="rb" @onclick="() => IrSaldos(c.ContratoID)">Saldos</button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                @if (seleccionado?.ContratoID == c.ContratoID)
+                                {
+                                    <tr>
+                                        <td colspan="10" style="padding:0 .5rem .5rem;">
+                                            <div class="det">
+                                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                                    <span style="font-size:.84rem;font-weight:600;color:#00bcd4;">
+                                                        📋 @c.NoRup — @c.ObjetoContrato
+                                                    </span>
+                                                    <button class="btn-sec" style="font-size:.7rem;padding:.25rem .6rem;"
+                                                            @onclick="()=>seleccionado=null">✕</button>
+                                                </div>
+
+                                                <div class="det-sec">Datos del contrato</div>
+                                                <div class="det-g4">
+                                                    <div class="df"><span class="dl">No. contrato</span><span class="dv">@c.NoContrato</span></div>
+                                                    <div class="df"><span class="dl">NIT contratista</span><span class="dv">@c.NitContratista</span></div>
+                                                    <div class="df"><span class="dl">Plazo (días)</span><span class="dv">@c.Plazo</span></div>
+                                                    <div class="df"><span class="dl">Valor SMMLV</span><span class="dv">@c.VrSmmlv</span></div>
+                                                </div>
+
+                                                <div class="det-sec">Ejecución financiera</div>
+                                                <div class="det-g4">
+                                                    <div class="df"><span class="dl">Valor ejecutado</span><span class="dv" style="color:#69f0ae;">@c.ValorEjecutado.ToString("C0")</span></div>
+                                                    <div class="df"><span class="dl">Saldo pendiente</span><span class="dv @SaldoColor(c)">@c.SaldoPendiente.ToString("C0")</span></div>
+                                                    <div class="df"><span class="dl">Anticipo</span><span class="dv">@c.VrSmmlvPart.ToString("C0")</span></div>
+                                                    <div class="df"><span class="dl">% Ejecución</span><span class="dv">@c.PorcEjecucion%</span></div>
+                                                </div>
+
+                                                <div class="det-sec">Responsable</div>
+                                                <div class="det-g3">
+                                                    <div class="df"><span class="dl">Responsable</span><span class="dv">@c.Responsable</span></div>
+                                                    <div class="df"><span class="dl">Teléfono</span><span class="dv">@c.Telefono</span></div>
+                                                    <div class="df"><span class="dl">Correo</span><span class="dv" style="font-size:.74rem;">@c.Correo</span></div>
+                                                </div>
+
+                                                <div class="det-btns">
+                                                    <button class="btn-pri" style="font-size:.72rem;padding:.35rem .85rem;"
+                                                            @onclick="() => IrVerContrato(c.ContratoID)">Ver detalle completo</button>
+                                                    <button class="btn-sec" style="font-size:.72rem;padding:.35rem .85rem;"
+                                                            @onclick="() => IrSaldos(c.ContratoID)">Saldos EJECSC</button>
+                                                    <button class="btn-sec" style="font-size:.72rem;padding:.35rem .85rem;"
+                                                            @onclick="() => IrAnalisisTecnico(c.ContratoID)">Análisis técnico</button>
+                                                    <button class="btn-sec" style="font-size:.72rem;padding:.35rem .85rem;"
+                                                            @onclick="() => IrAccionistas(c.ContratoID)">Accionistas</button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pag">
+                <div class="pi">
+                    Página @paginaActual de @totalPaginas &nbsp;·&nbsp; Por página:
+                    <select class="pg-sz" @bind="paginaTam" @bind:after="()=>{paginaActual=1;Paginar();}">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <div class="pbs">
+                    <button class="pb" @onclick="()=>IrPag(1)"              disabled="@(paginaActual==1)">«</button>
+                    <button class="pb" @onclick="()=>IrPag(paginaActual-1)" disabled="@(paginaActual==1)">‹</button>
+                    @foreach (var p in Paginas)
+                    {
+                        @if (p == -1) { <span style="color:#3d5875;font-size:.75rem;padding:0 2px;">…</span> }
+                        else { <button class="pb @(p==paginaActual?"cur":"")" @onclick="()=>IrPag(p)">@p</button> }
+                    }
+                    <button class="pb" @onclick="()=>IrPag(paginaActual+1)" disabled="@(paginaActual==totalPaginas)">›</button>
+                    <button class="pb" @onclick="()=>IrPag(totalPaginas)"   disabled="@(paginaActual==totalPaginas)">»</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @* ═══ VISTA KANBAN ═══ *@
+    else
+    {
+        var cols = new[]
+        {
+            ("En ejecución","#1976d2"),("Terminado","#5b9bd5"),
+            ("Suspendido","#7c4dff"),  ("Liquidado","#00bcd4"),("Rescindido","#ef5350")
+        };
+        <div class="kanban">
+            @foreach (var (estado, color) in cols)
+            {
+                var grupo = filtrados.Where(c => c.Estado == estado).ToList();
+                <div class="kan-col">
+                    <div class="kan-head">
+                        <div class="kan-title">
+                            <div class="kan-dot" style="background:@color;box-shadow:0 0 5px @color;"></div>
+                            @estado
+                        </div>
+                        <div class="kan-cnt">@grupo.Count</div>
+                    </div>
+                    @if (!grupo.Any())
+                    {
+                        <div style="font-size:.72rem;color:#3d5875;text-align:center;padding:.75rem 0;">Sin contratos</div>
+                    }
+                    @foreach (var c in grupo.Take(7))
+                    {
+                        <div class="kan-card" @onclick="() => IrVerContrato(c.ContratoID)">
+                            <div class="kc-no">@c.NoRup</div>
+                            <div class="kc-emp">@c.NombreContratista</div>
+                            <div class="kc-val">@c.ValorContrato.ToString("C0")</div>
+                            <div class="kc-bar">
+                                <div class="kc-bf" style="width:@c.PorcEjecucion%;background:@ProgColor(c.PorcEjecucion);"></div>
+                            </div>
+                        </div>
+                    }
+                    @if (grupo.Count > 7)
+                    {
+                        <div style="font-size:.68rem;color:#3d5875;text-align:center;padding:.35rem 0;">
+                            +@(grupo.Count - 7) más…
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+@code {
+    bool cargando = true;
+    string vistaActual = "tabla";
+    List<ContratoVm> todos = new();
+    List<ContratoVm> filtrados = new();
+    List<ContratoVm> pagItems = new();
+    ContratoVm? seleccionado;
+
+    string busqueda = "", filtEstado = "", filtEmpresa = "";
+    DateTime? filtDesde, filtHasta;
+    string campoOrden = "FechaInicio";
+    bool ordenAsc = false;
+    int paginaActual = 1, paginaTam = 10;
+    int totalPaginas => Math.Max(1, (int)Math.Ceiling((double)filtrados.Count / paginaTam));
+
+    protected override async Task OnInitializedAsync()
+    {
+        cargando = true;
+        try
+        {
+            var r = await Http.GetFromJsonAsync<List<ContratoVm>>("api/contratos");
+            todos = r ?? Demo();
+        }
+        catch { todos = Demo(); }
+        Filtrar();
+        cargando = false;
+    }
+
+    void OnFiltroChanged() { paginaActual = 1; Filtrar(); }
+
+    void Limpiar()
+    {
+        busqueda = ""; filtEstado = ""; filtEmpresa = "";
+        filtDesde = null; filtHasta = null;
+        OnFiltroChanged();
+    }
+
+    void Seleccionar(ContratoVm c) =>
+        seleccionado = seleccionado?.ContratoID == c.ContratoID ? null : c;
+
+    void Filtrar()
+    {
+        filtrados = todos.Where(c =>
+            (string.IsNullOrWhiteSpace(busqueda) ||
+             c.NoRup.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
+             c.ObjetoContrato.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
+             c.NombreContratista.Contains(busqueda, StringComparison.OrdinalIgnoreCase)) &&
+            (string.IsNullOrEmpty(filtEstado)  || c.Estado == filtEstado) &&
+            (string.IsNullOrEmpty(filtEmpresa) || c.NombreContratista.Contains(filtEmpresa, StringComparison.OrdinalIgnoreCase)) &&
+            (!filtDesde.HasValue || c.FechaInicio >= filtDesde.Value) &&
+            (!filtHasta.HasValue || c.FechaFinal  <= filtHasta.Value)
+        ).ToList();
+        Ordenar();
+        Paginar();
+    }
+
+    void Ordenar()
+    {
+        filtrados = (campoOrden switch
+        {
+            "NoRup"         => ordenAsc ? filtrados.OrderBy(c => c.NoRup)          : filtrados.OrderByDescending(c => c.NoRup),
+            "ValorContrato" => ordenAsc ? filtrados.OrderBy(c => c.ValorContrato)   : filtrados.OrderByDescending(c => c.ValorContrato),
+            "FechaFinal"    => ordenAsc ? filtrados.OrderBy(c => c.FechaFinal)      : filtrados.OrderByDescending(c => c.FechaFinal),
+            _               => ordenAsc ? filtrados.OrderBy(c => c.FechaInicio)     : filtrados.OrderByDescending(c => c.FechaInicio),
+        }).ToList();
+    }
+
+    void Paginar() =>
+        pagItems = filtrados.Skip((paginaActual - 1) * paginaTam).Take(paginaTam).ToList();
+
+    void IrPag(int p) { paginaActual = Math.Clamp(p, 1, totalPaginas); Paginar(); seleccionado = null; }
+
+    void CambiarOrden(string col)
+    {
+        if (campoOrden == col) ordenAsc = !ordenAsc;
+        else { campoOrden = col; ordenAsc = false; }
+        Ordenar(); Paginar();
+    }
+
+    IEnumerable<int> Paginas
+    {
+        get
+        {
+            var l = new List<int>();
+            if (totalPaginas <= 7) { for (int i = 1; i <= totalPaginas; i++) l.Add(i); return l; }
+            l.Add(1);
+            if (paginaActual > 3) l.Add(-1);
+            for (int i = Math.Max(2, paginaActual - 1); i <= Math.Min(totalPaginas - 1, paginaActual + 1); i++) l.Add(i);
+            if (paginaActual < totalPaginas - 2) l.Add(-1);
+            l.Add(totalPaginas);
+            return l;
+        }
+    }
+
+    string IconOrden(string c) => campoOrden == c ? (ordenAsc ? "↑" : "↓") : "↕";
+    string FormatVal(decimal v) => v >= 1_000_000_000 ? $"${v / 1_000_000_000:F1}B" : $"${v / 1_000_000:F0}M";
+
+    string ChipClass(string e) => e switch
+    {
+        "En ejecución" => "ejec", "Terminado" => "ter",
+        "Suspendido"   => "sus",  "Liquidado" => "liq",
+        "Rescindido"   => "res",  _ => "ejec"
+    };
+
+    string SaldoColor(ContratoVm c) =>
+        c.PorcEjecucion >= 90 ? "sbad" : c.PorcEjecucion >= 60 ? "smid" : "sok";
+
+    string ProgColor(int p) => p >= 90 ? "#ef5350" : p >= 60 ? "#ffab00" : "#00c853";
+
+    void ExportarExcel() { /* TODO: JSInterop + ClosedXML */ }
+
+    List<ContratoVm> Demo()
+    {
+        var rnd = new Random(7);
+        var estados  = new[] { "En ejecución","En ejecución","En ejecución","Terminado","Suspendido","Liquidado","Rescindido" };
+        var empresas = new[] { "Constructora Horizonte S.A.S","Ingeniería XYZ Ltda","Tech Solutions Corp",
+            "Servicios Integrales SA","Pavimentos del Caribe","Consultores Unidos",
+            "Sistemas & Redes SAS","Infraestructura Nacional","Obras y Proyectos","DataCenter Colombia" };
+        var objetos  = new[] { "Construcción vía terciaria","Suministro equipos TI","Consultoría financiera",
+            "Infraestructura redes","Mantenimiento edificio","Adquisición vehículos",
+            "Estudios y diseños","Interventoría obras","Dotación institucional","Software gestión" };
+        var resp     = new[] { "Carlos Pérez","Ana Gómez","Luis Torres","María Silva" };
+
+        return Enumerable.Range(1, 55).Select(i =>
+        {
+            var val  = rnd.Next(50, 900) * 1_000_000m;
+            var ejec = rnd.Next(5, 99);
+            return new ContratoVm
+            {
+                ContratoID        = i,
+                NoRup             = $"RUP-{2024000 + i}",
+                NoContrato        = $"CON-2024-{i:000}",
+                ObjetoContrato    = objetos[i % objetos.Length],
+                NombreContratista = empresas[i % empresas.Length],
+                NitContratista    = $"900.{rnd.Next(100,999)}.{rnd.Next(100,999)}-{rnd.Next(0,9)}",
+                ValorContrato     = val,
+                ValorEjecutado    = val * ejec / 100,
+                SaldoPendiente    = val * (100 - ejec) / 100,
+                VrSmmlvPart       = rnd.Next(5, 50) * 1_000_000m,
+                VrSmmlv           = rnd.Next(30, 400),
+                PorcEjecucion     = ejec,
+                Plazo             = rnd.Next(90, 540),
+                FechaInicio       = DateTime.Now.AddDays(-rnd.Next(30, 365)),
+                FechaFinal        = DateTime.Now.AddDays(rnd.Next(-30, 180)),
+                Estado            = estados[i % estados.Length],
+                Responsable       = resp[i % resp.Length],
+                Telefono          = $"310{rnd.Next(1000000, 9999999)}",
+                Correo            = $"responsable{i}@appsils.gov.co",
+            };
+        }).ToList();
+    }
+
+    class ContratoVm
+    {
+        public int      ContratoID        { get; set; }
+        public string   NoRup             { get; set; } = "";
+        public string   NoContrato        { get; set; } = "";
+        public string   ObjetoContrato    { get; set; } = "";
+        public string   NombreContratista { get; set; } = "";
+        public string   NitContratista    { get; set; } = "";
+        public decimal  ValorContrato     { get; set; }
+        public decimal  ValorEjecutado    { get; set; }
+        public decimal  SaldoPendiente    { get; set; }
+        public decimal  VrSmmlvPart       { get; set; }
+        public int      VrSmmlv           { get; set; }
+        public int      PorcEjecucion     { get; set; }
+        public int      Plazo             { get; set; }
+        public DateTime FechaInicio       { get; set; }
+        public DateTime FechaFinal        { get; set; }
+        public string   Estado            { get; set; } = "";
+        public string   Responsable       { get; set; } = "";
+        public string   Telefono          { get; set; } = "";
+        public string   Correo            { get; set; } = "";
+    }
+    // ── Métodos de navegación ──
+    void IrVerContrato(int id)      => Nav.NavigateTo($"/contratos/{id}");
+    void IrEditarContrato(int id)   => Nav.NavigateTo($"/contratos/{id}/editar");
+    void IrSaldos(int id)           => Nav.NavigateTo($"/contratos/{id}/saldos");
+    void IrAnalisisTecnico(int id)  => Nav.NavigateTo($"/analisis/tecnico?contrato={id}");
+    void IrAccionistas(int id)      => Nav.NavigateTo($"/accionistas?contrato={id}");
+    void ToggleVista()              => vistaActual = vistaActual == "tabla" ? "kanban" : "tabla";
+
+}

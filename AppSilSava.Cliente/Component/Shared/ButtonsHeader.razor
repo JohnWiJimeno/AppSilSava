@@ -1,0 +1,34 @@
+﻿<div class="text-center>">
+    <button class="btn btn-primary" @onclick="() => buscar()">Buscar</button>
+    <buttton class="btn btn-danger" @onclick="() => limpiar()">Limpiar</buttton>
+    <button class="btn btn-success" @onclick="() => Nuevo()">Nuevo</button>
+
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback OnBuscar { get; set; }
+    [Parameter]
+    public EventCallback OnLimpiar { get; set; }
+    [Parameter]
+    public EventCallback OnNuevo { get; set; }
+
+
+    private async Task buscar()
+    {
+        await OnBuscar.InvokeAsync(null);
+    }
+
+    private async Task limpiar()
+    {
+        await OnLimpiar.InvokeAsync(null);
+    }
+
+        private async Task Nuevo()
+    {
+        await OnNuevo.InvokeAsync(null);
+    }
+
+    
+
+}

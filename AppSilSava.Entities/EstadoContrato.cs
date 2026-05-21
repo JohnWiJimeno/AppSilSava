@@ -14,4 +14,6 @@ public partial class EstadoContrato
     public bool? Activo { get; set; }
 
     public virtual ICollection<Licitacion> Licitacions { get; set; } = new List<Licitacion>();
+
+    public virtual ICollection<Contrato> Contratos { get; set; } = new List<Contrato>();
 }

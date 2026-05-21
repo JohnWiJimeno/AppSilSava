@@ -70,4 +70,7 @@ public partial class Contrato
     public virtual ICollection<SaldoContratosEjec5C> SaldoContratosEjec5Cs { get; set; } = new List<SaldoContratosEjec5C>();
 
     public virtual TipoObra? TipoObra { get; set; }
+
+    public virtual EstadoContrato? EstadoContrato { get; set; }
+
 }

@@ -17,7 +17,6 @@
     <Folder Include="Pages\Analisis Puntuable\" />
     <Folder Include="Pages\Analisis Tecnico\" />
     <Folder Include="Pages\Capacidad Tecnica 5B\" />
-    <Folder Include="Pages\Contrato\" />
     <Folder Include="Pages\Contrato Aporte\" />
     <Folder Include="Pages\Estado Contrato\" />
     <Folder Include="Pages\InfoFinanciera\" />

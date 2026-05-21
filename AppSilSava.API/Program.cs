@@ -4,6 +4,7 @@ using AppSilSava.Repositorio.Implementaciones;
 using AppSilSava.Repositorio.Interfaces;
 using AppSilSava.Negocio.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using AppSilSava.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,13 @@ builder.Services.AddDbContext<InfraCoreDbContext>(opt=>
 });
 
 
-builder.Services.AddControllers();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());// Agregar el convertidor para DateOnly
+    });
+
 builder.Services.AddEndpointsApiExplorer(); //registar api
 builder.Services.AddSwaggerGen(); //registar swagger
 

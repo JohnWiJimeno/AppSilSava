@@ -1,0 +1,729 @@
+@page "/empresas"
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<PageTitle>Empresas — AppSilSava</PageTitle>
+
+<style>
+    .emp-page { font-family: 'Sora', sans-serif; color: #ffffff; }
+
+    /* TOPBAR */
+    .emp-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.1rem; }
+    .emp-title  { font-size:1.15rem; font-weight:600; color:#ffffff; }
+    .emp-sub    { font-size:.72rem; color:#90a4c8; margin-top:1px; }
+
+    .btn-pri { background:linear-gradient(135deg,#1565c0,#1976d2); color:#fff; border:none; padding:.45rem 1.1rem; border-radius:6px; font-size:.78rem; font-family:'Sora',sans-serif; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:.4rem; transition:all .2s; }
+    .btn-pri:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(21,101,192,.4); }
+    .btn-sec { background:transparent; color:#90a4c8; border:1px solid rgba(100,160,255,.2); padding:.4rem .85rem; border-radius:6px; font-size:.78rem; font-family:'Sora',sans-serif; cursor:pointer; transition:all .2s; }
+    .btn-sec:hover { color:#ffffff; border-color:rgba(100,160,255,.4); }
+
+    /* KPIs */
+    .emp-kpis { display:grid; grid-template-columns:repeat(6,1fr); gap:9px; margin-bottom:1rem; }
+    .kpi { background:rgba(27,45,66,.7); border:1px solid rgba(100,160,255,.1); border-radius:10px; padding:.85rem 1rem; position:relative; overflow:hidden; transition:transform .2s,box-shadow .2s; }
+    .kpi:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,.35); }
+    .kpi::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+    .kb::before { background:linear-gradient(90deg,#1565c0,#00bcd4); }
+    .kg::before { background:linear-gradient(90deg,#00c853,#69f0ae); }
+    .ka::before { background:linear-gradient(90deg,#ffab00,#ffd54f); }
+    .kp::before { background:linear-gradient(90deg,#7c4dff,#b388ff); }
+    .kt::before { background:linear-gradient(90deg,#00bcd4,#26c6da); }
+    .kr::before { background:linear-gradient(90deg,#ef5350,#ef9a9a); }
+    .kpi-icon { position:absolute; right:.8rem; top:.8rem; font-size:1.2rem; opacity:.2; }
+    .kpi-lbl  { font-size:.66rem; color:#90a4c8; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.2rem; }
+    .kpi-val  { font-size:1.55rem; font-weight:700; font-family:'JetBrains Mono',monospace; line-height:1.1; }
+    .kpi-sub  { font-size:.67rem; margin-top:.25rem; color:#90a4c8; }
+
+    /* FILTROS */
+    .emp-filters { background:rgba(27,45,66,.65); border:1px solid rgba(100,160,255,.1); border-radius:10px; padding:.85rem 1.1rem; margin-bottom:1rem; display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr 1fr auto; gap:.65rem; align-items:end; }
+    .fg { display:flex; flex-direction:column; gap:.3rem; }
+    .fl { font-size:.66rem; color:#90a4c8; font-weight:500; text-transform:uppercase; letter-spacing:.06em; }
+    .fi,.fs { background:rgba(13,27,42,.7); border:1px solid rgba(100,160,255,.15); border-radius:6px; color:#ffffff; padding:.4rem .7rem; font-size:.77rem; font-family:'Sora',sans-serif; transition:border-color .2s; width:100%; }
+    .fi:focus,.fs:focus { outline:none; border-color:rgba(0,188,212,.5); box-shadow:0 0 0 3px rgba(0,188,212,.07); }
+    .fi::placeholder { color:#3d5875; }
+    .fs option { background:#0d1b2a; }
+    .btn-clr { background:transparent; color:#5a7498; border:1px solid rgba(100,160,255,.12); padding:.4rem .75rem; border-radius:6px; font-size:.75rem; font-family:'Sora',sans-serif; cursor:pointer; white-space:nowrap; transition:all .2s; }
+    .btn-clr:hover { color:#90a4c8; border-color:rgba(100,160,255,.3); }
+
+    /* TABS VISTA */
+    .view-tabs { display:flex; gap:.4rem; margin-bottom:.75rem; }
+    .vtab { padding:.4rem .9rem; border-radius:6px; border:1px solid rgba(100,160,255,.15); background:transparent; color:#5a7498; font-size:.76rem; font-family:'Sora',sans-serif; cursor:pointer; transition:all .18s; }
+    .vtab.on { background:rgba(0,188,212,.09); color:#00bcd4; border-color:rgba(0,188,212,.45); font-weight:500; }
+
+    /* TABLA */
+    .tcard { background:rgba(27,45,66,.65); border:1px solid rgba(100,160,255,.1); border-radius:10px; overflow:hidden; }
+    .tbar  { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1.1rem; border-bottom:1px solid rgba(100,160,255,.08); }
+    .tinfo { font-size:.74rem; color:#90a4c8; }
+    .tinfo strong { color:#ffffff; }
+
+    table.et { width:100%; border-collapse:collapse; font-size:.78rem; }
+    table.et th { padding:.5rem .9rem; color:#5a7498; font-size:.67rem; font-weight:600; text-transform:uppercase; letter-spacing:.07em; border-bottom:1px solid rgba(100,160,255,.07); text-align:left; white-space:nowrap; cursor:pointer; user-select:none; transition:color .15s; }
+    table.et th:hover { color:#90a4c8; }
+    table.et th.srt { color:#00bcd4; }
+    table.et td { padding:.7rem .9rem; border-bottom:1px solid rgba(100,160,255,.04); color:#f0f4ff; vertical-align:middle; }
+    table.et tbody tr { transition:background .12s; cursor:pointer; }
+    table.et tbody tr:hover td { background:rgba(0,188,212,.04); }
+    table.et tbody tr.sel td { background:rgba(0,188,212,.06); }
+    table.et tbody tr:last-child td { border-bottom:none; }
+
+    .mono { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:#00bcd4; }
+    .rs   { font-size:.78rem; font-weight:500; color:#ffffff; max-width:170px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .nit  { font-family:'JetBrains Mono',monospace; font-size:.71rem; color:#90a4c8; }
+    .cty  { font-size:.73rem; color:#90a4c8; }
+    .tel  { font-family:'JetBrains Mono',monospace; font-size:.71rem; color:#90a4c8; }
+
+    /* avatar empresa */
+    .emp-av { width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:600; flex-shrink:0; color:#fff; }
+
+    /* chips tipo/estado */
+    .chip { display:inline-flex; align-items:center; gap:4px; font-size:.65rem; padding:3px 9px; border-radius:20px; font-weight:500; white-space:nowrap; }
+    .chip::before { content:''; width:5px; height:5px; border-radius:50%; }
+    .cact { background:rgba(0,200,83,.13);  color:#69f0ae; } .cact::before { background:#00c853; }
+    .cinact{background:rgba(239,83,80,.12); color:#ef9a9a; } .cinact::before { background:#ef5350; }
+    .ctip { background:rgba(100,160,255,.12); color:#90c4f8; font-size:.62rem; padding:2px 7px; border-radius:4px; }
+    .ctip::before { display:none; }
+
+    /* badges especiales */
+    .badge-sm { display:inline-flex; align-items:center; gap:3px; font-size:.62rem; padding:2px 6px; border-radius:4px; font-weight:500; }
+    .b-mip  { background:rgba(0,200,83,.12);  color:#69f0ae; }
+    .b-disc { background:rgba(0,188,212,.12);  color:#26c6da; }
+    .b-muj  { background:rgba(124,77,255,.12); color:#ce93d8; }
+
+    /* row actions */
+    .ra { display:flex; gap:.3rem; opacity:0; transition:opacity .15s; }
+    table.et tbody tr:hover .ra { opacity:1; }
+    .rb { font-size:.65rem; padding:2px 8px; border-radius:4px; border:1px solid rgba(100,160,255,.18); background:transparent; color:#90a4c8; cursor:pointer; font-family:'Sora',sans-serif; transition:all .15s; }
+    .rb:hover { color:#00bcd4; border-color:rgba(0,188,212,.4); }
+
+    /* DETALLE EXPANDIDO */
+    .det { background:rgba(13,27,42,.96); border:1px solid rgba(100,160,255,.15); border-radius:8px; padding:1rem 1.1rem; margin:.1rem .5rem .5rem; animation:sd .22s ease; }
+    @@keyframes sd { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    .det-g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:.65rem; margin-top:.5rem; }
+    .det-g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:.65rem; margin-top:.5rem; }
+    .det-g6 { display:grid; grid-template-columns:repeat(6,1fr); gap:.55rem; margin-top:.5rem; }
+    .df { display:flex; flex-direction:column; gap:.2rem; }
+    .dl { font-size:.63rem; color:#5a7498; text-transform:uppercase; letter-spacing:.06em; }
+    .dv { font-size:.8rem; color:#ffffff; font-weight:500; }
+    .det-sec { font-size:.68rem; font-weight:600; color:#5a7498; margin-top:.7rem; padding-bottom:.3rem; border-bottom:1px solid rgba(100,160,255,.07); text-transform:uppercase; letter-spacing:.06em; }
+    .det-btns { display:flex; gap:.5rem; margin-top:.8rem; flex-wrap:wrap; }
+
+    /* VISTA CARDS */
+    .cards-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .emp-card { background:rgba(27,45,66,.7); border:1px solid rgba(100,160,255,.1); border-radius:12px; padding:1.1rem; cursor:pointer; transition:all .2s; position:relative; overflow:hidden; }
+    .emp-card:hover { border-color:rgba(0,188,212,.3); transform:translateY(-2px); box-shadow:0 10px 30px rgba(0,0,0,.35); }
+    .emp-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+    .emp-card-head { display:flex; align-items:flex-start; gap:.75rem; margin-bottom:.85rem; }
+    .emp-card-av { width:40px; height:40px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; flex-shrink:0; color:#fff; }
+    .emp-card-name { font-size:.84rem; font-weight:600; color:#ffffff; line-height:1.3; }
+    .emp-card-nit  { font-size:.7rem; font-family:'JetBrains Mono',monospace; color:#90a4c8; margin-top:1px; }
+    .emp-card-body { display:grid; grid-template-columns:1fr 1fr; gap:.4rem; margin-bottom:.75rem; }
+    .ecf { display:flex; flex-direction:column; gap:.1rem; }
+    .ecl { font-size:.62rem; color:#5a7498; text-transform:uppercase; letter-spacing:.05em; }
+    .ecv { font-size:.74rem; color:#f0f4ff; }
+    .emp-card-badges { display:flex; gap:.3rem; flex-wrap:wrap; }
+    .emp-card-footer { display:flex; align-items:center; justify-content:space-between; margin-top:.75rem; padding-top:.65rem; border-top:1px solid rgba(100,160,255,.07); }
+    .emp-card-actions { display:flex; gap:.35rem; }
+    .ecbtn { font-size:.68rem; padding:3px 9px; border-radius:4px; border:1px solid rgba(100,160,255,.18); background:transparent; color:#90a4c8; cursor:pointer; transition:all .15s; font-family:'Sora',sans-serif; }
+    .ecbtn:hover { color:#00bcd4; border-color:rgba(0,188,212,.4); }
+
+    /* PAGINACIÓN */
+    .pag { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1.1rem; border-top:1px solid rgba(100,160,255,.07); }
+    .pi  { font-size:.72rem; color:#5a7498; }
+    .pbs { display:flex; gap:.3rem; }
+    .pb  { width:28px; height:28px; border-radius:5px; border:1px solid rgba(100,160,255,.15); background:transparent; color:#90a4c8; font-size:.72rem; font-family:'JetBrains Mono',monospace; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+    .pb:hover:not([disabled]) { color:#00bcd4; border-color:rgba(0,188,212,.4); background:rgba(0,188,212,.06); }
+    .pb[disabled] { opacity:.3; cursor:not-allowed; }
+    .pb.cur { background:rgba(0,188,212,.12); color:#00bcd4; border-color:rgba(0,188,212,.45); font-weight:600; }
+    .pg-sz { background:rgba(13,27,42,.7); border:1px solid rgba(100,160,255,.15); border-radius:5px; color:#90a4c8; padding:.22rem .45rem; font-size:.72rem; font-family:'Sora',sans-serif; cursor:pointer; }
+
+    /* SKELETON */
+    .skel { background:linear-gradient(90deg,rgba(100,160,255,.06) 25%,rgba(100,160,255,.12) 50%,rgba(100,160,255,.06) 75%); background-size:200% 100%; animation:sh 1.4s infinite; border-radius:4px; }
+    @@keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* EMPTY */
+    .empty { text-align:center; padding:3rem 1rem; }
+    .empty-ico { font-size:2.5rem; opacity:.4; margin-bottom:.6rem; }
+    .empty-txt { font-size:.88rem; color:#5a7498; }
+    .empty-sub { font-size:.75rem; color:#3d5875; margin-top:.3rem; }
+
+    .scroll { overflow-x:auto; }
+    .scroll::-webkit-scrollbar { height:4px; }
+    .scroll::-webkit-scrollbar-thumb { background:rgba(100,160,255,.15); border-radius:10px; }
+</style>
+
+<div class="emp-page">
+
+    <!-- TOPBAR -->
+    <div class="emp-topbar">
+        <div>
+            <div class="emp-title">Empresas</div>
+            <div class="emp-sub">Registro y gestión de empresas contratistas y habilitadas</div>
+        </div>
+        <div style="display:flex;gap:.6rem;">
+            <button class="btn-sec" @onclick="ExportarExcel">📥 Exportar</button>
+            <button class="btn-pri" @onclick='()=>Nav.NavigateTo("/empresas/nueva")'>
+                ＋ Nueva empresa
+            </button>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="emp-kpis">
+        <div class="kpi kb">
+            <div class="kpi-icon">🏢</div>
+            <div class="kpi-lbl">Total empresas</div>
+            <div class="kpi-val" style="color:#00bcd4;">@todas.Count</div>
+            <div class="kpi-sub">registradas</div>
+        </div>
+        <div class="kpi kg">
+            <div class="kpi-icon">✅</div>
+            <div class="kpi-lbl">Activas</div>
+            <div class="kpi-val" style="color:#00c853;">@todas.Count(e=>e.Activo)</div>
+            <div class="kpi-sub" style="color:#69f0ae;">habilitadas</div>
+        </div>
+        <div class="kpi ka">
+            <div class="kpi-icon">🌱</div>
+            <div class="kpi-lbl">MiPymes</div>
+            <div class="kpi-val" style="color:#ffab00;">@todas.Count(e=>e.MiPyme)</div>
+            <div class="kpi-sub">registradas</div>
+        </div>
+        <div class="kpi kp">
+            <div class="kpi-icon">♿</div>
+            <div class="kpi-lbl">Discapacitados</div>
+            <div class="kpi-val" style="color:#b388ff;">@todas.Count(e=>e.Discapacitado)</div>
+            <div class="kpi-sub">habilitados</div>
+        </div>
+        <div class="kpi kt">
+            <div class="kpi-icon">👩‍💼</div>
+            <div class="kpi-lbl">Emprend. mujer</div>
+            <div class="kpi-val" style="color:#26c6da;">@todas.Count(e=>e.EmprendimientoMujer)</div>
+            <div class="kpi-sub">activos</div>
+        </div>
+        <div class="kpi kr">
+            <div class="kpi-icon">❌</div>
+            <div class="kpi-lbl">Inactivas</div>
+            <div class="kpi-val" style="color:#ef9a9a;">@todas.Count(e=>!e.Activo)</div>
+            <div class="kpi-sub" style="color:#ef9a9a;">deshabilitadas</div>
+        </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="emp-filters">
+        <div class="fg">
+            <label class="fl">🔍 Buscar</label>
+            <input class="fi" type="text" placeholder="Razón social, NIT, ciudad…"
+                   @bind="busqueda" @oninput="@(e => { busqueda = e.Value?.ToString() ?? ""; OnFiltroChanged(); })" />
+        </div>
+        <div class="fg">
+            <label class="fl">🏭 Tipo empresa</label>
+            <select class="fs" @bind="filtTipo" @bind:after="() => OnFiltroChanged()">
+                <option value="">Todos los tipos</option>
+                <option>SAS</option>
+                <option>Ltda</option>
+                <option>SA</option>
+                <option>Persona Natural</option>
+                <option>Consorcio</option>
+                <option>Unión Temporal</option>
+            </select>
+        </div>
+        <div class="fg">
+            <label class="fl">📍 Departamento</label>
+            <select class="fs" @bind="filtDpto" @bind:after="() => OnFiltroChanged()">
+                <option value="">Todos</option>
+                <option>Atlántico</option>
+                <option>Bolívar</option>
+                <option>Cundinamarca</option>
+                <option>Antioquia</option>
+                <option>Valle del Cauca</option>
+                <option>Santander</option>
+            </select>
+        </div>
+        <div class="fg">
+            <label class="fl">📌 Estado</label>
+            <select class="fs" @bind="filtEstado" @bind:after="() => OnFiltroChanged()">
+                <option value="">Todos</option>
+                <option value="true">Activa</option>
+                <option value="false">Inactiva</option>
+            </select>
+        </div>
+        <div class="fg">
+            <label class="fl">🏷 Categoría especial</label>
+            <select class="fs" @bind="filtCategoria" @bind:after="() => OnFiltroChanged()">
+                <option value="">Todas</option>
+                <option value="mipyme">MiPyme</option>
+                <option value="disc">Discapacitado</option>
+                <option value="mujer">Emprend. mujer</option>
+            </select>
+        </div>
+        <button class="btn-clr" @onclick="Limpiar">✕ Limpiar</button>
+    </div>
+
+    <!-- TABS VISTA -->
+    <div class="view-tabs">
+        <button class="vtab @(vista=="tabla"?"on":"")"  @onclick='()=>vista="tabla"'>📋 Tabla</button>
+        <button class="vtab @(vista=="cards"?"on":"")"  @onclick='()=>vista="cards"'>🗃 Tarjetas</button>
+    </div>
+
+    <!-- ═══════════ VISTA TABLA ═══════════ -->
+    @if (vista == "tabla")
+    {
+        <div class="tcard">
+            <div class="tbar">
+                <div class="tinfo">
+                    Mostrando <strong>@pagItems.Count</strong> de <strong>@filtradas.Count</strong> empresas
+                    @if (filtradas.Count != todas.Count)
+                    { <span style="color:#ffab00;margin-left:.4rem;">· filtros activos</span> }
+                </div>
+                <div style="display:flex;gap:.35rem;">
+                    @foreach (var (col,lbl) in new[]{("RazonSocial","Nombre"),("Ciudad","Ciudad"),("FechaRegistro","Registro")})
+                    {
+                        <button class="rb @(campoOrden==col?"srt":"")" style="font-size:.68rem;"
+                                @onclick="()=>CambiarOrden(col)">
+                            @lbl @IconOrden(col)
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <div class="scroll">
+                <table class="et">
+                    <thead>
+                        <tr>
+                            <th style="width:32px;"></th>
+                            <th @onclick='()=>CambiarOrden("RazonSocial")' class="@(campoOrden=="RazonSocial"?"srt":"")">Razón social</th>
+                            <th>NIT</th>
+                            <th>Tipo</th>
+                            <th @onclick='()=>CambiarOrden("Ciudad")' class="@(campoOrden=="Ciudad"?"srt":"")">Ciudad / Dpto.</th>
+                            <th>Teléfono</th>
+                            <th>Correo</th>
+                            <th>Categorías</th>
+                            <th>Estado</th>
+                            <th @onclick='()=>CambiarOrden("FechaRegistro")' class="@(campoOrden=="FechaRegistro"?"srt":"")">Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (cargando)
+                        {
+                            @for (int i = 0; i < paginaTam; i++)
+                            {
+                                <tr>
+                                    @for (int j = 0; j < 11; j++)
+                                    {
+                                        <td><div class="skel" style="height:10px;width:@(j==1?130:j==6?110:60)px;border-radius:3px;"></div></td>
+                                    }
+                                </tr>
+                            }
+                        }
+                        else if (!pagItems.Any())
+                        {
+                            <tr>
+                                <td colspan="11">
+                                    <div class="empty">
+                                        <div class="empty-ico">🏢</div>
+                                        <div class="empty-txt">Sin empresas</div>
+                                        <div class="empty-sub">Cambia los filtros de búsqueda</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var e in pagItems)
+                            {
+                                <tr class="@(seleccionada?.EmpresaID==e.EmpresaID?"sel":"")"
+                                    @onclick="()=>Seleccionar(e)">
+                                    <td>
+                                        <div class="emp-av" style="background:@e.Color;font-size:.65rem;">
+                                            @e.Siglas
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="rs" title="@e.RazonSocial">@e.RazonSocial</span>
+                                        @if (!string.IsNullOrEmpty(e.Sigla))
+                                        { <div style="font-size:.67rem;color:#5a7498;">@e.Sigla</div> }
+                                    </td>
+                                    <td><span class="nit">@e.IdentificacionNit</span></td>
+                                    <td><span class="ctip">@e.TipoEmpresa</span></td>
+                                    <td>
+                                        <span class="cty">@e.Ciudad</span>
+                                        <div style="font-size:.67rem;color:#5a7498;">@e.Departamento</div>
+                                    </td>
+                                    <td><span class="tel">@e.Telefono</span></td>
+                                    <td style="font-size:.71rem;color:#90a4c8;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@e.Correo</td>
+                                    <td>
+                                        <div style="display:flex;gap:3px;flex-wrap:wrap;">
+                                            @if (e.MiPyme)      { <span class="badge-sm b-mip">🌱 MiPyme</span> }
+                                            @if (e.Discapacitado){ <span class="badge-sm b-disc">♿ Disc.</span> }
+                                            @if (e.EmprendimientoMujer) { <span class="badge-sm b-muj">👩‍💼 Mujer</span> }
+                                        </div>
+                                    </td>
+                                    <td><span class="chip @(e.Activo?"cact":"cinact")">@(e.Activo?"Activa":"Inactiva")</span></td>
+                                    <td style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:#5a7498;">
+                                        @e.FechaRegistro.ToString("dd/MM/yy")
+                                    </td>
+                                    <td>
+                                        <div class="ra" @onclick:stopPropagation="true">
+                                            <button class="rb" @onclick="@(() => Nav.NavigateTo($"/empresas/{e.EmpresaID}"))">Ver</button>
+                                            <button class="rb" @onclick="@(() => Nav.NavigateTo($"/empresas/{e.EmpresaID}/editar"))">Editar</button>
+                                            <button class="rb" @onclick="@(() => Nav.NavigateTo($"/analisis/financiero?empresa={e.EmpresaID}"))">Análisis</button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                @if (seleccionada?.EmpresaID == e.EmpresaID)
+                                {
+                                    <tr>
+                                        <td colspan="11" style="padding:0 .5rem .5rem;">
+                                            <div class="det">
+                                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                                    <div style="display:flex;align-items:center;gap:.75rem;">
+                                                        <div class="emp-av" style="background:@e.Color;width:36px;height:36px;border-radius:8px;font-size:.8rem;">@e.Siglas</div>
+                                                        <div>
+                                                            <div style="font-size:.88rem;font-weight:600;color:#00bcd4;">@e.RazonSocial</div>
+                                                            <div style="font-size:.72rem;color:#90a4c8;">@e.TipoEmpresa · NIT: @e.IdentificacionNit</div>
+                                                        </div>
+                                                    </div>
+                                                    <button class="btn-sec" style="font-size:.7rem;padding:.25rem .6rem;" @onclick="()=>seleccionada=null">✕</button>
+                                                </div>
+
+                                                <div class="det-sec">Información general</div>
+                                                <div class="det-g4">
+                                                    <div class="df"><span class="dl">Sigla</span><span class="dv">@(e.Sigla ?? "—")</span></div>
+                                                    <div class="df"><span class="dl">Departamento</span><span class="dv">@e.Departamento</span></div>
+                                                    <div class="df"><span class="dl">Ciudad</span><span class="dv">@e.Ciudad</span></div>
+                                                    <div class="df"><span class="dl">Matrícula</span><span class="dv">@(e.MatriculaNo ?? "—")</span></div>
+                                                </div>
+
+                                                <div class="det-sec">Contacto</div>
+                                                <div class="det-g3">
+                                                    <div class="df"><span class="dl">Teléfono</span><span class="dv">@e.Telefono</span></div>
+                                                    <div class="df"><span class="dl">Correo</span><span class="dv" style="font-size:.74rem;">@e.Correo</span></div>
+                                                    <div class="df"><span class="dl">Dirección</span><span class="dv" style="font-size:.74rem;">@e.DireccionDomicilio</span></div>
+                                                </div>
+
+                                                <div class="det-sec">Representante legal</div>
+                                                <div class="det-g4">
+                                                    <div class="df"><span class="dl">Nombre legal</span><span class="dv">@e.NombreLegal</span></div>
+                                                    <div class="df"><span class="dl">ID representante</span><span class="dv">@e.IdentificacionRl</span></div>
+                                                    <div class="df"><span class="dl">Revisión fiscal</span><span class="dv">@(e.RevisionFiscal?"Sí":"No")</span></div>
+                                                    <div class="df"><span class="dl">Fecha registro</span><span class="dv">@e.FechaRegistro.ToString("dd/MM/yyyy")</span></div>
+                                                </div>
+
+                                                <div class="det-sec">Categorías especiales</div>
+                                                <div class="det-g6">
+                                                    <div class="df"><span class="dl">MiPyme</span><span class="dv">@(e.MiPyme ? "✅ Sí" : "—")</span></div>
+                                                    <div class="df"><span class="dl">Discapacitado</span><span class="dv">@(e.Discapacitado ? "✅ Sí" : "—")</span></div>
+                                                    <div class="df"><span class="dl">Emprend. mujer</span><span class="dv">@(e.EmprendimientoMujer ? "✅ Sí" : "—")</span></div>
+                                                    <div class="df"><span class="dl">Emprendimiento</span><span class="dv">@(e.Emprendimiento ? "✅ Sí" : "—")</span></div>
+                                                    <div class="df"><span class="dl">Id. suplente</span><span class="dv" style="font-size:.73rem;">@(e.IdentificacionS ?? "—")</span></div>
+                                                    <div class="df"><span class="dl">Tipo empresa ID</span><span class="dv">@e.TipoEmpresaID</span></div>
+                                                </div>
+
+                                                <div class="det-btns">
+                                                    <button class="btn-pri" style="font-size:.72rem;padding:.35rem .85rem;"
+                                                            @onclick="@(() => Nav.NavigateTo($"/empresas/{e.EmpresaID}"))">
+                                                        Ver perfil completo
+                                                    </button>
+                                                    <button class="btn-sec" style="font-size:.72rem;padding:.35rem .85rem;"
+                                                            @onclick="@(() => Nav.NavigateTo($"/analisis/financiero?empresa={e.EmpresaID}"))">
+                                                        Análisis financiero
+                                                    </button>
+                                                    <button class="btn-sec" style="font-size:.72rem;padding:.35rem .85rem;"
+                                                            @onclick="@(() => Nav.NavigateTo($"/capacidad-tecnica?empresa={e.EmpresaID}"))">
+                                                        Capacidad técnica
+                                                    </button>
+                                                    <button class="btn-sec" style="font-size:.72rem;padding:.35rem .85rem;"
+                                                            @onclick="@(() => Nav.NavigateTo($"/accionistas?empresa={e.EmpresaID}"))">
+                                                        Accionistas
+                                                    </button>
+                                                    <button class="btn-sec" style="font-size:.72rem;padding:.35rem .85rem;"
+                                                            @onclick="@(() => Nav.NavigateTo($"/contratos?empresa={e.EmpresaID}"))">
+                                                        Contratos
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINACIÓN -->
+            <div class="pag">
+                <div class="pi">
+                    Página @paginaActual de @totalPaginas &nbsp;·&nbsp; Por página:
+                    <select class="pg-sz" @bind="paginaTam" @bind:after="()=>{paginaActual=1;Paginar();}">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <div class="pbs">
+                    <button class="pb" @onclick="()=>IrPag(1)"              disabled="@(paginaActual==1)">«</button>
+                    <button class="pb" @onclick="()=>IrPag(paginaActual-1)" disabled="@(paginaActual==1)">‹</button>
+                    @foreach (var p in Paginas)
+                    {
+                        @if (p==-1) { <span style="color:#3d5875;font-size:.75rem;padding:0 2px;">…</span> }
+                        else { <button class="pb @(p==paginaActual?"cur":"")" @onclick="()=>IrPag(p)">@p</button> }
+                    }
+                    <button class="pb" @onclick="()=>IrPag(paginaActual+1)" disabled="@(paginaActual==totalPaginas)">›</button>
+                    <button class="pb" @onclick="()=>IrPag(totalPaginas)"   disabled="@(paginaActual==totalPaginas)">»</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- ═══════════ VISTA CARDS ═══════════ -->
+    else
+    {
+        <div class="cards-grid">
+            @if (!filtradas.Any())
+            {
+                <div colspan="3" style="grid-column:1/-1;">
+                    <div class="empty">
+                        <div class="empty-ico">🏢</div>
+                        <div class="empty-txt">Sin empresas</div>
+                        <div class="empty-sub">Cambia los filtros</div>
+                    </div>
+                </div>
+            }
+            @foreach (var e in filtradas.Take(12))
+            {
+                <div class="emp-card" style="border-top:2px solid @e.Color20;">
+                    <div class="emp-card-head">
+                        <div class="emp-card-av" style="background:@e.Color;">@e.Siglas</div>
+                        <div style="flex:1;min-width:0;">
+                            <div class="emp-card-name" title="@e.RazonSocial">@e.RazonSocial</div>
+                            <div class="emp-card-nit">@e.IdentificacionNit</div>
+                        </div>
+                        <span class="chip @(e.Activo?"cact":"cinact")" style="flex-shrink:0;">@(e.Activo?"Activa":"Inactiva")</span>
+                    </div>
+                    <div class="emp-card-body">
+                        <div class="ecf"><div class="ecl">Tipo</div><div class="ecv">@e.TipoEmpresa</div></div>
+                        <div class="ecf"><div class="ecl">Ciudad</div><div class="ecv">@e.Ciudad</div></div>
+                        <div class="ecf"><div class="ecl">Departamento</div><div class="ecv">@e.Departamento</div></div>
+                        <div class="ecf"><div class="ecl">Teléfono</div><div class="ecv" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;">@e.Telefono</div></div>
+                    </div>
+                    <div class="emp-card-badges">
+                        @if (e.MiPyme)               { <span class="badge-sm b-mip">🌱 MiPyme</span> }
+                        @if (e.Discapacitado)         { <span class="badge-sm b-disc">♿ Disc.</span> }
+                        @if (e.EmprendimientoMujer)   { <span class="badge-sm b-muj">👩‍💼 Mujer</span> }
+                        @if (!e.MiPyme && !e.Discapacitado && !e.EmprendimientoMujer)
+                        { <span style="font-size:.67rem;color:#3d5875;">Sin categoría especial</span> }
+                    </div>
+                    <div class="emp-card-footer">
+                        <span style="font-size:.68rem;color:#5a7498;font-family:'JetBrains Mono',monospace;">D
+                            Reg: @e.FechaRegistro.ToString("dd/MM/yyyy")
+                        </span>
+                        <div class="emp-card-actions">
+    <button class="ecbtn" @onclick="() => IrVerEmpresa(e.EmpresaID)">Ver</button>
+    <button class="ecbtn" @onclick="() => IrAnalisisFinanciero(e.EmpresaID)">Análisis</button>
+</div>
+                    </div>
+                </div>
+            }
+        </div>
+        @if (filtradas.Count > 12)
+        {
+            <div style="text-align:center;margin-top:1rem;">
+                <button class="btn-sec" @onclick='()=>vista="tabla"'>
+                    Ver las @(filtradas.Count-12) empresas restantes en tabla →
+                </button>
+            </div>
+        }
+    }
+
+</div>
+
+@code {
+    bool cargando = true;
+    string vista = "tabla";
+    List<EmpresaVm> todas = new();
+    List<EmpresaVm> filtradas = new();
+    List<EmpresaVm> pagItems = new();
+    EmpresaVm? seleccionada;
+
+    string busqueda = "", filtTipo = "", filtDpto = "", filtEstado = "", filtCategoria = "";
+    string campoOrden = "RazonSocial";
+    bool ordenAsc = true;
+    int paginaActual = 1, paginaTam = 10;
+    int totalPaginas => Math.Max(1, (int)Math.Ceiling((double)filtradas.Count / paginaTam));
+
+    protected override async Task OnInitializedAsync()
+    {
+        cargando = true;
+        try
+        {
+            var r = await Http.GetFromJsonAsync<List<EmpresaVm>>("api/empresas");
+            todas = r ?? Demo();
+        }
+        catch { todas = Demo(); }
+        Filtrar();
+        cargando = false;
+    }
+
+    void OnFiltroChanged(ChangeEventArgs? e = null) { paginaActual = 1; Filtrar(); }
+
+    void Limpiar()
+    {
+        busqueda = ""; filtTipo = ""; filtDpto = ""; filtEstado = ""; filtCategoria = "";
+        OnFiltroChanged();
+    }
+
+    void Seleccionar(EmpresaVm e) =>
+        seleccionada = seleccionada?.EmpresaID == e.EmpresaID ? null : e;
+
+    void Filtrar()
+    {
+        filtradas = todas.Where(e =>
+            (string.IsNullOrWhiteSpace(busqueda) ||
+             e.RazonSocial.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
+             e.IdentificacionNit.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
+             e.Ciudad.Contains(busqueda, StringComparison.OrdinalIgnoreCase)) &&
+            (string.IsNullOrEmpty(filtTipo)   || e.TipoEmpresa == filtTipo) &&
+            (string.IsNullOrEmpty(filtDpto)   || e.Departamento == filtDpto) &&
+            (string.IsNullOrEmpty(filtEstado) || e.Activo.ToString().ToLower() == filtEstado) &&
+            (filtCategoria switch
+            {
+                "mipyme" => e.MiPyme,
+                "disc"   => e.Discapacitado,
+                "mujer"  => e.EmprendimientoMujer,
+                _        => true
+            })
+        ).ToList();
+        Ordenar(); Paginar();
+    }
+
+    void Ordenar()
+    {
+        filtradas = (campoOrden switch
+        {
+            "Ciudad"        => ordenAsc ? filtradas.OrderBy(e => e.Ciudad)         : filtradas.OrderByDescending(e => e.Ciudad),
+            "FechaRegistro" => ordenAsc ? filtradas.OrderBy(e => e.FechaRegistro)  : filtradas.OrderByDescending(e => e.FechaRegistro),
+            _               => ordenAsc ? filtradas.OrderBy(e => e.RazonSocial)    : filtradas.OrderByDescending(e => e.RazonSocial),
+        }).ToList();
+    }
+
+    void Paginar() =>
+        pagItems = filtradas.Skip((paginaActual - 1) * paginaTam).Take(paginaTam).ToList();
+
+    void IrPag(int p) { paginaActual = Math.Clamp(p, 1, totalPaginas); Paginar(); seleccionada = null; }
+
+    void CambiarOrden(string col)
+    {
+        if (campoOrden == col) ordenAsc = !ordenAsc;
+        else { campoOrden = col; ordenAsc = true; }
+        Ordenar(); Paginar();
+    }
+
+    IEnumerable<int> Paginas
+    {
+        get
+        {
+            var l = new List<int>();
+            if (totalPaginas <= 7) { for (int i = 1; i <= totalPaginas; i++) l.Add(i); return l; }
+            l.Add(1);
+            if (paginaActual > 3) l.Add(-1);
+            for (int i = Math.Max(2, paginaActual - 1); i <= Math.Min(totalPaginas - 1, paginaActual + 1); i++) l.Add(i);
+            if (paginaActual < totalPaginas - 2) l.Add(-1);
+            l.Add(totalPaginas);
+            return l;
+        }
+    }
+
+    string IconOrden(string c) => campoOrden == c ? (ordenAsc ? "↑" : "↓") : "↕";
+    void ExportarExcel() { /* TODO: JSInterop + ClosedXML */ }
+
+    List<EmpresaVm> Demo()
+    {
+        var rnd   = new Random(42);
+        var tipos = new[] { "SAS","Ltda","SA","Persona Natural","Consorcio","Unión Temporal" };
+        var dptos = new[] { "Atlántico","Bolívar","Cundinamarca","Antioquia","Valle del Cauca","Santander" };
+        var ciudades = new[] { "Barranquilla","Cartagena","Bogotá","Medellín","Cali","Bucaramanga" };
+        var nombres  = new[] { "Constructora Horizonte","Ingeniería XYZ","Tech Solutions",
+            "Servicios Integrales","Pavimentos del Caribe","Consultores Unidos",
+            "Sistemas & Redes","Infraestructura Nacional","Obras y Proyectos","DataCenter Colombia",
+            "Arquitectura & Diseño","Suministros Industriales","Logística Express","Asesorías Técnicas",
+            "Construcciones Modernas","Redes y Comunicaciones","Equipos del Norte","Proyectos Civiles",
+            "Soluciones Ambientales","Geotécnica Colombia" };
+        var sfx   = new[] { "S.A.S","Ltda","S.A","& Cía","Corp","Group" };
+        var colores = new[] { "#1565c0","#00695c","#6a1b9a","#e65100","#1565c0","#37474f","#283593","#558b2f" };
+
+        return Enumerable.Range(1, 50).Select(i =>
+        {
+            var idx  = i % nombres.Length;
+            var dIdx = i % dptos.Length;
+            return new EmpresaVm
+            {
+                EmpresaID          = i,
+                RazonSocial        = $"{nombres[idx]} {sfx[i%sfx.Length]}",
+                Sigla              = i % 3 == 0 ? nombres[idx][..Math.Min(4, nombres[idx].Length)].ToUpper() : null,
+                IdentificacionNit  = $"9{rnd.Next(10,99)}.{rnd.Next(100,999)}.{rnd.Next(100,999)}-{rnd.Next(0,9)}",
+                TipoEmpresa        = tipos[i % tipos.Length],
+                TipoEmpresaID      = (i % tipos.Length) + 1,
+                Departamento       = dptos[dIdx],
+                Ciudad             = ciudades[dIdx],
+                MatriculaNo        = i % 4 == 0 ? $"MAT-{rnd.Next(10000,99999)}" : null,
+                Telefono           = $"(60{rnd.Next(1,9)}) {rnd.Next(100,999)}-{rnd.Next(1000,9999)}",
+                Correo             = $"info@{nombres[idx].Replace(" ","").Replace("&","").ToLower()}.com.co",
+                DireccionDomicilio = $"Cra {rnd.Next(1,80)} #{rnd.Next(10,99)}-{rnd.Next(10,99)}",
+                NombreLegal        = new[]{"Carlos Martínez","Ana Rodríguez","Juan Gómez","María Torres"}[i%4],
+                IdentificacionRl   = $"{rnd.Next(10000000,99999999)}",
+                IdentificacionS    = i % 5 == 0 ? $"{rnd.Next(10000000,99999999)}" : null,
+                RevisionFiscal     = i % 3 == 0,
+                MiPyme             = i % 4 == 0,
+                Discapacitado      = i % 7 == 0,
+                EmprendimientoMujer= i % 6 == 0,
+                Emprendimiento     = i % 8 == 0,
+                Activo             = i % 8 != 0,
+                FechaRegistro      = DateTime.Now.AddDays(-rnd.Next(30, 1800)),
+                Color              = colores[i % colores.Length],
+            };
+        }).ToList();
+    }
+
+    class EmpresaVm
+    {
+        public int      EmpresaID           { get; set; }
+        public string   RazonSocial         { get; set; } = "";
+        public string?  Sigla               { get; set; }
+        public string   IdentificacionNit   { get; set; } = "";
+        public string   TipoEmpresa         { get; set; } = "";
+        public int      TipoEmpresaID       { get; set; }
+        public string   Departamento        { get; set; } = "";
+        public string   Ciudad              { get; set; } = "";
+        public string?  MatriculaNo         { get; set; }
+        public string   Telefono            { get; set; } = "";
+        public string   Correo              { get; set; } = "";
+        public string   DireccionDomicilio  { get; set; } = "";
+        public string   NombreLegal         { get; set; } = "";
+        public string   IdentificacionRl    { get; set; } = "";
+        public string?  IdentificacionS     { get; set; }
+        public bool     RevisionFiscal      { get; set; }
+        public bool     MiPyme              { get; set; }
+        public bool     Discapacitado       { get; set; }
+        public bool     EmprendimientoMujer { get; set; }
+        public bool     Emprendimiento      { get; set; }
+        public bool     Activo              { get; set; }
+        public DateTime FechaRegistro       { get; set; }
+        public string   Color               { get; set; } = "#1565c0";
+
+        // Calculados
+        public string Siglas => string.IsNullOrEmpty(RazonSocial) ? "??" :
+            string.Concat(RazonSocial.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Where(w => w.Length > 2 && char.IsUpper(w[0])).Take(2).Select(w => w[0]));
+        public string Color20 => Color + "33";
+    }
+
+    void IrVerEmpresa(int id) => Nav.NavigateTo($"/empresas/{id}");
+    void IrEditarEmpresa(int id) => Nav.NavigateTo($"/empresas/{id}/editar");
+    void IrAnalisisFinanciero(int id) => Nav.NavigateTo($"/analisis/financiero?empresa={id}");
+    void IrCapacidadTecnica(int id) => Nav.NavigateTo($"/capacidad-tecnica?empresa={id}");
+    void IrAccionistas(int id) => Nav.NavigateTo($"/accionistas?empresa={id}");
+    void IrContratos(int id) => Nav.NavigateTo($"/contratos?empresa={id}");
+
+}

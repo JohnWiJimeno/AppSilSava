@@ -207,7 +207,7 @@ public partial class InfraCoreDbContext : DbContext
             entity.ToTable(tb =>
                 {
                     
-                    tb.HasTrigger("trg_Calcular_VrSmmlvPart2");
+                    tb.HasTrigger("trg_Contratos_CalcularValores");
                 });
 
             entity.Property(e => e.ContratoId).HasColumnName("ContratoID");
@@ -242,6 +242,10 @@ public partial class InfraCoreDbContext : DbContext
             entity.HasOne(d => d.TipoObra).WithMany(p => p.Contratos)
                 .HasForeignKey(d => d.TipoObraId)
                 .HasConstraintName("FK_Contratos_TipoObra");
+
+            entity.HasOne(d => d.EstadoContrato).WithMany(p => p.Contratos)
+                .HasForeignKey(d => d.EstadoContratoId)
+                .HasConstraintName("FK_Contratos_EstadoContrato");
         });
 
         modelBuilder.Entity<ContratoAporte>(entity =>
