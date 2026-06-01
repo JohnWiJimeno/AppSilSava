@@ -8,6 +8,8 @@ using AppSilSava.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
+string NombrePolitica = "PermitirTodo"; //nombre de la politica de cors permirir todo de la API
+
 // Add services to the container.
 
 builder.Services.AddDbContext<InfraCoreDbContext>(opt=>
@@ -15,6 +17,16 @@ builder.Services.AddDbContext<InfraCoreDbContext>(opt=>
         opt.UseSqlServer(builder.Configuration.GetConnectionString("cn"));
 });
 
+//politicas de la api para permitir el acceso desde cualquier origen, metodo y header, esto es para que el cliente pueda consumir la api sin problemas de cors
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(NombrePolitica, policy =>
+    {
+        policy.AllowAnyOrigin()// Permitir cualquier origen
+              .AllowAnyMethod()// Permitir cualquier método HTTP (GET, POST, PUT, DELETE, etc.)
+              .AllowAnyHeader();// Permitir cualquier encabezado
+    });
+});
 
 
 builder.Services.AddControllers()
@@ -72,6 +84,8 @@ builder.Services.AddScoped<ITipoPliegoNegocio, TipoPliegoNegocio>();
 builder.Services.AddScoped<IUsuarioNegocio, UsuarioNegocio>();
 
 var app = builder.Build();
+
+app.UseCors(NombrePolitica); //aplicar la politica de cors a la api
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
