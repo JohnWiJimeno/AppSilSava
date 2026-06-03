@@ -48,6 +48,8 @@ namespace AppSilSava.DTO.Response.Empresa
 
         public byte[]? Logo { get; set; }
 
-        public int? TipoEmpresaId { get; set; }
+        //public int? TipoEmpresaId { get; set; }
+
+        public string? NombreTipoEmpresa { get; set; }  // busca el nombre del tipo de empresa en lugar del id para mostrarlo en la consulta
     }
 }

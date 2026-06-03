@@ -113,3 +113,55 @@ code {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+
+/* Estilos globales para tablas de contratos */
+.tabla-contratos {
+    font-size: 0.85rem;
+}
+
+    .tabla-contratos .col-id {
+        white-space: nowrap;
+        width: 1%;
+        
+    }
+
+    .tabla-contratos .col-noup {
+        white-space: nowrap;
+        width: 1%;
+        text-align: center;
+       
+    }
+
+    .tabla-contratos .col-objeto {
+        width: 300px;
+        max-width: 300px;
+        word-wrap: break-word;
+        white-space: normal;
+        text-align: justify;
+    }
+
+    .tabla-contratos .col-acciones {
+        white-space: nowrap;
+        width: 1%;
+    }
+
+    .tabla-contratos .col-general {
+        padding: 12px 16px;
+        white-space: nowrap;
+        width: 1%;
+        word-wrap: break-word;
+        white-space: normal;
+        text-align: left;
+    }
+
+    .tabla-contratos .col-general2 {
+        padding: 12px 16px;
+        white-space: nowrap;
+        width: 1%;
+        word-wrap: break-word;
+        white-space: normal;
+        text-align: left;
+    }
+
+  

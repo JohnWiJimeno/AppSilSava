@@ -66,6 +66,7 @@ public partial class Empresa
     public virtual ICollection<SaldoContratosEjec5C> SaldoContratosEjec5Cs { get; set; } = new List<SaldoContratosEjec5C>();
 
     public virtual TipoEmpresa? TipoEmpresa { get; set; }
+    //public virtual ICollection<TipoEmpresa> TipoEmpresas { get; set; } = new List<TipoEmpresa>();
 
     public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }

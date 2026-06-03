@@ -6,7 +6,7 @@ namespace AppSilSava.DTO.Response.Contrato
 {
     public class ContratoResponse
     {
-        //public int ContratoId { get; set; }
+        public int ContratoId { get; set; }
 
         public string? EmpresaId { get; set; }
 

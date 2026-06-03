@@ -22,7 +22,14 @@ namespace AppSilSava.Negocio.Implementaciones
             try
             {
                 var lista = await _repositorio.Listar();
-                var ListaEmpresa= lista.Select(p => new EmpresaResponse
+                //var ListaEmpresa= lista.Select(p => new EmpresaResponse
+
+                // ORDENAMIENTO: Ordenamos de forma ascendente por el Nit/CC (EmpresaId)
+                var listaOrdenada = lista.OrderByDescending(p => p.EmpresaId).ToList();
+
+                // Mapeamos desde la lista que ya se encuentra perfectamente ordenada
+                var ListaEmpresa = listaOrdenada.Select(p => new EmpresaResponse
+
                 {
                     EmpresaId = p.EmpresaId,
                     RazonSocial = p.RazonSocial,
@@ -45,7 +52,7 @@ namespace AppSilSava.Negocio.Implementaciones
                     EmpredimientoMujer = p.EmpredimientoMujer,
                     Mipyme = p.Mipyme,
                     Logo = p.Logo,
-                    TipoEmpresaId = p.TipoEmpresaId
+                    NombreTipoEmpresa = p.TipoEmpresa?.Nombre
                 }).ToList();
                 rpta.Data = ListaEmpresa;
                 rpta.Exito = true;

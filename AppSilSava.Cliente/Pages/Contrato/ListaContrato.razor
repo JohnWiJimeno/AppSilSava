@@ -1,12 +1,22 @@
 ﻿@page "/contrato"
 @inject NavigationManager navigationManager
+@inject IContratoProxy ContratoProxy
+@inject SweetAlertService Swal;
 
 <div class="container">
     <CardInfo Titulo="Lista de Contratos">
         <Content>
             <div class="input-group mb-3">
+               
                 <span class="input-group-text" id="basic-addon3">Ingrese NIT</span>
-                <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3" @bind="NombreCompleto">
+                <input type="text"
+                       class="form-control"
+                       id="basic-url"
+                       aria-describedby="basic-addon3"
+                       @bind="NombreCompleto"
+                       @bind:event="oninput">
+
+
             </div>
 
             <ButtonsHeader OnBuscar="()=>buscar()" OnLimpiar="()=>limpiar()" OnNuevo="()=>Nuevo()" />
@@ -18,15 +28,229 @@
 </div>
 
 <div class="mt-5">
-    <CardInfo Titulo="Lista de Contratos">
+    <CardInfo Titulo="Lista de Contratos" EsAncho="true">
         <Content>
+          <div class="table-responsive w-100">
+            <table class="table table-sm tabla-contratos">
+                <thead>
+                    <tr>
+                        @*<th class="col-id">ContratoID</th>*@
+                        <th class="col-id">EmpresaID</th>
+                        <th class="col-noup">No.Rup</th>
+                        <th class="col-objeto">Objeto contrato</th>
+                        <th class="col-general">Entidad Contratante </th>
+                        <th class="col-general">Porcentaje de Participación</th>
+                        <th class="col-general">Nombre contratista</th>
+                        <th class="col-general2">Tipo de Contrato</th>
+                        <th class="col-general">Smmlv Rup %</th>
+                        <th class="col-general">Vr Actual Contrato</th>
+                        <th class="col-acciones">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var contrato in ContratosPaginados)
+                    {
+                        <tr>
+                            @*<td class="col-id">@contrato.ContratoId</td>*@
+                            <td class="col-id">@contrato.EmpresaId</td>
+                            <td class="col-noup">@contrato.NoRup</td>
+                            <td class="col-objeto">@contrato.ObjetoContrato</td>
+                            <td class="col-general">@contrato.EntidadContratante</td>
+                            <td class="col-general">@(contrato.PorcentajePart?.ToString("P2"))</td>
+                            <td class="col-general">@contrato.NombreContratista</td>
+                            <td class="col-general2">@contrato.NombreTipoObra</td>
+                            <td class="col-general">@contrato.VrSmmlvPart</td>
+                            <td class="col-general">@((contrato.VrTotalContrato ?? 0).ToString("C0", CultureInfo.CreateSpecificCulture("es-CO")))</td>
+                            <td>
+                                <ButtonsActions OnEditar="() => editar(contrato.ContratoId)" OnEliminar="() => eliminar(contrato.ContratoId)" OnVerDetalles="() => verDetalles(contrato.ContratoId)" />
+                               
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+         </div>
+         
+    @* Invocas tu componente reutilizable así de limpio: *@
+    <ComponentPaginacion PaginaActual="paginaActual" TotalPaginas="TotalPaginas" OnPaginaCambiada="CambiarPagina" />
+
 
         </Content>
     </CardInfo>
 </div>
 
+
+@*//modal*@
+@if (MostrarModal && ContratoSeleccionado != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5); z-index: 1050;">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">
+                        <i class="oi oi-document me-2"></i> Información Completa del Contrato
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="CerrarModal"></button>
+                </div>
+                <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-1"><b>Información de la Tabla</b></h6>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><b>No. Contrato:</b> <span class="text-muted">@ContratoSeleccionado.NoContrato</span></p>
+                            <p class="mb-1"><b>Fecha de Inicio:</b> <span class="text-muted">@ContratoSeleccionado.FechaInicio</span></p>
+                            <p class="mb-1"><b>Fecha Fenal:</b> <span class="text-muted">@ContratoSeleccionado.FechaFinal</span></p>
+                            <p class="mb-1"><b>plazo:</b> <span class="text-muted">@ContratoSeleccionado.Plazo</span></p>
+                            
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><b>Nit Consorcio/UT:</b> <span class="text-muted">@ContratoSeleccionado.NitConsorcioUt</span></p>
+                            <p class="mb-1"><b>Valor del Contrato:</b> <span class="text-muted">@((ContratoSeleccionado.ValorContrato ?? 0).ToString("C0", System.Globalization.CultureInfo.CreateSpecificCulture("es-CO")))</span></p>
+                            <p class="mb-1"><b>Vr en SMMLV:</b> <span class="text-muted">@ContratoSeleccionado.VrSmmlv</span></p>
+                            <p class="mb-1"><b>Estado Contrato:</b> <span class="text-muted">@ContratoSeleccionado.NombreEstadoContrato</span></p>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-1"><b>Información Adicional del Contrato</b></h6>
+                        </div>
+
+                        <div class="col-md-6">
+                            <p class="mb-2"><b>Responsable:</b> <span class="text-muted">@(ContratoSeleccionado.Responsable ?? "N/A")</span></p>
+                            <p class="mb-2"><b>Teléfono:</b> <span class="text-muted">@(ContratoSeleccionado.Telefono ?? "N/A")</span></p>
+                            <p class="mb-2"><b>Correo:</b> <span class="text-muted">@(ContratoSeleccionado.Correo ?? "N/A")</span></p>
+                            <p class="mb-2"><b>Fecha RUT:</b> <span class="text-muted">@(ContratoSeleccionado.FechaRut?.ToString("dd/MM/yyyy") ?? "N/A")</span></p>
+                            
+                        </div>
+
+                        <div class="col-md-6">
+                            <p class="mb-2"><b>Plataforma:</b> <span class="text-muted">@(ContratoSeleccionado.Plataforma ?? "N/A")</span></p>
+                           @*  <p class="mb-2"><b>Estado Contrato ID:</b> <span class="text-muted">@(ContratoSeleccionado.EstadoContratoId?.ToString() ?? "N/A")</span></p>
+                            <p class="mb-2"><b>Salario ID:</b> <span class="text-muted">@(ContratoSeleccionado.SalarioId?.ToString() ?? "N/A")</span></p> *@
+                            <p class="mb-2">
+                                <b>Link Contrato:</b>
+                                @if (!string.IsNullOrEmpty(ContratoSeleccionado.LinkContrato))
+                                {
+                                    <a href="@ContratoSeleccionado.LinkContrato" target="_blank" class="text-decoration-none text-info">
+                                        <i class="oi oi-external-link"></i> Ir al enlace
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No asignado</span>
+                                }
+                            </p>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <label class="fw-bold text-secondary mb-1">Datos Técnicos:</label>
+                            <p class="p-2 bg-light border rounded text-justify text-muted" style="white-space: pre-wrap; font-size: 0.9rem;">
+                                @(ContratoSeleccionado.DatosTecnicos ?? "Sin datos técnicos registrados.")
+                            </p>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="fw-bold text-secondary mb-1">Detalles Adicionales:</label>
+                            <p class="p-2 bg-light border rounded text-justify text-muted" style="white-space: pre-wrap; font-size: 0.9rem;">
+                                @(ContratoSeleccionado.DetallesAdicionales ?? "Sin detalles adicionales.")
+                            </p>
+                        </div>
+
+                        <div class="col-12">
+                            <p class="mb-1">
+                                <b>Documento Adjunto:</b>
+                                @if (ContratoSeleccionado.DocumentoPdf != null && ContratoSeleccionado.DocumentoPdf.Length > 0)
+                                {
+                                    <span class="badge bg-success"><i class="oi oi-paperclip"></i> Archivo PDF Disponible</span>
+                                    @* Aquí podrías añadir un botón para descargar el byte[] si lo requieres *@
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">No tiene archivo adjunto</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" @onclick="CerrarModal">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+
+
+
+
+
+
+
 @code {
     public string NombreCompleto { get; set; } = default!;
+    public List<ContratoResponse> Listacontrato { get; set; } = new List<ContratoResponse>();
+
+    // ==========================================================
+    // AGREGA ESTAS DOS LÍNEAS JUSTO AQUÍ:
+    private bool MostrarModal { get; set; } = false;
+    private ContratoResponse? ContratoSeleccionado { get; set; }
+    // ==========================================================
+    private void CerrarModal()
+    {
+        MostrarModal = false;
+        ContratoSeleccionado = null;
+    }
+ 
+
+    protected override async Task OnInitializedAsync()
+    {
+        //logica para cargar lista de contratos
+        var rpta = await ContratoProxy.Listar();
+        Listacontrato = rpta.Data;
+    }
+
+
+    private void editar(int ContratoId)
+    {
+        //logica para editar contrato
+        navigationManager.NavigateTo($"/contrato/editar/{ContratoId}");
+        //Console.WriteLine($"Editar contrato con id: {ContratoId}");
+    }
+
+
+    private async Task eliminar(int ContratoId)
+    {
+
+    }
+
+
+    private async Task verDetalles(int ContratoId)
+    {
+        ContratoSeleccionado = Listacontrato.FirstOrDefault(c => c.ContratoId == ContratoId);
+
+        if (ContratoSeleccionado != null)
+        {
+            MostrarModal = true;
+        }
+        else
+        {
+            await Swal.FireAsync("Error", "No se encontró la información del contrato.", SweetAlertIcon.Error);
+        }
+    }
+
+
+
+
     //pasa pagina para agregar empresa
     private void Nuevo()
     {
@@ -43,4 +267,98 @@
         NombreCompleto = string.Empty;
     }
 
+
+    // paginacion de los contratos, se muestra 5 por pagina, se puede cambiar el tamaño de pagina modificando la variable tamañoPagina
+
+    // Variables de control para la paginación
+    private int paginaActual = 1;
+    private int tamañoPagina = 5;
+
+    // Esta propiedad filtra automáticamente los 10 registros que corresponden a la página actual
+    // private IEnumerable<ContratoResponse> ContratosPaginados => Listacontrato
+
+    //     .Skip((paginaActual - 1) * tamañoPagina)
+    //     .Take(tamañoPagina);
+
+    // // Calcula el total de páginas dinámicamente según la cantidad de contratos
+    // private int TotalPaginas => (int)Math.Ceiling((double)Listacontrato.Count / tamañoPagina);
+
+    // Modifica tu propiedad actual por esta versión inteligente:
+    
+
+    // También debes ajustar el cálculo de TotalPaginas para que la paginación se adapte al filtro:
+    
+    
+    
+    private IEnumerable<ContratoResponse> ContratosPaginados
+    {
+        get
+        {
+            // 1. Si el input está vacío, tomamos toda la lista original
+            var contratosFiltrados = Listacontrato;
+
+            // 2. Si el usuario escribió algo, filtramos en tiempo real por NIT (EmpresaId)
+            if (!string.IsNullOrWhiteSpace(NombreCompleto))
+            {
+                contratosFiltrados = Listacontrato
+                    .Where(c => c.EmpresaId != null &&
+                                c.EmpresaId.Contains(NombreCompleto, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            // 3. Aplicamos la paginación sobre el resultado final (sea filtrado o no)
+            return contratosFiltrados
+                .Skip((paginaActual - 1) * tamañoPagina)
+                .Take(tamañoPagina);
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    private int TotalPaginas
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(NombreCompleto))
+            {
+                return (int)Math.Ceiling((double)Listacontrato.Count / tamañoPagina);
+            }
+
+            int conteoFiltrado = Listacontrato
+                .Count(c => c.EmpresaId != null &&
+                            c.EmpresaId.Contains(NombreCompleto, StringComparison.OrdinalIgnoreCase));
+
+            return (int)Math.Ceiling((double)conteoFiltrado / tamañoPagina);
+        }
+    }
+
+
+
+
+    // Método para saltar entre páginas
+    private void CambiarPagina(int nuevaPagina)
+    {
+        paginaActual = nuevaPagina;
+    }
+
+   
+
+   
 }

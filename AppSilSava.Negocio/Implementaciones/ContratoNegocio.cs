@@ -22,10 +22,19 @@ namespace AppSilSava.Negocio.Implementaciones
             try
             {
                 var lista = await _repositorio.Listar();
-                var listaContrato= lista.Select(p => new ContratoResponse
-                {
+
+                // 1. Primero nos aseguramos de ordenar los datos si vienen desordenados de la BD
+                // Puedes ordenarlo por el ID original o por la fecha según tu necesidad:
+                var listaOrdenada = lista.OrderBy(p => p.NoRup).ToList();
+
+                //var listaContrato= lista.Select(p => new ContratoResponse
+                //var listaContrato = listaOrdenada.Select(p  => new ContratoResponse
+                var listaContrato = listaOrdenada.Select((p, index) => new ContratoResponse
+                {   
+                    ContratoId = p.ContratoId,
                     EmpresaId = p.EmpresaId,
                     NoRup = p.NoRup,
+                   //NoRup = index + 1,
                     ObjetoContrato = p.ObjetoContrato,
                     EntidadContratante = p.EntidadContratante,
                     NoContrato = p.NoContrato,

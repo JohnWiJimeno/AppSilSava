@@ -1,0 +1,68 @@
+﻿<div style="overflow-x: auto; white-space: nowrap; width: 100%;" class="p-2">
+    <nav aria-label="Page navigation" class="mt-3">
+        <ul class="pagination justify-content-center flex-wrap">
+
+            @* Ir a la Primera Página *@
+            <li class="page-item @(PaginaActual == 1 ? "disabled" : "")">
+                <button class="page-link" @onclick="() => SeleccionarPagina(1)">&laquo;&laquo;</button>
+            </li>
+
+            @* Botón Anterior *@
+            <li class="page-item @(PaginaActual == 1 ? "disabled" : "")">
+                <button class="page-link" @onclick="() => SeleccionarPagina(PaginaActual - 1)">&laquo;</button>
+            </li>
+
+            @* Números de Páginas Truncados *@
+            @foreach (var i in ObtenerBloquePaginas())
+            {
+                var numeroPagina = i;
+                <li class="page-item @(PaginaActual == numeroPagina ? "active" : "")">
+                    <button class="page-link" @onclick="() => SeleccionarPagina(numeroPagina)">@numeroPagina</button>
+                </li>
+            }
+
+            @* Botón Siguiente *@
+            <li class="page-item @(PaginaActual == TotalPaginas ? "disabled" : "")">
+                <button class="page-link" @onclick="() => SeleccionarPagina(PaginaActual + 1)">&raquo;</button>
+            </li>
+
+            @* Ir a la Última Página *@
+            <li class="page-item @(PaginaActual == TotalPaginas ? "disabled" : "")">
+                <button class="page-link" @onclick="() => SeleccionarPagina(TotalPaginas)">&raquo;&raquo;</button>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+@code {
+    [Parameter] public int PaginaActual { get; set; }
+    [Parameter] public int TotalPaginas { get; set; }
+    [Parameter] public EventCallback<int> OnPaginaCambiada { get; set; }
+
+    private async Task SeleccionarPagina(int nuevaPagina)
+    {
+        if (nuevaPagina >= 1 && nuevaPagina <= TotalPaginas && nuevaPagina != PaginaActual)
+        {
+            // Notifica a la pantalla padre que el usuario cambió de página
+            await OnPaginaCambiada.InvokeAsync(nuevaPagina);
+        }
+    }
+
+    private IEnumerable<int> ObtenerBloquePaginas()
+    {
+        int radio = 2;
+        int inicio = Math.Max(1, PaginaActual - radio);
+        int fin = Math.Min(TotalPaginas, PaginaActual + radio);
+
+        if (PaginaActual <= radio)
+        {
+            fin = Math.Min(TotalPaginas, 1 + (radio * 2));
+        }
+        if (PaginaActual + radio >= TotalPaginas)
+        {
+            inicio = Math.Max(1, TotalPaginas - (radio * 2));
+        }
+
+        return Enumerable.Range(inicio, fin - inicio + 1);
+    }
+}
