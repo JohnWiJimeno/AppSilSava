@@ -15,6 +15,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(UrlBase)
 //registrar proxy
 builder.Services.AddScoped<IEmpresaProxy, EmpresaProxy>();
 builder.Services.AddScoped<IContratoProxy, ContratoProxy>();
+builder.Services.AddScoped<ITipoEmpresaProxy, TipoEmpresaProxy>();
 
 builder.Services.AddSweetAlert2();
 

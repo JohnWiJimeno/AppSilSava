@@ -1,6 +1,8 @@
 ﻿@page "/empresa"
 @inject NavigationManager navigationManager
 @inject IEmpresaProxy EmpresaProxy
+@inject ITipoEmpresaProxy tipoEmpresaProxy
+
 @inject SweetAlertService Swal;
 
 @* <div class="container-fluid px-2">
@@ -75,13 +77,18 @@
         <div class="fg">
             <label class="fl">🏭 Tipo empresa</label>
             <select class="fs">
-                <option value="">Todos los tipos</option>
-                <option>SAS</option>
-                <option>Ltda</option>
-                <option>SA</option>
-                <option>Persona Natural</option>
-                <option>Consorcio</option>
-                <option>Unión Temporal</option>
+                <option value="">Todos los tipos</option><!--filtra segun el tipo de empresa-->
+              
+                @if (ListaTipoEmpresas !=null)
+                {
+                    @foreach (var tipo in ListaTipoEmpresas)
+                    {
+                        <option value="@tipo.Nombre">@tipo.Nombre </option>
+                    }
+                }
+
+
+
             </select>
         </div>
         <div class="fg">
@@ -113,7 +120,7 @@
                 <option value="mujer">Emprend. mujer</option>
             </select>
         </div>
-        <button class="btn-clr">✕ Limpiar</button>
+        <button class="btn-clr" @onclick="limpiar">✕ Limpiar</button>
     </div>
 
 
@@ -280,6 +287,10 @@
     //captrar el nombre en la barra e busqueda y hacer la consulta a la base de datos
     public string NombreCompleto { get; set; } = default!;
     public List<EmpresaResponse> ListaEmpresas { get; set; } = new List<EmpresaResponse>();
+    public List<TipoEmpresaResponse> ListaTipoEmpresas { get; set; } = new List<TipoEmpresaResponse>();
+    // Variable para capturar el tipo de empresa seleccionado del Combobox
+    public string TipoEmpresaSeleccionado { get; set; } = string.Empty;
+
 
     // ==========================================================
     // AGREGA ESTAS DOS LÍNEAS JUSTO AQUÍ:
@@ -297,9 +308,28 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //logica para cargar la lista de empresas
-        var rpta = await EmpresaProxy.Listar();
-        ListaEmpresas = rpta.Data;
+        try
+        {
+            //logica para cargar la lista de empresas
+            var rpta = await EmpresaProxy.Listar();
+            ListaEmpresas = rpta.Data;
+
+            // 2. Cargamos la lista para el Combobox de Tipo de Empresa
+            // (Asegúrate de cambiar 'TipoEmpresaNegocio' por tu HttpClient/Proxy si ya estás en el Cliente)
+            var rptaTipos = await tipoEmpresaProxy.Listar();
+            if (rptaTipos != null && rptaTipos.Exito && rptaTipos.Data != null)
+            {
+                ListaTipoEmpresas = rptaTipos.Data;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            // Si cualquiera de las dos llamadas falla (se cae el API o la BD),
+            // capturamos el error aquí para que la pantalla no se rompa.
+            Console.WriteLine($"Error al inicializar los datos de la página: {ex.Message}");
+        }
+
     }
 
     private void editar(string EmpresaId)
@@ -368,9 +398,13 @@
         //logica para buscar empresa por nombre completo
         Console.WriteLine($"nombre: {NombreCompleto}");
     }
+
+    
     private void limpiar()
     {
         NombreCompleto = string.Empty;
+        TipoEmpresaSeleccionado = string.Empty; // Resetea el combobox a "Todos los tipos"
+        paginaActual = 1; // Reinicia la paginación al limpiar
     }
 
 
@@ -384,52 +418,63 @@
     private int tamañoPagina = 5;
 
     // LINQ se encarga de segmentar cualquier tipo de objeto
-
-   
     private IEnumerable<EmpresaResponse> EmpresasPaginadas
     {
         get
         {
-            // 1. Si el input está vacío, tomamos toda la lista original
-            var contratosFiltrados = ListaEmpresas;
+            // 1. Iniciamos con la lista completa de empresas
+            var empresasFiltradas = ListaEmpresas.AsEnumerable();
 
-            // 2. Si el usuario escribió algo, filtramos en tiempo real por NIT (EmpresaId)
+            // 2. Filtro por Texto (NIT / Razón Social)
             if (!string.IsNullOrWhiteSpace(NombreCompleto))
             {
-                contratosFiltrados = ListaEmpresas
+                empresasFiltradas = empresasFiltradas
                     .Where(c => c.EmpresaId != null &&
-                                c.EmpresaId.Contains(NombreCompleto, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                                c.EmpresaId.Contains(NombreCompleto, StringComparison.OrdinalIgnoreCase));
             }
 
-            // 3. Aplicamos la paginación sobre el resultado final (sea filtrado o no)
-            return contratosFiltrados
+            // 3. NUEVO: Filtro por Tipo de Empresa (Combobox)
+            // Nota: Asegúrate de usar la propiedad de tu DTO que mapea el tipo de empresa (ej: NombreTipoEmpresa)
+            if (!string.IsNullOrWhiteSpace(TipoEmpresaSeleccionado))
+            {
+                empresasFiltradas = empresasFiltradas
+                    .Where(c => c.NombreTipoEmpresa != null &&
+                                c.NombreTipoEmpresa.Equals(TipoEmpresaSeleccionado, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // 4. Aplicamos la paginación sobre el resultado final totalmente filtrado
+            return empresasFiltradas
                 .Skip((paginaActual - 1) * tamañoPagina)
                 .Take(tamañoPagina);
         }
     }
 
-    
-    
-
-    // También debes ajustar el cálculo de TotalPaginas para que la paginación se adapte al filtro:
     private int TotalPaginas
     {
         get
         {
-            if (string.IsNullOrWhiteSpace(NombreCompleto))
+            var empresasFiltradas = ListaEmpresas.AsEnumerable();
+
+            // Aplicamos el filtro de texto para el conteo de páginas
+            if (!string.IsNullOrWhiteSpace(NombreCompleto))
             {
-                return (int)Math.Ceiling((double)ListaEmpresas.Count / tamañoPagina);
+                empresasFiltradas = empresasFiltradas
+                    .Where(c => c.EmpresaId != null &&
+                                c.EmpresaId.Contains(NombreCompleto, StringComparison.OrdinalIgnoreCase));
             }
 
-            int conteoFiltrado = ListaEmpresas
-                .Count(c => c.EmpresaId != null &&
-                            c.EmpresaId.Contains(NombreCompleto, StringComparison.OrdinalIgnoreCase));
+            // Aplicamos el filtro de tipo de empresa para el conteo de páginas
+            if (!string.IsNullOrWhiteSpace(TipoEmpresaSeleccionado))
+            {
+                empresasFiltradas = empresasFiltradas
+                    .Where(c => c.NombreTipoEmpresa != null &&
+                                c.NombreTipoEmpresa.Equals(TipoEmpresaSeleccionado, StringComparison.OrdinalIgnoreCase));
+            }
 
-            return (int)Math.Ceiling((double)conteoFiltrado / tamañoPagina);
+            int conteoFinal = empresasFiltradas.Count();
+            return (int)Math.Ceiling((double)conteoFinal / tamañoPagina);
         }
     }
-
 
 
 
