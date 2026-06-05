@@ -76,7 +76,7 @@
         </div>
         <div class="fg">
             <label class="fl">🏭 Tipo empresa</label>
-            <select class="fs">
+            <select class="fs" @bind="TipoEmpresaSeleccionado" @bind:after="OnTipoEmpresaChanged">
                 <option value="">Todos los tipos</option><!--filtra segun el tipo de empresa-->
               
                 @if (ListaTipoEmpresas !=null)
@@ -120,7 +120,7 @@
                 <option value="mujer">Emprend. mujer</option>
             </select>
         </div>
-        <button class="btn-clr" @onclick="limpiar">✕ Limpiar</button>
+        <button class="btn-clr" @onclick="() => limpiar()">✕ Limpiar</button>
     </div>
 
 
@@ -169,8 +169,7 @@
                                 <th clase="col-general">Departamento</th>
                                 <th clase="col-general">Ciudad</th>
                                 <th clase="col-general">Tamaño Empresa</th>
-                                <th clase="col-general">Discapacitado</th>
-                                <th clase="col-general">Emprendimiento Mujer</th>
+                                <th clase="col-general">Tipo de Empresa</th>
                                 <th clase="col-acciones">Acciones</th>
                             </tr>
                         </thead>
@@ -183,8 +182,8 @@
                                     <td clase="col-general">@empresa.Departamento</td>
                                     <td clase="col-general">@empresa.Ciudad</td>
                                     <td clase="col-general">@empresa.TamanoEmpresa</td>
-                                    <td clase="col-general">@(empresa.Discapacitado == true ? "Si" : "No")</td>
-                                    <td>@(empresa.EmpredimientoMujer == true ? "Si" : "No")</td>
+                                    <td clase="col-general">@empresa.NombreTipoEmpresa</td>
+                                   
                                     <td>
                                         <ButtonsActions OnEditar="() => editar(empresa.EmpresaId)" OnEliminar="() => eliminar(empresa.EmpresaId)" OnVerDetalles="() => verDetalles(empresa.EmpresaId)" />
 
@@ -243,6 +242,8 @@
                             <p class="mb-1"><b>Correo:</b> <span class="text-muted">@EmpresaSeleccionada.Correo</span></p>
                             <p class="mb-1"><b>Telefono:</b> <span class="text-muted">@((EmpresaSeleccionada.Telefono))</span></p>
                             <p class="mb-1"><b>Tipo Empresa:</b> <span class="text-muted">@EmpresaSeleccionada.NombreTipoEmpresa</span></p>
+                            <p class="mb-1"><b>Discapacitado:</b> <span class="text-muted">@(EmpresaSeleccionada.Discapacitado == true ? "Si" : "No")</span></p>
+                            <p class="mb-1"><b>Emprendimiento Mujer:</b> <span class="text-muted">@(EmpresaSeleccionada.EmpredimientoMujer == true ? "Si" : "No")</span></p>
                         </div>
                     </div>
 
@@ -422,10 +423,10 @@
     {
         get
         {
-            // 1. Iniciamos con la lista completa de empresas
+            // 1. Iniciamos con la lista que ya viene del proxy (y que tu Backend ya entrega ordenada)
             var empresasFiltradas = ListaEmpresas.AsEnumerable();
 
-            // 2. Filtro por Texto (NIT / Razón Social)
+            // 2. Filtro por Texto (NIT / Razón Social en barra de búsqueda)
             if (!string.IsNullOrWhiteSpace(NombreCompleto))
             {
                 empresasFiltradas = empresasFiltradas
@@ -433,8 +434,7 @@
                                 c.EmpresaId.Contains(NombreCompleto, StringComparison.OrdinalIgnoreCase));
             }
 
-            // 3. NUEVO: Filtro por Tipo de Empresa (Combobox)
-            // Nota: Asegúrate de usar la propiedad de tu DTO que mapea el tipo de empresa (ej: NombreTipoEmpresa)
+            // 3. Filtro por Tipo de Empresa (Combobox alimentado por TipoEmpresaResponse)
             if (!string.IsNullOrWhiteSpace(TipoEmpresaSeleccionado))
             {
                 empresasFiltradas = empresasFiltradas
@@ -442,7 +442,7 @@
                                 c.NombreTipoEmpresa.Equals(TipoEmpresaSeleccionado, StringComparison.OrdinalIgnoreCase));
             }
 
-            // 4. Aplicamos la paginación sobre el resultado final totalmente filtrado
+            // 4. Paginación limpia sobre el resultado final cruzado
             return empresasFiltradas
                 .Skip((paginaActual - 1) * tamañoPagina)
                 .Take(tamañoPagina);
@@ -455,7 +455,7 @@
         {
             var empresasFiltradas = ListaEmpresas.AsEnumerable();
 
-            // Aplicamos el filtro de texto para el conteo de páginas
+            // Acumula el filtro por barra de búsqueda
             if (!string.IsNullOrWhiteSpace(NombreCompleto))
             {
                 empresasFiltradas = empresasFiltradas
@@ -463,7 +463,7 @@
                                 c.EmpresaId.Contains(NombreCompleto, StringComparison.OrdinalIgnoreCase));
             }
 
-            // Aplicamos el filtro de tipo de empresa para el conteo de páginas
+            // Acumula el filtro por combobox
             if (!string.IsNullOrWhiteSpace(TipoEmpresaSeleccionado))
             {
                 empresasFiltradas = empresasFiltradas
@@ -477,12 +477,19 @@
     }
 
 
-
     // Método para saltar entre páginas
     private void CambiarPagina(int nuevaPagina)
     {
         paginaActual = nuevaPagina;
     }
+    //Este método se disparará automáticamente cada vez que el usuario haga clic en una opción del combobox, obligando a Blazor a recalcular la paginación desde la página 1 y refrescar la vista:
+    private void OnTipoEmpresaChanged()
+    {
+        // Al cambiar el filtro, regresamos a la página 1 para evitar desbordamientos
+        paginaActual = 1;
 
+        // Forzamos a Blazor a que vuelva a renderizar la tabla con los nuevos datos filtrados
+        StateHasChanged();
+    }
    
 }
