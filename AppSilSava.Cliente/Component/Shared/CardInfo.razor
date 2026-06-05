@@ -1,4 +1,4 @@
-﻿<div class="@(EsAncho ? "container-fluid" : "container")">
+﻿@* <div class="@(EsAncho ? "container-fluid" : "container")">
  <div class="container">
     <div class="card mb-3">
         <div class="card-header bg-dark text-white">@Titulo</div>
@@ -7,6 +7,16 @@
         </div>
     </div>
  </div>
+</div>
+ *@
+
+<div class="container-fluid p-0">
+    <div class="card mb-3 w-100">
+        <div class="card-header bg-dark text-white fw-bold">@Titulo</div>
+        <div class="card-body p-3">
+            @Content
+        </div>
+    </div>
 </div>
 
 @code {

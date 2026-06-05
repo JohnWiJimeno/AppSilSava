@@ -59,8 +59,8 @@
                             <td class="col-general">@(contrato.PorcentajePart?.ToString("P2"))</td>
                             <td class="col-general">@contrato.NombreContratista</td>
                             <td class="col-general2">@contrato.NombreTipoObra</td>
-                            <td class="col-general">@contrato.VrSmmlvPart</td>
-                            <td class="col-general">@((contrato.VrTotalContrato ?? 0).ToString("C0", CultureInfo.CreateSpecificCulture("es-CO")))</td>
+                                <td class="col-general">@((contrato.VrSmmlvPart ?? 0).ToString("#,##0.00", CultureInfo.CreateSpecificCulture("es-CO")))</td>
+                            <td class="col-moneda">@((contrato.VrTotalContrato ?? 0).ToString("C0", CultureInfo.CreateSpecificCulture("es-CO")))</td>
                             <td>
                                 <ButtonsActions OnEditar="() => editar(contrato.ContratoId)" OnEliminar="() => eliminar(contrato.ContratoId)" OnVerDetalles="() => verDetalles(contrato.ContratoId)" />
                                
@@ -101,7 +101,7 @@
                         <div class="col-md-6">
                             <p class="mb-1"><b>No. Contrato:</b> <span class="text-muted">@ContratoSeleccionado.NoContrato</span></p>
                             <p class="mb-1"><b>Fecha de Inicio:</b> <span class="text-muted">@ContratoSeleccionado.FechaInicio</span></p>
-                            <p class="mb-1"><b>Fecha Fenal:</b> <span class="text-muted">@ContratoSeleccionado.FechaFinal</span></p>
+                            <p class="mb-1"><b>Fecha Final:</b> <span class="text-muted">@ContratoSeleccionado.FechaFinal</span></p>
                             <p class="mb-1"><b>plazo:</b> <span class="text-muted">@ContratoSeleccionado.Plazo</span></p>
                             
                         </div>
@@ -128,8 +128,7 @@
 
                         <div class="col-md-6">
                             <p class="mb-2"><b>Plataforma:</b> <span class="text-muted">@(ContratoSeleccionado.Plataforma ?? "N/A")</span></p>
-                           @*  <p class="mb-2"><b>Estado Contrato ID:</b> <span class="text-muted">@(ContratoSeleccionado.EstadoContratoId?.ToString() ?? "N/A")</span></p>
-                            <p class="mb-2"><b>Salario ID:</b> <span class="text-muted">@(ContratoSeleccionado.SalarioId?.ToString() ?? "N/A")</span></p> *@
+                          
                             <p class="mb-2">
                                 <b>Link Contrato:</b>
                                 @if (!string.IsNullOrEmpty(ContratoSeleccionado.LinkContrato))
@@ -274,21 +273,10 @@
     private int paginaActual = 1;
     private int tamañoPagina = 5;
 
-    // Esta propiedad filtra automáticamente los 10 registros que corresponden a la página actual
-    // private IEnumerable<ContratoResponse> ContratosPaginados => Listacontrato
-
-    //     .Skip((paginaActual - 1) * tamañoPagina)
-    //     .Take(tamañoPagina);
-
-    // // Calcula el total de páginas dinámicamente según la cantidad de contratos
-    // private int TotalPaginas => (int)Math.Ceiling((double)Listacontrato.Count / tamañoPagina);
-
-    // Modifica tu propiedad actual por esta versión inteligente:
-    
+      
 
     // También debes ajustar el cálculo de TotalPaginas para que la paginación se adapte al filtro:
-    
-    
+      
     
     private IEnumerable<ContratoResponse> ContratosPaginados
     {

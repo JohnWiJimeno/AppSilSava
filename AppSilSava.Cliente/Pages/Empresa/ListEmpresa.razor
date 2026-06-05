@@ -3,81 +3,207 @@
 @inject IEmpresaProxy EmpresaProxy
 @inject SweetAlertService Swal;
 
-<div class="container">
-    <CardInfo Titulo="Lista de Empresas">
-        <Content>
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon3">Ingrese Nit/CC</span>
-                <input type="text"
-                       class="form-control"
-                       id="basic-url"
-                       aria-describedby="basic-addon3"
-                       @bind="NombreCompleto"
-                       @bind:event="oninput">
-            </div>
+@* <div class="container-fluid px-2">
+    <div class="row m-0 justify-content-start">
+        <div class="col-12 col-xl-11"> *@
 
-            <ButtonsHeader OnBuscar="()=>buscar()" OnLimpiar="()=>limpiar()" OnNuevo="()=>Nuevo()" />
+<div class="emp-page">
+    <!-- TOPBAR -->
+    <div class="emp-topbar">
+        <div>
+            <div class="emp-title">Empresas</div>
+            <div class="emp-sub">Registro y gestión de empresas contratistas y habilitadas</div>
+        </div>
+        <div style="display:flex;gap:.6rem;">
+            <button class="btn-sec">📥 Exportar</button>
+            <button class="btn-pri" @onclick="() => Nuevo()">
+                ＋ Nueva empresa
+            </button>
+        </div>
+    </div>
 
 
-            @* <div class="text-center>">
+
+
+    <!-- KPIs -->
+    <div class="emp-kpis">
+        <div class="kpi kb">
+            <div class="kpi-icon">🏢</div>
+            <div class="kpi-lbl">Total empresas</div>
+            <div class="kpi-val" style="color:#00bcd4;">10</div>
+            <div class="kpi-sub" style="color:#00bcd4;">registradas</div>
+        </div>
+        <div class="kpi kg">
+            <div class="kpi-icon">✅</div>
+            <div class="kpi-lbl">Activas</div>
+            <div class="kpi-val" style="color:#00c853;">10</div>
+            <div class="kpi-sub" style="color:#00c853;">habilitadas</div>
+        </div>
+        <div class="kpi ka">
+            <div class="kpi-icon">🌱</div>
+            <div class="kpi-lbl">MiPymes</div>
+            <div class="kpi-val" style="color:#ffab00;">10</div>
+            <div class="kpi-sub" style="color: #ffab00;">registradas</div>
+        </div>
+        <div class="kpi kp">
+            <div class="kpi-icon">♿</div>
+            <div class="kpi-lbl">Discapacitados</div>
+            <div class="kpi-val" style="color:#b388ff;">10</div>
+            <div class="kpi-sub" style="color:#b388ff;">habilitados</div>
+        </div>
+        <div class="kpi kt">
+            <div class="kpi-icon">👩‍💼</div>
+            <div class="kpi-lbl">Emprend. mujer</div>
+            <div class="kpi-val" style="color:#26c6da;">10</div>
+            <div class="kpi-sub" style="color:#26c6da;">activos</div>
+        </div>
+        <div class="kpi kr">
+            <div class="kpi-icon">❌</div>
+            <div class="kpi-lbl">Inactivas</div>
+            <div class="kpi-val" style="color:#ef9a9a;">10</div>
+            <div class="kpi-sub" style="color:#ef9a9a;">deshabilitadas</div>
+        </div>
+    </div>
+
+
+    <!-- FILTROS -->
+    <div class="emp-filters">
+        <div class="fg">
+            <label class="fl">🔍 Buscar</label>
+            <input class="fi" type="text" placeholder="Razón social, NIT, ciudad…" @bind="NombreCompleto" @bind:event="oninput">
+        </div>
+        <div class="fg">
+            <label class="fl">🏭 Tipo empresa</label>
+            <select class="fs">
+                <option value="">Todos los tipos</option>
+                <option>SAS</option>
+                <option>Ltda</option>
+                <option>SA</option>
+                <option>Persona Natural</option>
+                <option>Consorcio</option>
+                <option>Unión Temporal</option>
+            </select>
+        </div>
+        <div class="fg">
+            <label class="fl">📍 Departamento</label>
+            <select class="fs">
+                <option value="">Todos</option>
+                <option>Atlántico</option>
+                <option>Bolívar</option>
+                <option>Cundinamarca</option>
+                <option>Antioquia</option>
+                <option>Valle del Cauca</option>
+                <option>Santander</option>
+            </select>
+        </div>
+        <div class="fg">
+            <label class="fl">📌 Estado</label>
+            <select class="fs">
+                <option value="">Todos</option>
+                <option value="true">Activa</option>
+                <option value="false">Inactiva</option>
+            </select>
+        </div>
+        <div class="fg">
+            <label class="fl">🏷 Categoría especial</label>
+            <select class="fs">
+                <option value="">Todas</option>
+                <option value="mipyme">MiPyme</option>
+                <option value="disc">Discapacitado</option>
+                <option value="mujer">Emprend. mujer</option>
+            </select>
+        </div>
+        <button class="btn-clr">✕ Limpiar</button>
+    </div>
+
+
+
+
+
+    <div class="container">
+        <CardInfo Titulo="Lista de Empresas">
+            <Content>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon3">Ingrese Nit/CC</span>
+                    @* <input type="text"
+                                   class="form-control"
+                                   id="basic-url"
+                                   aria-describedby="basic-addon3"
+                                   @bind="NombreCompleto"
+                                   @bind:event="oninput"> *@
+                </div>
+
+                <ButtonsHeader OnBuscar="() => buscar()" OnLimpiar="() => limpiar()" OnNuevo="() => Nuevo()" />
+
+
+                @* <div class="text-center>">
                 <button class="btn btn-primary" @onclick="()=>buscar()">Buscar</button>
                 <buttton class="btn btn-danger" @onclick="()=>limpiar()">Limpiar</buttton>
                 <button class="btn btn-success" @onclick="()=>Nuevo()">Nuevo</button>
 
             </div> *@
-        </Content>
 
-    </CardInfo>
-</div>
-  <div class="mt-5">
-    <CardInfo Titulo="Lista de Empresas">
-        <Content>
-            <div clase="table-responsive w-100">
-                <table class="table table-sm tabla-contratos">
-                <thead>
-                    <tr>
-                        <th clase="col-id">Nit/CC</th>
-                        <th clase="col-objeto">Razon Social</th>
-                        <th clase="col-general">Departamento</th>
-                        <th clase="col-general">Ciudad</th>
-                        <th clase="col-general">Tamaño Empresa</th>
-                        <th clase="col-general">Discapacitado</th>
-                        <th clase="col-general">Emprendimiento Mujer</th>
-                        <th clase="col-acciones">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var empresa in EmpresasPaginadas)
-                    {
-                        <tr>
-                            <td clase="col-id">@empresa.EmpresaId</td>
-                            <td clase="col-objeto">@empresa.RazonSocial</td>
-                            <td clase="col-general">@empresa.Departamento</td>
-                            <td clase="col-general">@empresa.Ciudad</td>
-                            <td clase="col-general">@empresa.TamanoEmpresa</td>
-                            <td clase="col-general">@(empresa.Discapacitado==true ? "Si":"No")</td>
-                            <td>@(empresa.EmpredimientoMujer==true ? "Si":"No")</td>
-                            <td>
-                                <ButtonsActions OnEditar="() => editar(empresa.EmpresaId)" OnEliminar="() => eliminar(empresa.EmpresaId)" OnVerDetalles="() => verDetalles(empresa.EmpresaId)" />
 
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
 
-            <table class="table">
-       </table>
+
+            </Content>
+
+        </CardInfo>
     </div>
-@* Invocas tu componente reutilizable así de limpio: *@
-<ComponentPaginacion PaginaActual="paginaActual" TotalPaginas="TotalPaginas" OnPaginaCambiada="CambiarPagina" />
+    <div class="mt-5">
+        <CardInfo Titulo="Lista de Empresas">
+            <Content>
+                <div clase="table-responsive w-100">
+                    <table class="table table-sm tabla-contratos">
+                        <thead>
+                            <tr>
+                                <th clase="col-id">Nit/CC</th>
+                                <th clase="col-objeto">Razon Social</th>
+                                <th clase="col-general">Departamento</th>
+                                <th clase="col-general">Ciudad</th>
+                                <th clase="col-general">Tamaño Empresa</th>
+                                <th clase="col-general">Discapacitado</th>
+                                <th clase="col-general">Emprendimiento Mujer</th>
+                                <th clase="col-acciones">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var empresa in EmpresasPaginadas)
+                            {
+                                <tr>
+                                    <td clase="col-id">@empresa.EmpresaId</td>
+                                    <td clase="col-objeto">@empresa.RazonSocial</td>
+                                    <td clase="col-general">@empresa.Departamento</td>
+                                    <td clase="col-general">@empresa.Ciudad</td>
+                                    <td clase="col-general">@empresa.TamanoEmpresa</td>
+                                    <td clase="col-general">@(empresa.Discapacitado == true ? "Si" : "No")</td>
+                                    <td>@(empresa.EmpredimientoMujer == true ? "Si" : "No")</td>
+                                    <td>
+                                        <ButtonsActions OnEditar="() => editar(empresa.EmpresaId)" OnEliminar="() => eliminar(empresa.EmpresaId)" OnVerDetalles="() => verDetalles(empresa.EmpresaId)" />
+
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <table class="table">
+                    </table>
+                </div>
+                @* Invocas tu componente reutilizable así de limpio: *@
+                <ComponentPaginacion PaginaActual="paginaActual" TotalPaginas="TotalPaginas" OnPaginaCambiada="CambiarPagina" />
 
 
 
-        </Content>
-    </CardInfo>
-  </div>
+            </Content>
+        </CardInfo>
+    </div>
 
+    @*       </div>
+    </div>
+</div> *@
+
+</div> @*el primer div*@
 
 @*//modal*@
 @if (MostrarModal && EmpresaSeleccionada != null)
@@ -102,8 +228,8 @@
                             <p class="mb-1"><b>Sigla:</b> <span class="text-muted">@EmpresaSeleccionada.Sigla</span></p>
                             <p class="mb-1"><b>Matricula No.:</b> <span class="text-muted">@EmpresaSeleccionada.MatriculaNo</span></p>
                             <p class="mb-1"><b>Fecha Matricula:</b> <span class="text-muted">@EmpresaSeleccionada.FechaMatricula?.ToString("dd/MM/yyyy")</span></p>
-                            
 
+                            
                         </div>
                         <div class="col-md-6">
                             <p class="mb-1"><b>Dirección:</b> <span class="text-muted">@EmpresaSeleccionada.DireccionDomiclio</span></p>
@@ -127,52 +253,8 @@
                             <p class="mb-2"><b>C.C Revisor Fiscal:</b> <span class="text-muted">@(EmpresaSeleccionada.IdentificacionRf ?? "N/A")</span></p>
                         </div>
 
-                      @*   <div class="col-md-6">
-                            <p class="mb-2"><b>Plataforma:</b> <span class="text-muted">@(ContratoSeleccionado.Plataforma ?? "N/A")</span></p>
-                            <p class="mb-2">
-                                <b>Link Contrato:</b>
-                                @if (!string.IsNullOrEmpty(ContratoSeleccionado.LinkContrato))
-                                {
-                                    <a href="@ContratoSeleccionado.LinkContrato" target="_blank" class="text-decoration-none text-info">
-                                        <i class="oi oi-external-link"></i> Ir al enlace
-                                    </a>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">No asignado</span>
-                                }
-                            </p>
-                        </div>
-
-                        <div class="col-12 mt-3">
-                            <label class="fw-bold text-secondary mb-1">Datos Técnicos:</label>
-                            <p class="p-2 bg-light border rounded text-justify text-muted" style="white-space: pre-wrap; font-size: 0.9rem;">
-                                @(ContratoSeleccionado.DatosTecnicos ?? "Sin datos técnicos registrados.")
-                            </p>
-                        </div>
-
-                        <div class="col-12">
-                            <label class="fw-bold text-secondary mb-1">Detalles Adicionales:</label>
-                            <p class="p-2 bg-light border rounded text-justify text-muted" style="white-space: pre-wrap; font-size: 0.9rem;">
-                                @(ContratoSeleccionado.DetallesAdicionales ?? "Sin detalles adicionales.")
-                            </p>
-                        </div>
-
-                        <div class="col-12">
-                            <p class="mb-1">
-                                <b>Documento Adjunto:</b>
-                                @if (ContratoSeleccionado.DocumentoPdf != null && ContratoSeleccionado.DocumentoPdf.Length > 0)
-                                {
-                                    <span class="badge bg-success"><i class="oi oi-paperclip"></i> Archivo PDF Disponible</span>
-                                    @* Aquí podrías añadir un botón para descargar el byte[] si lo requieres *@
-                                @* }
-                                else
-                                {
-                                    <span class="badge bg-secondary">No tiene archivo adjunto</span>
-                                }
-                            </p>
-                        </div>*@
-                    </div> 
+                      
+                    </div>
 
                 </div>
                 <div class="modal-footer bg-light">
@@ -197,7 +279,7 @@
 @code {
     //captrar el nombre en la barra e busqueda y hacer la consulta a la base de datos
     public string NombreCompleto { get; set; } = default!;
-        public List<EmpresaResponse> ListaEmpresas { get; set; } = new List<EmpresaResponse>();
+    public List<EmpresaResponse> ListaEmpresas { get; set; } = new List<EmpresaResponse>();
 
     // ==========================================================
     // AGREGA ESTAS DOS LÍNEAS JUSTO AQUÍ:
@@ -213,14 +295,6 @@
 
 
 
-
-
-
-
-
-
-
-
     protected override async Task OnInitializedAsync()
     {
         //logica para cargar la lista de empresas
@@ -230,7 +304,7 @@
 
     private void editar(string EmpresaId)
     {
-       
+
         navigationManager.NavigateTo($"/empresa/editar/{EmpresaId}");//logica para editar empresa por id
     }
 
@@ -238,7 +312,7 @@
     {
         SweetAlertResult result = await Swal.FireAsync(new SweetAlertOptions
         {
-            Title = "Desea eliminar la empresa "+EmpresaId+"?",
+            Title = "Desea eliminar la empresa " + EmpresaId + "?",
             Text = "¡No podrás recuperar los datos de esta empresa!",
             Icon = SweetAlertIcon.Warning,
             ShowCancelButton = true,
@@ -310,8 +384,8 @@
     private int tamañoPagina = 5;
 
     // LINQ se encarga de segmentar cualquier tipo de objeto
-   
 
+   
     private IEnumerable<EmpresaResponse> EmpresasPaginadas
     {
         get
@@ -337,14 +411,6 @@
 
     
     
-
-
-
-
-
-
-
-
 
     // También debes ajustar el cálculo de TotalPaginas para que la paginación se adapte al filtro:
     private int TotalPaginas

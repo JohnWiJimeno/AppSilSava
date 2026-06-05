@@ -17,7 +17,7 @@ a, .btn-link {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 .content {
@@ -123,14 +123,12 @@ code {
     .tabla-contratos .col-id {
         white-space: nowrap;
         width: 1%;
-        
     }
 
     .tabla-contratos .col-noup {
         white-space: nowrap;
         width: 1%;
         text-align: center;
-       
     }
 
     .tabla-contratos .col-objeto {
@@ -164,4 +162,340 @@ code {
         text-align: left;
     }
 
-  
+    /* Nueva clase específica para columnas de dinero/moneda */
+    .tabla-contratos .col-moneda {
+        padding: 12px 16px;
+        white-space: nowrap; /* Evita que el número, el $ o el COP se partan en dos renglones */
+        width: auto; /* Permite que la columna se estire adaptándose al tamaño del texto */
+        text-align: right; /* Por buena práctica financiera, los números se alinean a la derecha */
+        font-weight: 500; /* Le da un sutil realce visual al dinero */
+    }
+
+
+
+/* Forzar a que el contenedor principal de Blazor use todo el espacio sin separaciones */
+main {
+    padding: 0 !important;
+}
+
+/* Evitar que contenedores fluidos guarden márgenes involuntarios */
+.container-fluid {
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+/* Optimización para que las tablas aprovechen todo el espacio recuperado */
+.tabla-contratos {
+    width: 100% !important;
+    margin-left: 0 !important;
+}
+
+
+/* TOPBAR */
+.emp-page {
+    font-family: 'Sora', sans-serif;
+    color: #ffffff;
+}
+
+.emp-sub {
+    font-family: 'Sora', sans-serif;
+    color: #000000 !important;
+    color: #0f172a; /* Letra principal oscura */
+    /*border: 1px solid #1e3a8a;*/ /* Borde delgado azul oscuro */
+    /*border-radius: 12px;*/ /* Opcional: suaviza las esquinas del contenedor */
+    /*padding: 1.5rem;*/ /* Opcional: da aire interno respecto al nuevo borde */
+}
+
+.emp-title {
+    font-family: 'Sora', sans-serif;
+    color: #000000 !important;
+    color: #0f172a; /* Letra principal oscura */
+    /*border: 1px solid #1e3a8a;*/ /* Borde delgado azul oscuro */
+    /*border-radius: 12px;*/ /* Opcional: suaviza las esquinas del contenedor */
+    /*padding: 1.5rem;*/ /* Opcional: da aire interno respecto al nuevo borde */
+}
+
+.emp-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.1rem;
+    
+}
+
+.emp-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.emp-sub {
+    font-size: .72rem;
+    color: #90a4c8;
+    margin-top: 1px;
+}
+
+.btn-pri {
+    background: linear-gradient(135deg,#1565c0,#1976d2);
+    color: #fff;
+    border: none;
+    padding: .45rem 1.1rem;
+    border-radius: 6px;
+    font-size: .78rem;
+    font-family: 'Sora',sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    transition: all .2s;
+}
+
+    .btn-pri:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(21,101,192,.4);
+    }
+
+.btn-sec {
+    background: transparent !important;
+    color: #000000 !important; /* Fuerza las letras a negro absoluto */
+    border: 1px solid rgba(16, 31, 66, 0.25) !important;
+    padding: .4rem .85rem;
+    border-radius: 6px;
+    font-size: .78rem;
+    font-family: 'Sora', sans-serif;
+    cursor: pointer;
+    transition: all .2s;
+}
+
+    .btn-sec:hover {
+        color: #000000 !important; /* Garantiza que al pasar el mouse siga negro */
+        border-color: rgba(16, 31, 66, 0.6) !important;
+        background-color: rgba(16, 31, 66, 0.08) !important; /* Le da un fondo grisáceo suave al pasar el mouse */
+    }
+
+
+
+
+
+/* KPIs */
+.emp-kpis {
+    display: grid;
+    grid-template-columns: repeat(6,1fr);
+    gap: 9px;
+    margin-bottom: 1rem;
+}
+
+.kpi {
+    /*background: rgba(27,45,66,.7);*/
+    background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
+    border: 1px solid rgba(100,160,255,.1);
+    border-radius: 10px;
+    padding: .85rem 1rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform .2s,box-shadow .2s;
+}
+
+    .kpi:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(0,0,0,.35);
+    }
+
+    .kpi::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+    }
+
+.kb::before {
+    background: linear-gradient(90deg,#1565c0,#00bcd4);
+}
+
+.kg::before {
+    background: linear-gradient(90deg,#00c853,#69f0ae);
+}
+
+.ka::before {
+    background: linear-gradient(90deg,#ffab00,#ffd54f);
+}
+
+.kp::before {
+    background: linear-gradient(90deg,#7c4dff,#b388ff);
+}
+
+.kt::before {
+    background: linear-gradient(90deg,#00bcd4,#26c6da);
+}
+
+.kr::before {
+    background: linear-gradient(90deg,#ef5350,#ef9a9a);
+}
+
+.kpi-icon {
+    position: absolute;
+    right: .8rem;
+    top: .8rem;
+    font-size: 1.2rem;
+    opacity: 1;
+}
+
+.kpi-lbl {
+    font-size: .66rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: .2rem;
+}
+
+.kpi-val {
+    font-size: 1.55rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono',monospace;
+    line-height: 1.1;
+}
+
+.kpi-sub {
+    font-size: .67rem;
+    margin-top: .25rem;
+    color: #90a4c8;
+}
+
+
+/* FILTROS */
+.emp-filters {
+    background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
+    border: 1px solid rgba(255,255,255,1);
+    border-radius: 10px;
+    padding: .85rem 1.1rem;
+    margin-bottom: 1rem;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr auto;
+    gap: .65rem;
+    align-items: end;
+}
+
+.fg {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+}
+
+.fl {
+    font-size: .66rem;
+    color: #fff;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.fi, .fs {
+    background: rgba(13,27,42,.7);
+    border: 1px solid rgba(100,160,255,.15);
+    border-radius: 6px;
+    color: #f0f0f0;
+    padding: .4rem .7rem;
+    font-size: .77rem;
+    font-family: 'Sora',sans-serif;
+    transition: border-color .2s;
+    width: 100%;
+}
+
+    .fi:focus, .fs:focus {
+        outline: none;
+        border-color: rgba(0,188,212,.5);
+        box-shadow: 0 0 0 3px rgba(0,188,212,.07);
+    }
+
+    .fi::placeholder {
+        color: #90a4c8;
+    }
+
+    .fs option {
+        background: #0d1b2a;
+    }
+
+.btn-clr {
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(100,160,255,.12);
+    padding: .4rem .75rem;
+    border-radius: 6px;
+    font-size: .75rem;
+    font-family: 'Sora',sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .2s;
+}
+
+    .btn-clr:hover {
+        color: #90a4c8;
+        border-color: rgba(100,160,255,.3);
+    }
+
+    /*mas configuraciones */
+.emp-page {
+    font-family: 'Sora', sans-serif;
+    color: #ffffff;
+}
+
+/* TOPBAR */
+.emp-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.1rem;
+}
+
+.emp-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.emp-sub {
+    font-size: .72rem;
+    color: #90a4c8;
+    margin-top: 1px;
+}
+
+.btn-pri {
+    background: linear-gradient(135deg,#1565c0,#1976d2);
+    color: #fff;
+    border: none;
+    padding: .45rem 1.1rem;
+    border-radius: 6px;
+    font-size: .78rem;
+    font-family: 'Sora',sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    transition: all .2s;
+}
+
+    .btn-pri:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(21,101,192,.4);
+    }
+
+.btn-sec {
+    background: transparent;
+    color: #90a4c8;
+    border: 1px solid rgba(100,160,255,.2);
+    padding: .4rem .85rem;
+    border-radius: 6px;
+    font-size: .78rem;
+    font-family: 'Sora',sans-serif;
+    cursor: pointer;
+    transition: all .2s;
+}
+
+    .btn-sec:hover {
+        color: #ffffff;
+        border-color: rgba(100,160,255,.4);
+    }
