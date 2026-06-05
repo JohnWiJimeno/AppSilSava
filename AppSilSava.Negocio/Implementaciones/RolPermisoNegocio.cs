@@ -1,6 +1,7 @@
 ﻿using AppSilSava.DTO.Response;
 using AppSilSava.DTO.Response.Accionista;
 using AppSilSava.DTO.Response.Generic;
+using AppSilSava.DTO.Response.RolPermiso;
 using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
 using System;

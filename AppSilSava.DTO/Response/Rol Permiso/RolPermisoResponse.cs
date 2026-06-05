@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AppSilSava.DTO.Response
+namespace AppSilSava.DTO.Response.RolPermiso
 {
     public class RolPermisoResponse
     {

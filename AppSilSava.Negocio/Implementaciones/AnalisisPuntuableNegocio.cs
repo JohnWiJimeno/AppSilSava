@@ -1,5 +1,6 @@
 ﻿using AppSilSava.DTO.Response;
 using AppSilSava.DTO.Response.Accionista;
+using AppSilSava.DTO.Response.AnalisisPuntuable;
 using AppSilSava.DTO.Response.Generic;
 using AppSilSava.Negocio.Interfaces;
 using AppSilSava.Repositorio.Interfaces;
