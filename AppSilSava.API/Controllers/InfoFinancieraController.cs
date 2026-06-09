@@ -14,10 +14,10 @@ namespace AppSilSava.API.Controllers
         {
             _repositorio = repositorio;
         }
-        [HttpGet]
-        public async Task<IActionResult> Listar()
+        [HttpGet("{empresaId}")]// Cambia la ruta para incluir el ID de la empresa como parte de la URL
+        public async Task<IActionResult> Listar(string empresaId) // Recibe el ID de la empresa como parámetro de consulta
         {
-            var rpta = await _repositorio.listar();
+            var rpta = await _repositorio.listar(empresaId); // Llama al método listar del repositorio pasando el ID de la empresa
             return rpta.Exito ? Ok(rpta) : BadRequest(rpta);
         }
     }

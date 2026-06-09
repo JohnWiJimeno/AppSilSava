@@ -16,13 +16,15 @@ namespace AppSilSava.Negocio.Implementaciones
         {
             _repositorio = repositorio;
         }
-        public async Task<RepuestaBase<List<InfoFinancieraResponse>>> listar()
+        public async Task<RepuestaBase<List<InfoFinancieraResponse>>> listar(string empresaId)
         {
             RepuestaBase<List<InfoFinancieraResponse>> rpta = new RepuestaBase<List<InfoFinancieraResponse>>();
             try
             {
+                // 1. Le pides al repositorio la lista completa (o idealmente creas un método en repositorio que filtre por query)
                 var lista = await _repositorio.Listar();
-                var listaFinanciera = lista.Select(p => new InfoFinancieraResponse
+                // 2. Filtramos usando .Where() para dejar únicamente los de la empresa seleccionada
+                var listaFinanciera = lista.Where(p => p.EmpresaId == empresaId).Select(p => new InfoFinancieraResponse
                 {
                     EmpresaId = p.EmpresaId,
                     AnioFiscal = p.AnioFiscal,

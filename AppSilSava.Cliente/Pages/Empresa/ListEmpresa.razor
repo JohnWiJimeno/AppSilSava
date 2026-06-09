@@ -161,7 +161,7 @@
         <CardInfo Titulo="Lista de Empresas">
             <Content>
                 <div clase="table-responsive w-100">
-                    <table class="table table-sm tabla-contratos">
+                    <table class="table table-sm tabla-contratos align-middle">
                         <thead>
                             <tr>
                                 <th clase="col-id">Nit/CC</th>
@@ -170,7 +170,7 @@
                                 <th clase="col-general">Ciudad</th>
                                 <th clase="col-general">Tamaño Empresa</th>
                                 <th clase="col-general">Tipo de Empresa</th>
-                                <th clase="col-acciones">Acciones</th>
+                                <th clase="col-acciones ">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -365,18 +365,18 @@
     {
         //logica para ver detalles de contrato
         //Console.WriteLine($"Ver detalles del contrato con id: {EmpresaId}");
+        navigationManager.NavigateTo($"/empresa/detail/{EmpresaId}");
 
+        // EmpresaSeleccionada = ListaEmpresas.FirstOrDefault(e => e.EmpresaId == EmpresaId);
 
-        EmpresaSeleccionada = ListaEmpresas.FirstOrDefault(e => e.EmpresaId == EmpresaId);
-
-        if (EmpresaSeleccionada != null)
-        {
-            MostrarModal = true;
-        }
-        else
-        {
-            await Swal.FireAsync("Error", "No se encontró la información de la empresa.", SweetAlertIcon.Error);
-        }
+        // if (EmpresaSeleccionada != null)
+        // {
+        //     MostrarModal = true;
+        // }
+        // else
+        // {
+        //     await Swal.FireAsync("Error", "No se encontró la información de la empresa.", SweetAlertIcon.Error);
+        // }
 
     }
 

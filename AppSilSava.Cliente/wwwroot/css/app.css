@@ -142,6 +142,7 @@ code {
     .tabla-contratos .col-acciones {
         white-space: nowrap;
         width: 1%;
+        text-align: center ;
     }
 
     .tabla-contratos .col-general {

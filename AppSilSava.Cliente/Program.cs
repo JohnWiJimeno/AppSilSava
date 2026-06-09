@@ -4,6 +4,7 @@ using AppSilSava.Cliente.Proxy.Interfaces;
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using MudBlazor.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -17,6 +18,8 @@ builder.Services.AddScoped<IEmpresaProxy, EmpresaProxy>();
 builder.Services.AddScoped<IContratoProxy, ContratoProxy>();
 builder.Services.AddScoped<ITipoEmpresaProxy, TipoEmpresaProxy>();
 
+
+builder.Services.AddMudServices();
 builder.Services.AddSweetAlert2();
 
 await builder.Build().RunAsync();

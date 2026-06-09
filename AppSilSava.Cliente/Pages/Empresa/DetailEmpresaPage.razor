@@ -1,0 +1,70 @@
+﻿@page "/empresa/detail/{EmpresaId}"
+
+<h3>DetailEmpresaPage @EmpresaId</h3>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="informacion-tab" data-bs-toggle="tab" data-bs-target="#informacion-tab-pane"
+                type="button" role="tab" aria-controls="informacion-tab-pane" aria-selected="true">
+            Información Adicional
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="financiero-tab" data-bs-toggle="tab" data-bs-target="#financiero-tab-pane"
+                type="button" role="tab" aria-controls="financiero-tab-pane" aria-selected="false">
+            Información Financiera
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="5A-tab" data-bs-toggle="tab" data-bs-target="#5A-tab-pane"
+                type="button" role="tab" aria-controls="5A-tab-pane" aria-selected="false">
+            Formato 5A
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="Tecnico-tab" data-bs-toggle="tab" data-bs-target="#Tecnico-tab-pane"
+                type="button" role="tab" aria-controls="Tecnico-tab-pane" aria-selected="false">
+            Capacidad Técnica
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="CSE-tab" data-bs-toggle="tab" data-bs-target="#CSE-tab-pane"
+                type="button" role="tab" aria-controls="CSE-tab-pane" aria-selected="false">
+            Saldos en Ejecución
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="informacion-tab-pane" role="tabpanel" aria-labelledby="informacion-tab" tabindex="0">
+
+        <InfomaAdicionalTab EmpresaId="@EmpresaId" />
+
+    </div>
+    <div class="tab-pane fade" id="financiero-tab-pane" role="tabpanel" aria-labelledby="financiero-tab" tabindex="0">
+        <FinancieroTab EmpresaId="@EmpresaId" />
+    </div>
+    <div class="tab-pane fade" id="5A-tab-pane" role="tabpanel" aria-labelledby="5A-tab" tabindex="0">
+        <Formato5ATab EmpresaId="@EmpresaId" />
+    </div>
+    <div class="tab-pane fade" id="Tecnico-tab-pane" role="tabpanel" aria-labelledby="Tecnico-tab" tabindex="0">
+        <CapacidadTecTab EmpresaId="@EmpresaId" />
+    </div>
+
+    <div class="tab-pane fade" id="CSE-tab-pane" role="tabpanel" aria-labelledby="CSE-tab" tabindex="0">
+        <SCETab EmpresaId="@EmpresaId" />
+    </div>
+</div>
+
+
+
+
+@code {
+
+    [Parameter]
+    public string? EmpresaId { get; set; }
+
+
+
+
+}

@@ -8,6 +8,6 @@ namespace AppSilSava.Negocio.Interfaces
 {
     public interface IInfoFinancieraNegocio
     {
-        Task<RepuestaBase<List<InfoFinancieraResponse>>> listar();
+        Task<RepuestaBase<List<InfoFinancieraResponse>>> listar(string empresaId);
     }
 }
