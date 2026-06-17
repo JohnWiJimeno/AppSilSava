@@ -24,5 +24,20 @@ namespace AppSilSava.Repositorio.Implementaciones
             // se incluye el estado del contrato y el tipo de obra para mostrar su nombre en la consulta
 
         }
+
+        // 👇 NUEVO MÉTODO AÑADIDO:
+        public async Task<List<Contrato>> ListarPorEmpresa(string empresaId)
+        {
+            // Se conecta a la BD, incluye las relaciones y filtra por EmpresaId antes de traer los datos
+            return await _bd.Contratos
+                .Include(p => p.EstadoContrato)
+                .Include(p => p.TipoObra)
+                .Include(p=>p.Salario) // 👈 Incluimos la relación con Salario para mostrar su información
+                .Where(p => p.EmpresaId == empresaId
+                 && p.Salario != null
+                 && p.Salario.Anio == DateTime.Now.Year) // 👈 2. Filtramos en SQL por el año actual
+        .ToListAsync();
+        }
+
     }
 }

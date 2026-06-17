@@ -1,7 +1,78 @@
 ﻿<h3>Formato 5A</h3>
+@inject HttpClient Http
+
+@if (contratos == null)
+{   
+    // PASO 1: La API aún no ha respondido. La lista es nula.
+    <p><em>Cargando contratos y salarios del año actual...</em></p>
+}
+else if (!contratos.Any())
+{
+    // PASO 2: La API ya respondió con éxito, pero esa empresa NO tiene contratos.
+    <p>No se encontraron contratos para esta empresa con salario registrado este año.</p>
+}
+else
+{
+    // PASO 3: La lista sí tiene datos (tiene 1 o más contratos). Pintamos la tabla.
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>No. RUP</th>
+                <th>Empresa ID</th>
+                <th>Vr. SMMLV</th>
+                <th>% Participación</th>
+                <th>Salario Actual</th>
+                <th>Vr. Total Contrato</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var contrato in contratos)
+            {
+                <tr>
+                    <td>@contrato.NoRup</td>
+                    <td>@contrato.EmpresaId</td>
+                    <td>@contrato.VrSmmlv?.ToString("C")</td>
+                    <td>@contrato.PorcentajePart %</td>
+                    <td>@contrato.ValorSalarioActual?.ToString("C")</td>
+                    <td>@contrato.VrTotalContrato?.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
     [Parameter]
     public string? EmpresaId { get; set; }
 
+    // Corregido: Nombre cambiado a 'contratos' y se inicializa en null para que funcione el condicional @if (contratos == null)
+    private List<ContratoResponse>? contratos;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            // 1. Apuntamos al endpoint correcto de tu controlador
+            var url = $"api/Contrato/por-empresa/{EmpresaId}";
+
+            // 2. Mapeamos la respuesta al objeto genérico que usas en el backend
+            var respuesta = await Http.GetFromJsonAsync<RepuestaBase<List<ContratoResponse>>>(url);
+
+            if (respuesta != null && respuesta.Exito)
+            {
+                // 3. Asignamos la lista que viene dentro de 'Data'
+                contratos = respuesta.Data;
+            }
+            else
+            {
+                contratos = new List<ContratoResponse>(); // Si falla, inicializa vacío para quitar el "Cargando..."
+                Console.WriteLine($"Error del servidor: {respuesta?.Mensaje}");
+            }
+        }
+        catch (Exception ex)
+        {
+            contratos = new List<ContratoResponse>(); // Si hay error de red, inicializa vacío
+            Console.WriteLine($"Error de red: {ex.Message}");
+        }
+    }
 }

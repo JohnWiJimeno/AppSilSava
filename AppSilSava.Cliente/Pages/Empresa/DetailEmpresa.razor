@@ -1,0 +1,134 @@
+﻿@page "/empresa/detail/{EmpresaId}"
+@inject NavigationManager navigationManager
+@inject IEmpresaProxy empresaProxy
+<h4>
+    @if (!string.IsNullOrEmpty(NombreEmpresa))
+    {
+        <span><b>@NombreEmpresa</b></span>
+    }
+    else
+    {
+        <span>Cargando detalle de @EmpresaId...</span>
+    }
+</h4>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(TabActivo == "informacion" ? "active" : "")"
+                type="button" @onclick='() => CambiarTab("informacion")'>
+            Información Adicional
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(TabActivo == "financiero" ? "active" : "")"
+                type="button" @onclick='() => CambiarTab("financiero")'>
+            Información Financiera
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(TabActivo == "5A" ? "active" : "")"
+                type="button" @onclick='() => CambiarTab("5A")'>
+            Formato 5A
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(TabActivo == "tecnico" ? "active" : "")"
+                type="button" @onclick='() => CambiarTab("tecnico")'>
+            Capacidad Técnica
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(TabActivo == "cse" ? "active" : "")"
+                type="button" @onclick='() => CambiarTab("cse")'>
+            Saldos en Ejecución
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content p-3 border border-top-0" id="myTabContent">
+    @if (TabActivo == "informacion")
+    {
+        <div class="tab-pane fade show active">
+            <InfomaAdicionalTab EmpresaId="@EmpresaId" />
+        </div>
+    }
+    else if (TabActivo == "financiero")
+    {
+        <div class="tab-pane fade show active">
+            <FinancieroTab EmpresaId="@EmpresaId" />
+        </div>
+    }
+    else if (TabActivo == "5A")
+    {
+        <div class="tab-pane fade show active">
+            <Formato5ATab EmpresaId="@EmpresaId" />
+        </div>
+    }
+    else if (TabActivo == "tecnico")
+    {
+        <div class="tab-pane fade show active">
+            <CapacidadTecTab EmpresaId="@EmpresaId" />
+        </div>
+    }
+    else if (TabActivo == "cse")
+    {
+        <div class="tab-pane fade show active">
+            <SCETab EmpresaId="@EmpresaId" />
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string? EmpresaId { get; set; }
+
+        // Estado para saber qué pestaña está activa
+    private string TabActivo { get; set; } = "informacion";
+
+    // 3. Variable para almacenar el nombre de la empresa
+    private string? NombreEmpresa { get; set; }
+
+    // 4. Ciclo de vida para obtener el nombre al iniciar el componente
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrEmpty(EmpresaId)) return;
+
+        try
+        {
+            // 1. Usamos tu método Listar() que trae el array de empresas
+            var rpta = await empresaProxy.Listar();
+
+            if (rpta != null && rpta.Exito && rpta.Data != null)
+            {
+                // 2. Filtramos en memoria con LINQ la empresa que coincida con el NIT de la URL
+                var empresaEncontrada = rpta.Data.FirstOrDefault(e => e.EmpresaId == EmpresaId);
+
+                if (empresaEncontrada != null)
+                {
+                    // 3. Asignamos la Razón Social a la variable del encabezado
+                    NombreEmpresa = empresaEncontrada.RazonSocial;
+                }
+                else
+                {
+                    // Si por alguna razón el NIT no está en la lista, mostramos el NIT
+                    NombreEmpresa = EmpresaId;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al traer el nombre de la empresa: {ex.Message}");
+            NombreEmpresa = EmpresaId; // Salvavidas: si el API falla, muestra el NIT
+        }
+    }
+
+
+    private void CambiarTab(string nombreTab)
+    {
+        TabActivo = nombreTab;
+    }
+
+
+
+
+}

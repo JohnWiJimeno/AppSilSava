@@ -1,9 +1,85 @@
-﻿<h3>Información Financiera</h3>
+﻿@inject IJSRuntime JSRuntime
+@inject IInfoFinancieraProxy InfoFinancieraProxy
+@inject NavigationManager navigationManager
+@inject IEmpresaProxy EmpresaProxy
 
 
+@* <h3>Información Financiera</h3> *@
 
+<div class="mt-5">
+    <CardInfo Titulo="Historial Financiero de la Empresa">
+        <Content>
+            <div class="table-responsive w-100">
+                <table class="table table-sm tabla-financiero align-middle">
+                    <thead>
+                        <tr>
+                            @* <th class="th-financiero-doble">Nit/CC</th> *@
+                            <th class="th-financiero-doble">Año Fiscal</th>
+                            <th class="th-financiero-doble">Activo Corriente</th>
+                            <th class="th-financiero-doble">Activo Total</th>
+                            <th class="th-financiero-doble">Pasivo Corriente</th>
+                            <th class="th-financiero-doble">Pasivo Total</th>
+                            <th class="th-financiero-doble">Patrimonio</th>
+                            <th class="th-financiero-doble">Ingresos Operacionales</th>
+                            <th class="th-financiero-doble">Utilidad / Pérdida</th>
+                            <th class="th-financiero-doble">Gastos Intereses</th>
+                            <th class="th-financiero-doble">Capital de Trabajo</th>
+                            <th class="th-financiero-doble">Índice Liquidez</th>
+                            <th class="th-financiero-doble">Índice Endeudamiento</th>
+                            <th class="th-financiero-doble">Razón Cobertura</th>
+                            <th class="th-financiero-doble">Rentabilidad Patrimonio</th>
+                            <th class="th-financiero-doble">Rentabilidad Activo</th>
+                            <th class="col-acciones">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ListaInfoFinanciera != null && ListaInfoFinanciera.Any())
+                        {
+                            @foreach (var info in ListaInfoFinanciera)
+                            {
+                                <tr>
+                                   @*  <td class="th-financiero-doble">@info.EmpresaId</td> *@
+                                    <td class="th-financiero-doble">@info.AnioFiscal</td>
 
+                                    <!-- Agregamos el operador elvis '?' porque en tu DTO los decimales aceptan nulos (decimal?) -->
+                                    <td class="col-valores-financieros">@info.ActivoCorriente?.ToString("#,##0.00", CultureInfo.CreateSpecificCulture("es-CO"))</td>
+                                    <td class="col-valores-financieros">@info.ActivoTotal?.ToString("#,##0.00", CultureInfo.CreateSpecificCulture("es-CO"))</td>
+                                    <td class="col-valores-financieros">@info.PasivoCorriente?.ToString("#,##0.00", CultureInfo.CreateSpecificCulture("es-CO"))</td>
+                                    <td class="col-valores-financieros">@info.PasivoTotal?.ToString("#,##0.00", CultureInfo.CreateSpecificCulture("es-CO"))</td>
+                                    <td class="col-valores-financieros">@info.Patrimonio?.ToString("#,##0.00", CultureInfo.CreateSpecificCulture("es-CO"))</td>
+                                    <td class="col-valores-financieros">@info.IngresosOperacionales?.ToString("#,##0.00", CultureInfo.CreateSpecificCulture("es-CO"))</td>
+                                    <td class="col-valores-financieros">@info.UtilidadPerdida?.ToString("#,##0.00", CultureInfo.CreateSpecificCulture("es-CO"))</td>
+                                    <td class="col-valores-financieros">@info.GastosInteres?.ToString("#,##0.00", CultureInfo.CreateSpecificCulture("es-CO"))</td>
+                                    <td class="col-valores-financieros">@info.CapitalTrabajo?.ToString("#,##0.00", CultureInfo.CreateSpecificCulture("es-CO"))</td>
 
+                                    <td class="th-financiero-doble">@(info.IndiceLiquidez?.ToString("N2") ?? "0.00")</td>
+                                    <td class="th-financiero-doble">@(info.IndiceEndeudamiento?.ToString("N2") ?? "0.00")</td>
+                                    <td class="th-financiero-doble">@(info.RazonCobertura?.ToString("N2") ?? "0.00")</td>
+                                    <td class="th-financiero-doble">@(info.RentaPatrimonio?.ToString("N2") ?? "0.00")</td> <!-- Corregido: RentaPatrimonio -->
+                                    <td class="th-financiero-doble">@(info.RentaActivo?.ToString("N2") ?? "0.00")</td> <!-- Corregido: RentaActivo -->
+                                    <td>
+                                        <!-- Usamos el AnioFiscal para identificar el registro a gestionar -->
+                                        <ButtonsActions OnEditar="() => editar(info.AnioFiscal)"
+                                                        OnEliminar="() => eliminar(info.AnioFiscal)"
+                                                        OnVerDetalles="() => verDetalles(info.AnioFiscal)" />
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="17" class="text-center text-muted p-4">
+                                    No se encontraron registros de información financiera para esta empresa.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </Content>
+    </CardInfo>
+</div>
 
 
 
@@ -11,5 +87,65 @@
 @code {
     [Parameter]
     public string? EmpresaId { get; set; }
+
+
+    public List<InfoFinancieraResponse> ListaInfoFinanciera { get; set; } = new List<InfoFinancieraResponse>();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        // Si EmpresaId es nulo o está vacío, no hacemos nada
+        if (string.IsNullOrEmpty(EmpresaId))
+        {
+            return;
+        }
+
+        try
+        {
+            var rpta = await InfoFinancieraProxy.Listar(EmpresaId);
+            if (rpta != null && rpta.Exito && rpta.Data != null)
+            {
+                ListaInfoFinanciera = rpta.Data;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar la información financiera: {ex.Message}");
+        }
+
+    }
+
+    // Los métodos ahora reciben el año fiscal para identificar qué registro alterar
+    private void editar(int anioFiscal)
+    {
+        // Tu lógica para editar (ej: redirigir a /empresa/financiero/editar/@EmpresaId/@anioFiscal)
+    }
+
+    private void eliminar(int anioFiscal)
+    {
+        // Tu lógica para eliminar
+    }
+
+    private void verDetalles(int anioFiscal)
+    {
+        // Tu lógica para ver detalles expandidos
+    }
+
+   
+
+   
+
+    private void buscar()
+    {
+        //logica para buscar empresa por nombre completo
+        // Console.WriteLine($"nombre: {NombreCompleto}");
+    }
+
+    // Agrega esta configuración para forzar el signo de pesos chileno/colombiano
+    private static readonly System.Globalization.CultureInfo CulturaPesos =
+        new System.Globalization.CultureInfo("es-CO")
+        {
+            NumberFormat = { CurrencySymbol = "$ " }
+        };
+
 
 }

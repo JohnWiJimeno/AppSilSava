@@ -72,5 +72,43 @@ namespace AppSilSava.Negocio.Implementaciones
             }
             return rpta;
         }
+       
+        //nuevo método: que resive el id de la empresa y devuelve solo los contratos de esa empresa
+
+        public async Task<RepuestaBase<List<ContratoResponse>>> ListarPorEmpresa(string empresaId)
+        {
+            RepuestaBase<List<ContratoResponse>> rpta = new RepuestaBase<List<ContratoResponse>>();
+            try
+            {
+                // El repositorio ya debe venir filtrado desde la BD por EmpresaId
+                var lista = await _repositorio.ListarPorEmpresa(empresaId);
+
+                var listaOrdenada = lista.OrderBy(p => p.NoRup).ToList();
+
+                var listaContrato = listaOrdenada.Select(p => new ContratoResponse
+                {
+                    //ContratoId = p.ContratoId,
+                    EmpresaId = p.EmpresaId,
+                    NoRup = p.NoRup,
+                    VrSmmlv = p.VrSmmlv,
+                    PorcentajePart = p.PorcentajePart,
+                    // 👇 AQUÍ EXTRAEMOS EL VALOR DEL SALARIO 
+                    // Usamos ?.VrSalario por seguridad en caso de que la relación sea nula
+                    ValorSalarioActual = p.Salario?.VrSalario,
+                    VrTotalContrato = p.VrTotalContrato,
+                   
+                }).ToList();
+
+                rpta.Data = listaContrato;
+                rpta.Exito = true;
+            }
+            catch (Exception ex)
+            {
+                rpta.Exito = false;
+                rpta.Mensaje = ex.Message;
+            }
+            return rpta;
+        }
+
     }
 }

@@ -9,5 +9,7 @@ namespace AppSilSava.Negocio.Interfaces
     public interface IContratoNegocio
     {
         Task<RepuestaBase<List<ContratoResponse>>> Listar();
+        // Nuevo método:
+        Task<RepuestaBase<List<ContratoResponse>>> ListarPorEmpresa(string empresaId);
     }
 }

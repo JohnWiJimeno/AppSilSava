@@ -64,6 +64,8 @@ namespace AppSilSava.DTO.Response.Contrato
 
         public byte[]? DocumentoPdf { get; set; }
 
-        //public int? SalarioId { get; set; }
+        public int? SalarioId { get; set; }
+
+        public decimal? ValorSalarioActual { get; set; }
     }
 }

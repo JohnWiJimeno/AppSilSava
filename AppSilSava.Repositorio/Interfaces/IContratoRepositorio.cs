@@ -8,5 +8,7 @@ namespace AppSilSava.Repositorio.Interfaces
     public interface IContratoRepositorio
     {
         Task<List<Contrato>> Listar();
+        
+        Task<List<Contrato>> ListarPorEmpresa(string empresaId);
     }
 }

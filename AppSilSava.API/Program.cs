@@ -32,8 +32,11 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());// Agregar el convertidor para DateOnly
+        //options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());// Agregar el convertidor para DateOnly
         options.JsonSerializerOptions.Encoder =System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+        // En .NET 10, esta es la forma óptima y nativa de omitir los nulos en la respuesta HTTP
+        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+    
     });
 
 builder.Services.AddEndpointsApiExplorer(); //registar api
