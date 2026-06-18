@@ -524,3 +524,175 @@ main {
         color: #ffffff;
         border-color: rgba(100,160,255,.4);
     }
+
+
+/* =============================================
+   FORMATO 5A - Tabla Acreditación de Experiencia
+   ============================================= */
+
+/* Div externo que limita el ancho total */
+.formato5a-container {
+    width: fit-content;
+    max-width: 900px; /* ← cambia este valor si necesitas más o menos ancho */
+    margin: 0;
+    overflow-x: auto; /* scroll horizontal si la pantalla es muy estrecha */
+}
+
+
+.formato5a-wrapper {
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    border: 2px solid #000;
+    width: 100%;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+    .formato5a-wrapper table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+        table-layout: fixed;
+    }
+
+    /* ── Anchos de columna ──
+   No.        :  4%
+   (A) SMMLV  : 22%
+   (B) Part.  : 18%
+   (C) Salario: 14%   ← columna numérica, más estrecha
+   (A*B*C)    : 20%
+*/
+    .formato5a-wrapper col.col-w-num {
+        width: 4%;
+    }
+
+    .formato5a-wrapper col.col-w-smmlv {
+        width: 22%;
+    }
+
+    .formato5a-wrapper col.col-w-part {
+        width: 18%;
+    }
+
+    .formato5a-wrapper col.col-w-salario {
+        width: 14%;
+    }
+
+    .formato5a-wrapper col.col-w-total {
+        width: 20%;
+    }
+
+/* --- Título --- */
+.formato5a-titulo {
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 6px 8px 2px;
+    border-bottom: 1px solid #000;
+    color: #000;
+}
+
+.formato5a-subtitulo {
+    text-align: center;
+    font-size: 10px;
+    padding: 2px 8px 6px;
+    border-bottom: 2px solid #000;
+    color: #000;
+}
+
+/* --- Fila proponente --- */
+.formato5a-proponente td {
+    border: 1px solid #000;
+    padding: 3px 6px;
+    font-size: 10px;
+    color: #000;
+}
+
+.formato5a-proponente .label-proponente {
+    white-space: nowrap;
+    background-color: #fff;
+    width: 150px;
+}
+
+.formato5a-proponente .valor-proponente {
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    background-color: #fff;
+}
+
+/* --- Encabezados --- */
+.formato5a-wrapper thead tr.fila-columnas th {
+    border: 1px solid #000;
+    padding: 4px 4px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #fff;
+    color: #000;
+    line-height: 1.3;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+    .formato5a-wrapper thead tr.fila-columnas th.col-shaded,
+    .formato5a-wrapper thead tr.fila-etiquetas th.col-shaded,
+    .formato5a-wrapper tbody td.col-shaded {
+        background-color: #c8c8c8 !important;
+    }
+
+/* --- Sub-etiquetas --- */
+.formato5a-wrapper thead tr.fila-etiquetas th {
+    border: 1px solid #000;
+    padding: 2px 4px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: normal;
+    background-color: #fff;
+    color: #000;
+}
+
+/* --- Celdas de datos --- */
+.formato5a-wrapper tbody td {
+    border: 1px solid #000;
+    padding: 2px 5px;
+    text-align: right;
+    vertical-align: middle;
+    font-size: 11px;
+    color: #000;
+    background-color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+    .formato5a-wrapper tbody td.col-num-data {
+        text-align: center;
+    }
+
+/* --- TOTAL --- */
+.formato5a-wrapper tfoot td {
+    border: 1px solid #000;
+    padding: 3px 5px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: right;
+    background-color: #fff;
+    color: #000;
+}
+
+.formato5a-wrapper tfoot .label-total {
+    text-align: right;
+}
+
+/* --- Nota al pie --- */
+.formato5a-nota {
+    border-top: 1px solid #000;
+    padding: 3px 6px;
+    font-size: 8px;
+    font-style: italic;
+    color: #000;
+    background-color: #fff;
+}
+ 

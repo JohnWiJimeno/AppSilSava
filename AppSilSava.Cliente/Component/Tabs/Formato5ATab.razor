@@ -1,8 +1,8 @@
-﻿<h3>Formato 5A</h3>
+﻿<h5>Formato 5A</h5>
 @inject HttpClient Http
 
 @if (contratos == null)
-{   
+{
     // PASO 1: La API aún no ha respondido. La lista es nula.
     <p><em>Cargando contratos y salarios del año actual...</em></p>
 }
@@ -14,31 +14,117 @@ else if (!contratos.Any())
 else
 {
     // PASO 3: La lista sí tiene datos (tiene 1 o más contratos). Pintamos la tabla.
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>No. RUP</th>
-                <th>Empresa ID</th>
-                <th>Vr. SMMLV</th>
-                <th>% Participación</th>
-                <th>Salario Actual</th>
-                <th>Vr. Total Contrato</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var contrato in contratos)
-            {
-                <tr>
-                    <td>@contrato.NoRup</td>
-                    <td>@contrato.EmpresaId</td>
-                    <td>@contrato.VrSmmlv?.ToString("C")</td>
-                    <td>@contrato.PorcentajePart %</td>
-                    <td>@contrato.ValorSalarioActual?.ToString("C")</td>
-                    <td>@contrato.VrTotalContrato?.ToString("C")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+
+    var total = contratos.Sum(c => c.VrTotalContrato ?? 0);
+    var smmlvDisplay = contratos.FirstOrDefault()?.ValorSalarioActual?
+        .ToString("$#,##0", CultureInfo.CreateSpecificCulture("es-CO")) ?? "";
+
+    <div class="formato5a-container">
+        <div class="formato5a-wrapper">
+            <table>
+
+                @* ── Anchos fijos proporcionales ── *@
+                <colgroup>
+                    <col class="col-w-num" />
+                    <col class="col-w-smmlv" />
+                    <col class="col-w-part" />
+                    <col class="col-w-salario" />
+                    <col class="col-w-total" />
+                </colgroup>
+
+                <thead>
+
+                    @* ── Título ── *@
+                    <tr>
+                        <td colspan="5" class="formato5a-titulo">
+                            Contratos para Acreditación de Experiencia
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="formato5a-subtitulo">
+                            (Proponente o Integrante Nacional o Extranjero con Sucursal o Domicilio en Colombia)
+                        </td>
+                    </tr>
+
+                    @* ── Nombre del proponente ── *@
+                    <tr class="formato5a-proponente">
+                        <td class="label-proponente">Nombre Proponente o Integrante:</td>
+                        <td colspan="4" class="valor-proponente">@EmpresaId</td>
+                    </tr>
+
+                    @* ── Encabezados de columna ── *@
+                    <tr class="fila-columnas">
+                        <th>Contrato<br />No.</th>
+                        <th class="col-shaded">
+                            Contratos Relacionados con la Actividad de la
+                            Construcción – Seg. 72 Clasif. UNSPSC del RUP (EN SMMLV)
+                        </th>
+                        <th class="col-shaded">
+                            Participación Porcentual del Proponente o
+                            Integrante del Oferente Plural
+                        </th>
+                        <th>
+                            Valor del SMMLV<br />Vigente @DateTime.Now.Year<br />
+                            <span style="font-weight:normal;">(@smmlvDisplay)</span>
+                        </th>
+                        <th>
+                            Valor de los Contratos Ejecutados<br />
+                            <span style="font-weight:normal; font-size:11px;">
+                                (Valor del Contrato Ponderado por la Participación)
+                            </span>
+                        </th>
+                    </tr>
+
+                    @* ── Sub-etiquetas (A) / (B) / (C) / (A*B*C) ── *@
+                    <tr class="fila-etiquetas">
+                        <th></th>
+                        <th class="col-shaded">(A)</th>
+                        <th class="col-shaded">(B)</th>
+                        <th>(C)</th>
+                        <th>(A*B*C)</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+                    @foreach (var contrato in contratos)
+                    {
+                        <tr>
+                            <td class="col-num-data">@contrato.NoRup</td>
+                            <td class="col-shaded">
+                                @(contrato.VrSmmlv?.ToString("N2") ?? "0.00")
+                            </td>
+                            <td class="col-shaded">
+                                @(contrato.PorcentajePart?.ToString("P2"))
+                            </td>
+                            <td>
+                                @(contrato.ValorSalarioActual?.ToString(
+                                    "#,##0.00", CultureInfo.CreateSpecificCulture("es-CO")))
+                            </td>
+                            <td>
+                                @(contrato.VrTotalContrato?.ToString(
+                                    "#,##0.00", CultureInfo.CreateSpecificCulture("es-CO")))
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="label-total">TOTAL</td>
+                        <td class="valor-total">
+                            @total.ToString("#,##0.00", CultureInfo.CreateSpecificCulture("es-CO"))
+                        </td>
+                    </tr>
+                </tfoot>
+
+            </table>
+
+            <div class="formato5a-nota">
+                (Diligenciar únicamente las columnas sombreadas, toda vez que la columna F se encuentra Formulada)
+            </div>
+        </div>
+    </div>
 }
 
 @code {
