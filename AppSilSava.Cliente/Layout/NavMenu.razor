@@ -3,6 +3,7 @@
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
+        
         <a class="navbar-brand" href="">AppSilSava</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
@@ -12,47 +13,254 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="nav flex-column">
-        <div class="nav-item px-3">
+       @*  <div class="nav-item px-2">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-               <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Dashboard
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Dashboard
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+      
+        <div class="nav-item px-2">
             <NavLink class="nav-link" href="empresa">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Empresa
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Empresas
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="contrato">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Contrato
-            </NavLink>
+    
+    <div class="nav-item px-2">
+        <NavLink class="nav-link" href="contrato">
+            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Contratos
+        </NavLink>
+    </div>
+    <div class="nav-item px-2">
+        <NavLink class="nav-link" href="licitaciones">
+            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Licitaciones
+        </NavLink>
+    </div>
+    <div class="nav-item px-2">
+            <NavLink class="nav-link" href="ListaTipoEmpresa">
+            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Tipo de Empresas
+        </NavLink>
+    </div>
+    <div class="nav-item px-2">
+            <NavLink class="nav-link" href="ListaTipoObra">
+            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Tipo Obra
+        </NavLink>
+    </div>
+    <div class="nav-item px-2">
+            <NavLink class="nav-link" href="ListaEstadoContrato">
+            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Estado de Contratos
+        </NavLink>
+    </div>
+    <div class="nav-item px-2">
+            <NavLink class="nav-link" href="ListaAccionista">
+            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Accionista
+        </NavLink>
+    </div>
+    <div class="nav-item px-2">
+            <NavLink class="nav-link" href="tabla-salario">
+            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Tabla de Salarios
+        </NavLink>
+    </div> *@
+
+@* </nav> *@
+
+
+
+
+
+
+@* Recibe el estado collapsed del MainLayout *@
+
+
+<div class="nav-wrap @(Collapsed ? "collapsed" : "")">
+    <div class="nav-scroll">
+
+        <!-- ══ PRINCIPAL ══ -->
+        <div class="nav-section @(Collapsed ? "hidden" : "")">Principal</div>
+
+        <button class="nav-item @(EsActiva("/") ? "active" : "")"
+                @onclick='() => Ir("/")'>
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Dashboard</span>
+            <span class="nav-tooltip">Dashboard</span>
+        </button>
+
+        <button class="nav-item @(EsActiva("/licitaciones") ? "active" : "")"
+                @onclick='() => Ir("/licitaciones")'>
+            <span class="nav-icon">📄</span>
+            <span class="nav-label">Licitaciones</span>
+            @* @if (BadgeLicitaciones > 0)
+            {
+                <span class="nav-badge badge-cyan">@BadgeLicitaciones</span>
+            } *@
+            <span class="nav-tooltip">Licitaciones (@BadgeLicitaciones)</span>
+        </button>
+
+        <button class="nav-item @(EsActiva("/contrato") ? "active" : "")"
+                @onclick='() => Ir("/contrato")'>
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">Contratos</span>
+            @* @if (BadgeContratos > 0)
+            {
+                <span class="nav-badge badge-green">@BadgeContratos</span>
+            } *@
+            <span class="nav-tooltip">Contratos (@BadgeContratos)</span>
+        </button>
+
+        <button class="nav-item @(EsActiva("/empresa") ? "active" : "")"
+                @onclick='() => Ir("/empresa")'>
+            <span class="nav-icon">🏢</span>
+            <span class="nav-label">Empresas</span>
+            <span class="nav-tooltip">Empresas</span>
+        </button>
+
+        <div class="nav-divider"></div>
+
+        <!-- ══ ANÁLISIS ══ -->
+        <div class="nav-section @(Collapsed ? "hidden" : "")">Análisis</div>
+
+        <!-- Análisis — con submenú -->
+        <button class="nav-item @(EsActiva("/analisis") ? "active" : "")"
+                @onclick="ToggleAnalisis">
+            <span class="nav-icon">📈</span>
+            <span class="nav-label">Análisis</span>
+            <span class="nav-chevron @(analisisOpen ? "open" : "")">›</span>
+            <span class="nav-tooltip">Análisis</span>
+        </button>
+        <div class="nav-sub @(analisisOpen ? "open" : "")">
+            <button class="nav-sub-item @(EsActiva("/analisis/financiero") ? "active" : "")"
+                    @onclick='() => Ir("/analisis/financiero")'>
+                <span class="sub-dot"></span>
+                💹 Financiero
+            </button>
+            <button class="nav-sub-item @(EsActiva("/analisis/tecnico") ? "active" : "")"
+                    @onclick='() => Ir("/analisis/tecnico")'>
+                <span class="sub-dot"></span>
+                🔧 Técnico
+            </button>
+            <button class="nav-sub-item @(EsActiva("/analisis/puntuable") ? "active" : "")"
+                    @onclick='() => Ir("/analisis/puntuable")'>
+                <span class="sub-dot"></span>
+                🎯 Puntuable
+            </button>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="accionista">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Accionista
-            </NavLink>
+
+        <button class="nav-item @(EsActiva("/accionistas") ? "active" : "")" @onclick='() => Ir("/ListaAccionista")'>
+            <span class="nav-icon">👥</span>
+            <span class="nav-label">Accionistas</span>
+            <span class="nav-tooltip">Accionistas</span>
+        </button>
+
+        <button class="nav-item @(EsActiva("/capacidad-tecnica") ? "active" : "")"
+                @onclick='() => Ir("/capacidad-tecnica")'>
+            <span class="nav-icon">🏗</span>
+            <span class="nav-label">SCE</span>
+            <span class="nav-tooltip">Capacidad técnica 5B</span>
+        </button>
+
+        <div class="nav-divider"></div>
+
+        <!-- ══ ADMINISTRACIÓN ══ -->
+        <div class="nav-section @(Collapsed ? "hidden" : "")">Administración</div>
+
+        <button class="nav-item @(EsActiva("/salarios") ? "active" : "")"
+                @onclick='() => Ir("/salarios")'>
+            <span class="nav-icon">💰</span>
+            <span class="nav-label">Tabla salarios</span>
+            <span class="nav-tooltip">Tabla salarios</span>
+        </button>
+
+        <!-- Catálogos — con submenú -->
+        <button class="nav-item @(EsActiva("/catalogos") ? "active" : "")"
+                @onclick="ToggleCatalogos">
+            <span class="nav-icon">📂</span>
+            <span class="nav-label">Catálogos</span>
+            <span class="nav-chevron @(catalogosOpen ? "open" : "")">›</span>
+            <span class="nav-tooltip">Catálogos</span>
+        </button>
+        <div class="nav-sub @(catalogosOpen ? "open" : "")">
+            <button class="nav-sub-item @(EsActiva("/tipo-pliego") ? "active" : "")"
+                    @onclick='() => Ir("/tipo-pliego")'>
+                <span class="sub-dot"></span>
+                📁 Tipos de pliego
+            </button>
+            <button class="nav-sub-item @(EsActiva("/tipo-obra") ? "active" : "")"
+                    @onclick='() => Ir("/tipo-obra")'>
+                <span class="sub-dot"></span>
+                🏛 Tipos de obra
+            </button>
+            <button class="nav-sub-item @(EsActiva("/tipo-empresa") ? "active" : "")"
+                    @onclick='() => Ir("/tipo-empresa")'>
+                <span class="sub-dot"></span>
+                🏭 Tipos de empresa
+            </button>
+            <button class="nav-sub-item @(EsActiva("/estado-contrato") ? "active" : "")"
+                    @onclick='() => Ir("/estado-contrato")'>
+                <span class="sub-dot"></span>
+                📌 Estados contrato
+            </button>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-        
-    </nav>
+
+        <div class="nav-divider"></div>
+
+        <!-- ══ SEGURIDAD ══ -->
+        <div class="nav-section @(Collapsed ? "hidden" : "")">Seguridad</div>
+
+        <button class="nav-item @(EsActiva("/roles") ? "active" : "")"
+                @onclick='() => Ir("/roles")'>
+            <span class="nav-icon">🔐</span>
+            <span class="nav-label">Roles y permisos</span>
+           @*  @if (BadgeRoles > 0)
+            {
+                <span class="nav-badge badge-amber">@BadgeRoles</span>
+            } *@
+            <span class="nav-tooltip">Roles y permisos (@BadgeRoles)</span>
+        </button>
+
+        <button class="nav-item @(EsActiva("/usuarios") ? "active" : "")"
+                @onclick='() => Ir("/usuarios")'>
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Usuarios</span>
+            <span class="nav-tooltip">Usuarios</span>
+        </button>
+
+        <button class="nav-item @(EsActiva("/permisos") ? "active" : "")"
+                @onclick='() => Ir("/permisos")'>
+            <span class="nav-icon">🛡</span>
+            <span class="nav-label">Permisos</span>
+            <span class="nav-tooltip">Permisos</span>
+        </button>
+
+        <div class="nav-divider"></div>
+
+        <!-- ══ CUENTA ══ -->
+        <div class="nav-section @(Collapsed ? "hidden" : "")">Cuenta</div>
+
+        <button class="nav-item @(EsActiva("/perfil") ? "active" : "")"
+                @onclick='() => Ir("/perfil")'>
+            <span class="nav-icon">⚙</span>
+            <span class="nav-label">Mi perfil</span>
+            <span class="nav-tooltip">Mi perfil</span>
+        </button>
+
+        <button class="nav-item" @onclick="() => cerrarSesion()">
+            <span class="nav-icon">🚪</span>
+            <span class="nav-label">Cerrar sesión</span>
+            <span class="nav-tooltip">Cerrar sesión</span>
+        </button>
+
+    </div>
+</div>
+ </nav>
 </div>
 
 
 
-
-
-
-
-
-
-
-
 @code {
-
+    /* ─ Parámetros desde MainLayout ─ */
+    [Parameter] public bool Collapsed { get; set; }
+    [Parameter] public int BadgeLicitaciones { get; set; } = 47;
+    [Parameter] public int BadgeContratos { get; set; } = 23;
+    [Parameter] public int BadgeRoles { get; set; } = 3;
     
     private bool collapseNavMenu = true;
 
@@ -62,4 +270,29 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
+    private void cerrarSesion()
+    {
+        // Lógica para cerrar sesión (ejemplo: limpiar tokens, redirigir a login, etc.)
+        Nav.NavigateTo("/login");
+    }
+
+    bool EsActiva(string ruta)
+    {
+        var path = new Uri(Nav.Uri).AbsolutePath;
+        if (ruta == "/") return path == "/";
+        return path.StartsWith(ruta, StringComparison.OrdinalIgnoreCase);
+    }
+
+    void Ir(string ruta) => Nav.NavigateTo(ruta);
+
+
+    /* ─ Estado submenús ─ */
+    bool analisisOpen = false;
+    bool catalogosOpen = false;
+
+    void ToggleAnalisis() => analisisOpen = !analisisOpen;
+    void ToggleCatalogos() => catalogosOpen = !catalogosOpen;
+
+
 }

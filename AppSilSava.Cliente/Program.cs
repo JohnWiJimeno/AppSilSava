@@ -18,6 +18,7 @@ builder.Services.AddScoped<IEmpresaProxy, EmpresaProxy>();
 builder.Services.AddScoped<IContratoProxy, ContratoProxy>();
 builder.Services.AddScoped<ITipoEmpresaProxy, TipoEmpresaProxy>();
 builder.Services.AddScoped<IInfoFinancieraProxy, InfoFinancieraProxy>();
+builder.Services.AddScoped<IAccionistaProxy, AccionistaProxy>();
 
 
 builder.Services.AddMudServices();

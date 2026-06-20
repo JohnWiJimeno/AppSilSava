@@ -17,5 +17,8 @@ namespace AppSilSava.DTO.Response.Accionista
         public string? VrAccion { get; set; }
 
         public string? NoAcciones { get; set; }
+
+        public string? NombreEmpresa { get; set; }=null!; // busca el nombre de la empresa en lugar del id para mostrarlo en la consulta
+
     }
 }

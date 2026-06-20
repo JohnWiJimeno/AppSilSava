@@ -25,7 +25,8 @@ namespace AppSilSava.Negocio.Implementaciones
                 {
                     AccionistaId = p.AccionistaId,
                     EmpresaId = p.EmpresaId,
-                    EmpresaAccionistaId = p.EmpresaAccionistaId,
+                    NombreEmpresa = p.Empresa.RazonSocial,
+                    //EmpresaAccionistaId = p.EmpresaAccionistaId,
                     PorcentajePart = p.PorcentajePart,
                     VrAccion = p.VrAccion,
                     NoAcciones = p.NoAcciones

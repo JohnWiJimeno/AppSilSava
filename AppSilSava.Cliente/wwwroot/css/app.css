@@ -168,23 +168,28 @@ code {
     }
 
     /* Nueva clase específica para columnas monetarias optimizadas */
-    .tabla-financiero .col-valores-financieros {
-        padding: 8px 12px;
-        min-width: 155px; /* Espacio mínimo óptimo para que quepan montos de miles de millones */
-        white-space: nowrap; /* Prohíbe terminantemente los saltos de línea dentro de la celda */
-        text-align: right; /* Alineación numérica estándar */
-        font-weight: 500; /* Un toque sutil de grosor para mejor lectura */
-    }
+.tabla-financiero .col-valores-financieros {
+    padding: 8px 12px;
+    /*min-width: 135px;*/ /* 155px Espacio mínimo óptimo para que quepan montos de miles de millones */
+    width: 1%; /* Esto le dice a la tabla que reduzca la columna al tamaño exacto de su contenido */
+    white-space: nowrap; /* Prohíbe terminantemente los saltos de línea dentro de la celda */
+    text-align: right; /* Alineación numérica estándar */
+    font-weight: 500; /* Un toque sutil de grosor para mejor lectura */
+    /* 👇 AQUÍ ESTÁ EL CAMBIO 👇 */
+    font-size: 12px; /* Ajusta este valor (ej. 0.7rem, 0.8rem o 11px) si lo quieres más grande o más pequeño */
+}
 
 /* Clase para forzar los títulos de la tabla a dos líneas */
 .tabla-financiero .th-financiero-doble {
     padding: 10px 12px;
-    min-width: 135px; /* Controla el ancho para obligar el quiebre de palabras */
-    max-width: 155px;
+    /*min-width: 135px;*/ /* Controla el ancho para obligar el quiebre de palabras */
+    /*max-width: 155px;*/
+    width: 1%; /* Obliga a la columna a encogerse al ancho de la palabra más larga */
     white-space: normal; /* Permite romper el texto en varias líneas */
     word-wrap: break-word;
     vertical-align: bottom; /* Alinea los títulos al fondo para mantener simetría */
     text-align: center; /* Sincroniza la alineación con los montos de abajo */
+    font-size: 12px; /* Ajusta este valor (ej. 0.7rem, 0.8rem o 11px) si lo quieres más grande o más pequeño */
 }
 
 
@@ -313,7 +318,7 @@ main {
 
 .kpi {
     /*background: rgba(27,45,66,.7);*/
-    background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
+    background: linear-gradient(180deg, #0c2054 0%, #390d4f 100%);
     border: 1px solid rgba(100,160,255,.1);
     border-radius: 10px;
     padding: .85rem 1rem;
@@ -392,8 +397,8 @@ main {
 
 /* FILTROS */
 .emp-filters {
-    background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
-    border: 1px solid rgba(255,255,255,1);
+    background: linear-gradient(180deg, #155196 0%, #2e155b 50%, #580d5e 100%);
+    border: 1px solid rgba(100,160,255,1);
     border-radius: 10px;
     padding: .85rem 1.1rem;
     margin-bottom: 1rem;
@@ -695,4 +700,357 @@ main {
     color: #000;
     background-color: #fff;
 }
- 
+
+
+
+/*.nav-section-title {
+    color: #ffffff;*/ /* Color blanco */
+    /*text-align: center;*/ /* Centrado */
+    /*padding-top: 9px;*/ /* Espaciado superior */
+    /*padding-bottom: 5px;*/ /* Espaciado inferior */
+    /*font-size: 0.8rem;*/ /* Opcional: Ajuste de tamaño */
+    /*font-weight: bold;*/ /* Opcional: Negrita para que resalte como título */
+/*}*/
+
+
+
+
+/* ══════════════════════════════
+       NAV MENU — AppSilSava
+       Usa las variables de MainLayout
+    ══════════════════════════════ */
+.nav-wrap {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* ── SECCIÓN ── */
+.nav-section {
+    padding: .85rem 1rem .28rem;
+    font-size: .6rem;
+    font-weight: 600;
+    /*color: var(--muted2, #5a7498);*/
+    color: #ffffff !important;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: opacity .22s ease, max-height .22s ease;
+    user-select: none;
+}
+
+    .nav-section.hidden {
+        opacity: 0;
+        max-height: 0;
+        padding: 0;
+    }
+
+/* ── ÍTEM ── */
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    padding: .54rem 1rem;
+    /* color: var(--muted, #90a4c8);*/
+    color: #ffffff !important;
+    font-size: .8rem;
+    font-family: var(--font, 'Sora', sans-serif);
+    border-left: 3px solid transparent;
+    cursor: pointer;
+    background: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+    width: 100%;
+    text-align: left;
+    white-space: nowrap;
+    position: relative;
+    transition: all .18s ease;
+    text-decoration: none;
+}
+
+    .nav-item:hover {
+        color: var(--text, #e8f0fe);
+        background: rgba(100,160,255,.06);
+        border-left-color: rgba(0,188,212,.35);
+    }
+
+    .nav-item.active {
+        color: var(--accent, #00bcd4);
+        background: rgba(0,188,212,.09);
+        border-left-color: var(--accent, #00bcd4);
+        font-weight: 500;
+    }
+
+        .nav-item.active .nav-icon {
+            filter: drop-shadow(0 0 4px rgba(0,188,212,.6));
+        }
+
+/* ── ICONO ── */
+.nav-icon {
+    font-size: 1rem;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+    transition: all .18s;
+}
+
+/* ── LABEL ── */
+.nav-label {
+    flex: 1;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity .18s ease, width .18s ease;
+    white-space: nowrap;
+}
+
+.collapsed .nav-label {
+    opacity: 0;
+    width: 0;
+    pointer-events: none;
+}
+
+/* ── BADGE ── */
+.nav-badge {
+    font-size: .59rem;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-left: auto;
+    transition: opacity .18s ease;
+    white-space: nowrap;
+}
+
+.collapsed .nav-badge {
+    opacity: 0;
+}
+
+.badge-cyan {
+    background: rgba(0,188,212,.18);
+    color: #26c6da;
+}
+
+.badge-green {
+    background: rgba(0,200,83,.15);
+    color: #69f0ae;
+}
+
+.badge-amber {
+    background: rgba(255,171,0,.18);
+    color: #ffab00;
+}
+
+.badge-red {
+    background: rgba(239,83,80,.15);
+    color: #ef9a9a;
+}
+
+.badge-purple {
+    background: rgba(124,77,255,.15);
+    color: #ce93d8;
+}
+
+/* ── TOOLTIP colapsado ── */
+.nav-tooltip {
+    display: none;
+    position: absolute;
+    left: 62px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1b2d42;
+    border: 1px solid rgba(100,160,255,.18);
+    border-radius: 7px;
+    padding: .35rem .75rem;
+    font-size: .76rem;
+    color: #cce4f7;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 9999;
+    box-shadow: 0 4px 16px rgba(0,0,0,.45);
+    font-family: var(--font, 'Sora', sans-serif);
+}
+
+    .nav-tooltip::before {
+        content: '';
+        position: absolute;
+        left: -5px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: 5px solid transparent;
+        border-right-color: rgba(100,160,255,.18);
+    }
+
+.collapsed .nav-item:hover .nav-tooltip {
+    display: block;
+}
+
+/* ── SUBMENÚ ── */
+.nav-sub {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height .25s ease;
+}
+
+    .nav-sub.open {
+        max-height: 400px;
+    }
+
+.nav-sub-item {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .44rem 1rem .44rem 2.7rem;
+    /*color: var(--muted, #90a4c8);*/
+    color: #ffffff !important;
+    font-size: .75rem;
+    font-family: var(--font, 'Sora', sans-serif);
+    border-left: 3px solid transparent;
+    cursor: pointer;
+    background: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+    width: 100%;
+    text-align: left;
+    transition: all .15s;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+    .nav-sub-item:hover {
+        color: var(--text-2, #cce4f7);
+        background: rgba(100,160,255,.04);
+        border-left-color: rgba(0,188,212,.2);
+    }
+
+    .nav-sub-item.active {
+        color: var(--accent, #00bcd4);
+        border-left-color: var(--accent, #00bcd4);
+        font-weight: 500;
+    }
+
+.collapsed .nav-sub {
+    display: none;
+}
+
+.sub-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--muted2, #5a7498);
+    flex-shrink: 0;
+    transition: background .15s;
+}
+
+.nav-sub-item.active .sub-dot,
+.nav-sub-item:hover .sub-dot {
+    background: var(--accent, #00bcd4);
+}
+
+/* ── CHEVRON ── */
+.nav-chevron {
+    font-size: 1.1rem;
+    /*color: var(--muted2, #5a7498);*/
+    color: #ffffff !important;
+    flex-shrink: 0;
+    transition: transform .22s ease, opacity .18s;
+    margin-left: auto;
+    margin-right: 0;
+    font-weight: bold; /* Opcional: Agrégalo si también quieres que se vea más gruesa */
+}
+
+    .nav-chevron.open {
+        transform: rotate(90deg);
+    }
+
+.collapsed .nav-chevron {
+    opacity: 0;
+}
+
+/* ── SCROLL ── */
+.nav-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: .5rem;
+}
+
+    .nav-scroll::-webkit-scrollbar {
+        width: 3px;
+    }
+
+    .nav-scroll::-webkit-scrollbar-thumb {
+        background: rgba(100,160,255,.14);
+        border-radius: 4px;
+    }
+
+/* ── SEPARADOR ── */
+.nav-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.15); /* Blanco con 25% de opacidad */
+    margin: .4rem .75rem;
+}
+
+/* =============================================
+   CORRECCIÓN PARA TABS HORIZONTALES (Detalle Empresa)
+   Anula el width: 100% heredado del menú lateral
+   ============================================= */
+ul.nav-tabs {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap; /* Permite que bajen de línea si la pantalla es muy pequeña */
+    border-bottom: 1px solid #dee2e6; /* Línea base típica de las pestañas */
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+    ul.nav-tabs .nav-item {
+        width: auto !important; /* ¡Esta es la clave! Quita el 100% */
+        padding: 0 !important; /* Limpia el padding del menú lateral */
+        border: none !important;
+        background: transparent !important;
+    }
+
+    ul.nav-tabs .nav-link {
+        cursor: pointer;
+        color: #495057; /* Color de texto normal para pestañas inactivas */
+        background: transparent;
+        border: 1px solid transparent;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+        padding: 0.5rem 1rem;
+        margin-bottom: -1px; /* Para que solape con el borde inferior del ul */
+    }
+
+        ul.nav-tabs .nav-link:hover {
+            border-color: #e9ecef #e9ecef #dee2e6;
+            color: #1b6ec2;
+        }
+
+        ul.nav-tabs .nav-link.active {
+            color: #495057;
+            background-color: #fff;
+            border-color: #dee2e6 #dee2e6 #fff;
+            font-weight: bold;
+        }
+
+
+
+/*tabla de accionistas*/
+
+table {
+    table-layout: auto;
+    width: auto; /* o 100% si quieres que ocupe todo */
+}
+
+
+.col-nombre {
+    white-space: normal;
+    word-break: break-word;
+    max-width: 350px;
+    
+}

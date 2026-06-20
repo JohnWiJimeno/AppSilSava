@@ -1,0 +1,62 @@
+﻿@page "/ListaAccionista"
+@inject IAccionistaProxy AccionistaProxy
+@inject NavigationManager navigationManager
+
+
+
+<h3>ListaAccionista</h3>
+
+<CardInfo Titulo="Lista de Accionistas">
+    <Content>
+
+        <div class="table-responsive w-100">
+            <table class="table table-sm tabla-contratos align-middle">
+                <thead>
+                    <tr>
+                        <th class="th-financiero-doble">Empresa ID</th>
+                        <th class="col-nombre">Nombre Accionista</th>
+                        <th class="th-financiero-doble">Porcentaje de %</th>
+                        <th class="th-financiero-doble">Valor de Acciones</th>
+                        <th class="th-financiero-doble">No. Acciones</th>
+                     </tr>
+                </thead>
+                <tbody>
+                    @foreach (var accionista in ListaInfoAccionista)
+                    {
+                        
+                        <tr>
+                            <td class="col-valores-financieros">@accionista.EmpresaId</td>
+                            <td class="col-nombre">@accionista.NombreEmpresa </td>
+                            <td class="col-valores-financieros">@accionista.PorcentajePart</td>
+                            <td class="col-valores-financieros">@accionista.VrAccion</td>
+                            <td class="col-valores-financieros">@accionista.NoAcciones</td>
+                        </tr>
+                    }
+
+                    
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    </Content>
+
+</CardInfo>
+
+@code {
+    [Parameter]
+    public string? EmpresaId { get; set; }
+
+    public List<AccionistaResponse> ListaInfoAccionista { get; set; } = new List<AccionistaResponse>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+            var rpta = await AccionistaProxy.Listar();
+            ListaInfoAccionista = rpta.Data;
+        
+    }
+
+}

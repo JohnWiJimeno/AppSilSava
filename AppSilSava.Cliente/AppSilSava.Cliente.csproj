@@ -16,18 +16,10 @@
 
   <ItemGroup>
     <Folder Include="Pages\Analisis Ffinanciero\" />
-    <Folder Include="Pages\Analisis Puntuable\" />
-    <Folder Include="Pages\Analisis Tecnico\" />
     <Folder Include="Pages\Capacidad Tecnica 5B\" />
     <Folder Include="Pages\Contrato Aporte\" />
-    <Folder Include="Pages\Estado Contrato\" />
-    <Folder Include="Pages\InfoFinanciera\" />
-    <Folder Include="Pages\Licitacion\" />
     <Folder Include="Pages\Usuario\" />
     <Folder Include="Pages\Tipo Pliego\" />
-    <Folder Include="Pages\Tipo Obra\" />
-    <Folder Include="Pages\Tipo Empresa\" />
-    <Folder Include="Pages\Tabla salario\" />
     <Folder Include="Pages\Saldo Ejecucion\" />
     <Folder Include="Pages\Permiso Rol\" />
     <Folder Include="Pages\Rol\" />

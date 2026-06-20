@@ -20,7 +20,7 @@ namespace AppSilSava.Repositorio.Implementaciones
         public async Task<List<Accionistum>> Listar()
         {
             //se conencta a la base de datos y trae la lista 
-            return await _bd.Accionista.ToListAsync(); 
+            return await _bd.Accionista.Include(p => p.Empresa).ToListAsync(); 
 
         }
     }
