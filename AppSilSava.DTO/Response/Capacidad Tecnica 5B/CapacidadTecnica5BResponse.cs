@@ -9,7 +9,7 @@ namespace AppSilSava.DTO.Response.CapacidadTEcnica
         public int CapacidadTecnicaId { get; set; }
 
         public string EmpresaId { get; set; } = null!;
-
+   
         public string NombreProfesional { get; set; } = null!;
 
         public string Profesion { get; set; } = null!;
@@ -19,5 +19,7 @@ namespace AppSilSava.DTO.Response.CapacidadTEcnica
         public string NoContrato { get; set; } = null!;
 
         public DateOnly FechaTerminacion { get; set; }
+
+        public string? NombreEmpresa { get; set; } = null!;
     }
 }

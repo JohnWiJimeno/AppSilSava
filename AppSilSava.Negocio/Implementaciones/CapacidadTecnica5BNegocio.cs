@@ -27,7 +27,9 @@ namespace AppSilSava.Negocio.Implementaciones
                 var listaCSE= lista.Select(x => new CapacidadTecnica5BResponse
                 {
                     CapacidadTecnicaId = x.CapacidadTecnicaId,
-                    EmpresaId = x.EmpresaId,
+                    
+                    //EmpresaId = x.EmpresaId,
+                    NombreEmpresa = x.Empresa.RazonSocial,
                     NombreProfesional = x.NombreProfesional,
                     Profesion = x.Profesion,
                     MatriculaProfesional = x.MatriculaProfesional,

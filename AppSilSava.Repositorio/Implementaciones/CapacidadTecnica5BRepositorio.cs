@@ -20,8 +20,19 @@ namespace AppSilSava.Repositorio.Implementaciones
         public async Task<List<CapacidadTecnica5B>> Listar()
         {
             //se conencta a la base de datos y trae la lista 
-            return await _bd.CapacidadTecnica5Bs.ToListAsync();
+            //return await _bd.CapacidadTecnica5Bs.ToListAsync();
+            return await _bd.CapacidadTecnica5Bs.Include(p => p.Empresa).ToListAsync();
+        }
 
+        public async Task<List<CapacidadTecnica5B>> ListarPorEmpresa(string empresaId)
+        {
+
+            return await _bd.CapacidadTecnica5Bs
+                .Include(p => p.Empresa)
+                .Where(p => p.EmpresaId == empresaId)
+                .ToListAsync();
         }
     }
+   
 }
+                

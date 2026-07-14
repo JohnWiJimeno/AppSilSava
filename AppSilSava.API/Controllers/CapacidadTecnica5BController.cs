@@ -20,5 +20,12 @@ namespace AppSilSava.API.Controllers
             var rpta = await _repositorio.Listar();
             return rpta.Exito ? Ok(rpta) : BadRequest(rpta);
         }
+
+        [HttpGet("PorEmpresa/{empresaId}")]
+        public async Task<IActionResult> ListarPorEmpresa(string empresaId)
+        {
+            var rpta = await _repositorio.ListarPorEmpresa(empresaId);
+            return rpta.Exito ? Ok(rpta) : BadRequest(rpta);
+        }
     }
 }
