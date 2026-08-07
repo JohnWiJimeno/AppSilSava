@@ -46,5 +46,36 @@ namespace AppSilSava.Negocio.Implementaciones
             }
             return rpta;
         }
+
+        // Método 2: EL MÉTODO QUE FALTABA PARA CUMPLIR CON LA INTERFAZ
+        public async Task<RepuestaBase<List<CapacidadTecnica5BResponse>>> ListarPorEmpresa(string empresaId)
+        {
+            RepuestaBase<List<CapacidadTecnica5BResponse>> rpta = new RepuestaBase<List<CapacidadTecnica5BResponse>>();
+            try
+            {
+                // Aquí asumo que tu repositorio tiene un método llamado ListarPorEmpresa que recibe el string
+                var lista = await _repositorio.ListarPorEmpresa(empresaId);
+                var listaCSE = lista.Select(x => new CapacidadTecnica5BResponse
+                {
+                    CapacidadTecnicaId = x.CapacidadTecnicaId,
+                    //EmpresaId = x.EmpresaId,
+                    NombreEmpresa = x.Empresa?.RazonSocial, // Se añade '?' por seguridad en caso de que Empresa sea null
+                    NombreProfesional = x.NombreProfesional,
+                    Profesion = x.Profesion,
+                    MatriculaProfesional = x.MatriculaProfesional,
+                    NoContrato = x.NoContrato,
+                    FechaTerminacion = x.FechaTerminacion
+                }).ToList();
+
+                rpta.Data = listaCSE;
+                rpta.Exito = true;
+            }
+            catch (Exception ex)
+            {
+                rpta.Mensaje = ex.Message;
+                rpta.Exito = false;
+            }
+            return rpta;
+        }
     }
 }

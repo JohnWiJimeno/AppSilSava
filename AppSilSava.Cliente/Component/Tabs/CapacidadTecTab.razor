@@ -1,7 +1,138 @@
-﻿<h3>Capacidad Técnica </h3>
+﻿@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject IEmpresaProxy EmpresaProxy
+@inject ICapacidadTecnica5BProxy CapacidadTecnica5BProxy
+@inject HttpClient Http
+
+<h3>Capacidad Técnica </h3>
+
+<style>
+    /* Permite que la tabla no sea forzosamente del 100% de la pantalla */
+    .tabla-ajustada {
+        width: auto; /* Quita el ancho total */
+        margin: 0 auto; /* Centra la tabla en la pantalla si lo deseas (opcional) */
+        font-size: 14px; /* Tamaño de letra un poco más pequeño para ahorrar espacio */
+    }
+
+        /* Fuerza el ajuste de texto en los encabezados */
+        .tabla-ajustada th {
+            white-space: normal !important;
+            word-wrap: break-word;
+            vertical-align: middle;
+            text-align: center;
+            background-color: #f8f9fa; /* Fondo gris claro típico de la imagen */
+        }
+
+        .tabla-ajustada td {
+            vertical-align: middle;
+        }
+
+    /* Definir anchos específicos para "apretar" las columnas y forzar el salto de línea */
+    .col-id {
+        width: 60px;
+    }
+
+    .col-nombre {
+        width: 280px;
+    }
+
+    .col-profesion {
+        width: 150px;
+    }
+
+    .col-matricula {
+        width: 140px;
+    }
+
+    .col-contrato {
+        width: 220px;
+    }
+
+    .col-fecha {
+        width: 140px;
+    }
+</style>
+
+
+
+
+<div class="mt-4">
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover tabla-ajustada">
+            <thead>
+                <tr>
+                    <th class="col-id">No.</th>
+                    <th class="col-nombre">Nombre del socio y/o profesional de la arquitectura, ingenieria o geologia</th>
+                    <th class="col-profesion">Profesión</th>
+                    <th class="col-matricula">No. de matricula profesional</th>
+                    <th class="col-contrato">Numero y año del contrato laboral o de la prestacion de servicios profesionales</th>
+                    <th class="col-fecha">Fecha de terminación del contrato</th>
+                </tr>
+            </thead>
+
+            <tbody>
+               
+                @if (CapacidadTec != null)
+                {
+                    @foreach (var item in CapacidadTec)
+                    {
+                        <tr>
+                            <td class="text-center fw-bold">@item.CapacidadTecnicaId</td>
+                            <td>@item.NombreProfesional </td>
+                            <td>@item.Profesion</td>
+                            <td>@item.MatriculaProfesional</td>
+                            <td class="text-center">@item.NoContrato</td>
+                            <td class="text-center">@item.FechaTerminacion.ToString("yyyy-MM-dd")</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
 
 @code {
     [Parameter]
     public string? EmpresaId { get; set; }
 
+    private List<CapacidadTecnica5BResponse>? CapacidadTec;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // 1. Evita hacer llamadas si el parámetro no se ha asignado correctamente
+        if (string.IsNullOrWhiteSpace(EmpresaId))
+        {
+            CapacidadTec = new();
+            return;
+        }
+
+        try
+        {
+            var url = $"api/CapacidadTecnica5B/PorEmpresa/{EmpresaId}";
+            var repuesta = await Http.GetFromJsonAsync<RepuestaBase<List<CapacidadTecnica5BResponse>>>(url);
+
+            if (repuesta != null && repuesta.Exito)
+            {
+                CapacidadTec = repuesta.Data ?? new();
+            }
+            else
+            {
+                CapacidadTec = new();
+                Console.WriteLine($"Error al obtener la capacidad técnica: {repuesta?.Mensaje ?? "Respuesta nula"}");
+            }
+        }
+        catch (Exception ex)
+        {
+            CapacidadTec = new();
+            Console.WriteLine($"Error de excepción: {ex.Message}");
+        }
+        finally
+        {
+            // 2. Notifica al componente Blazor que el estado cambió para forzar la actualización del DOM
+            StateHasChanged();
+        }
+    }
 }

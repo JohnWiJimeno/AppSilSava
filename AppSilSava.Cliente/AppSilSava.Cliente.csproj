@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <Folder Include="Pages\Analisis Ffinanciero\" />
-    <Folder Include="Pages\Capacidad Tecnica 5B\" />
     <Folder Include="Pages\Contrato Aporte\" />
     <Folder Include="Pages\Usuario\" />
     <Folder Include="Pages\Tipo Pliego\" />
