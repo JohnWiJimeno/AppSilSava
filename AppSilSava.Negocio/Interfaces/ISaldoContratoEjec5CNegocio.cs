@@ -10,5 +10,7 @@ namespace AppSilSava.Negocio.Interfaces
     public interface ISaldoContratoEjec5CNegocio
     {
         Task<RepuestaBase<List<SaldoContratoEjec5CResponse>>> Listar();
+
+        Task<RepuestaBase<List<SaldoContratoEjec5CResponse>>> ListarPorCSE(string empresaId);
     }
 }

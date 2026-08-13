@@ -20,5 +20,14 @@ namespace AppSilSava.API.Controllers
             var rpta = await _repositorio.Listar();
             return rpta.Exito ? Ok(rpta) : BadRequest(rpta);
         }
+
+        //NUEVO METODO PARA LISTAR POR EMPRESA GET
+        [HttpGet("FormatoSCE/{empresaId}")]
+        public async Task<IActionResult> ListarPorCSE(string empresaId)
+        {
+            var rpta = await _repositorio.ListarPorCSE(empresaId);
+            return rpta.Exito ? Ok(rpta) : BadRequest(rpta);
+        }
+
     }
 }

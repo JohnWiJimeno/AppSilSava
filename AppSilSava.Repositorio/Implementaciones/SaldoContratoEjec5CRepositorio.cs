@@ -23,5 +23,18 @@ namespace AppSilSava.Repositorio.Implementaciones
             return await _bd.SaldoContratosEjec5Cs.ToListAsync();
         }
 
+        //NUEVO METODO AÑADIDO:
+        public async Task<List<SaldoContratosEjec5C>> ListarPorCSE(string empresaId)
+        {
+            // Se conecta a la BD y filtra por ContratoId antes de traer los datos
+            return await _bd.SaldoContratosEjec5Cs
+                .Include(x => x.Empresa)
+                .Include(x => x.Contrato)
+                .Where(x => x.EmpresaId == empresaId)
+                .ToListAsync();
+        }
+
+
+
     }
 }

@@ -21,6 +21,8 @@ namespace AppSilSava.API.Controllers
             return rpta.Exito ? Ok(rpta) : BadRequest(rpta);
         }
 
+        //NUEVO METODO PARA LISTAR POR EMPRESA GET
+
         [HttpGet("PorEmpresa/{empresaId}")]
         public async Task<IActionResult> ListarPorEmpresa(string empresaId)
         {

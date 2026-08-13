@@ -8,5 +8,8 @@ namespace AppSilSava.Repositorio.Interfaces
     public interface ISaldoContratoEjec5CRepositorio
     {
         Task<List<SaldoContratosEjec5C>> Listar();
+
+        // NUEVO METODO AÑADIDO:
+        Task<List<SaldoContratosEjec5C>> ListarPorCSE(string empresaId);
     }
 }
