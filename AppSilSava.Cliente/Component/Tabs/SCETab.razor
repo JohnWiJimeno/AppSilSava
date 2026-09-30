@@ -1,7 +1,151 @@
-﻿<h3>Saldos en Ejecución</h3>
+﻿@inject IJSRuntime JS
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IEmpresaProxy EmpresaProxy
+@inject ISaldoContratoEjec5CProxy SaldoContratoEjec5CProxy
+
+<h3>Saldos en Ejecución</h3>
+
+<style>
+    /* Permite que la tabla no sea forzosamente del 100% de la pantalla */
+    .tabla-ajustada {
+        width: auto; /* Quita el ancho total */
+        margin: 0 auto; /* Centra la tabla en la pantalla si lo deseas (opcional) */
+        font-size: 14px; /* Tamaño de letra un poco más pequeño para ahorrar espacio */
+    }
+
+        /* Fuerza el ajuste de texto en los encabezados */
+        .tabla-ajustada th {
+            white-space: normal !important;
+            word-wrap: break-word;
+            vertical-align: middle;
+            text-align: center;
+            background-color: #f8f9fa; /* Fondo gris claro típico de la imagen */
+        }
+
+        .tabla-ajustada td {
+            vertical-align: middle;
+        }
+
+    /* Definir anchos específicos para "apretar" las columnas y forzar el salto de línea */
+    .col-id {
+        width: 60px;
+    }
+
+    .col-nombre {
+        width: 280px;
+    }
+
+    .col-profesion {
+        width: 150px;
+    }
+
+    .col-matricula {
+        width: 140px;
+    }
+
+    .col-contrato {
+        width: 220px;
+    }
+
+    .col-fecha {
+        width: 140px;
+    }
+</style>
+ 
+<div class="mt-3">
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover table-sm align-middle">
+            <thead class="table-light text-center align-middle">
+                <tr>
+                    <th>No. Contrato</th>
+                    <th>Objeto Contrato</th>
+                    <th>Entidad Contratante</th>
+                    <th>Plazo total del Contrato en Meses (1)</th>
+                    <th>Valor total del  Contrato (incluido IVA y adiciones) (2)</th>
+                    <th>Si el Contrato està o estuvo Suspendido registrar Saldo Pendiente por Ejecutar (3)</th>
+                    <th>Fecha de Inicio o Reinicio del Contrato (dd/mm/aa) (4)</th>
+                    <th>Porcentaje de participación (5)</th>
+                    <th>Fecha de Cierre de Presentacion de la Oferta Objeto del Presente Proceso de Contrataciòn (dd/mm/aa)  (6)</th>
+                    <th>Dìas Ejecutados del Contrato (7) (7)=(6)-(4)      </th>
+                    <th>Dias por Ejecutar del Contrato a Partir de la Fecha de Presentaciòn de la Oferta Objeto del Proceso de Contrataciòn (8)</th>
+                    <th>Saldo Diario del Contrato en Ejecuciòn (9) (9)=(2)/((1)*30)</th>
+                    <th>Saldo del Contrato en Ejecuciòn (10)</th>
+                </tr>
+
+            </thead>
+            <tbody>
+                @if (SaldosEjecucion != null)
+                {
+                    @foreach (var item in SaldosEjecucion)
+                    {
+                        <tr>
+                            <td>@item.NoContrato</td>
+                            <td>@item.ObjetoContrato</td>
+                            <td>@item.EntidadContratante</td>
+                            <td>@item.Plazo</td>
+                            <td>@item.ValorContrato</td>
+                            <td>@item.SaldoPendienteEjec</td>
+                            <td>@item.FechaInicioReinicio?.ToString("yyyy-MM-dd")</td>
+                            <td>@item.PorcentajePart</td>
+                            <td>@item.FechaCierreProceso?.ToString("yyyy-MM-dd")</td>
+                            <td>@item.DiasEjecutados</td>
+                            <td>@item.DiasXejecutar</td>
+                            <td>@item.SaldoDiarioContrato</td>
+                            <td>@item.SaldoContratoEjec</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="13" class="text-center">No hay datos disponibles.</td>
+                    </tr>
+                }
+                
+            </tbody>
+            
+        </table>
+    </div>
+
+</div>
+
+
+
 
 @code {
     [Parameter]
     public string? EmpresaId { get; set; }
+
+    private List<SaldoContratoEjec5CResponse>? SaldosEjecucion;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrWhiteSpace(EmpresaId))
+        {
+            SaldosEjecucion = new();
+            return;
+        }
+        try
+        {
+            var url = $"api/SaldoContratoEjec5C/FormatoSCE/{EmpresaId}";
+            var repuesta = await Http.GetFromJsonAsync<RepuestaBase<List<SaldoContratoEjec5CResponse>>>(url);
+            if (repuesta != null && repuesta.Exito)
+            {
+                SaldosEjecucion = repuesta.Data ?? new();
+            }
+            else
+            {
+                SaldosEjecucion = new();
+                Console.WriteLine($"Error al obtener los saldos en ejecución: {repuesta?.Mensaje ?? "Respuesta nula"}");
+            }
+        }
+        catch (Exception ex)
+        {
+            SaldosEjecucion = new();
+            Console.WriteLine($"Error de excepción: {ex.Message}");
+        }
+    }
+
 
 }

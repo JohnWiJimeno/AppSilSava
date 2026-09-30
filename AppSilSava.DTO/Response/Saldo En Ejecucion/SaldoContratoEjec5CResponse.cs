@@ -12,6 +12,18 @@ namespace AppSilSava.DTO.Response.SaldoContratoSCE
 
         public int ContratoId { get; set; }
 
+        public string? ObjetoContrato { get; set; }
+
+        public string? EntidadContratante { get; set; }
+
+        public string? NoContrato { get; set; }
+
+        public decimal? PorcentajePart { get; set; }
+
+        public decimal? Plazo { get; set; }
+
+        public decimal? ValorContrato { get; set; }
+
         public DateOnly? FechaCalculo { get; set; }
 
         public decimal? SaldoPendienteEjec { get; set; }

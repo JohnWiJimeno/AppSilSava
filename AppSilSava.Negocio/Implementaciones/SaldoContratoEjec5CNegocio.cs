@@ -26,7 +26,12 @@ namespace AppSilSava.Negocio.Implementaciones
                 var listaSCE = lista.Select(p => new SaldoContratoEjec5CResponse
                 {
                     EmpresaId = p.EmpresaId,
-                    ContratoId = p.ContratoId,
+                    NoContrato =p.Contrato?.NoContrato, 
+                    ObjetoContrato = p.Contrato?.ObjetoContrato,
+                    EntidadContratante = p.Contrato?.EntidadContratante, 
+                    Plazo = p.Contrato?.Plazo,
+                    ValorContrato = p.Contrato?.ValorContrato,
+                    PorcentajePart = p.Contrato?.PorcentajePart,
                     FechaCalculo = p.FechaCalculo,
                     SaldoPendienteEjec = p.SaldoPendienteEjec,
                     FechaInicioReinicio = p.FechaInicioReinicio,
@@ -64,7 +69,7 @@ namespace AppSilSava.Negocio.Implementaciones
                 var listaSCE = saldoContrato.Select(p => new SaldoContratoEjec5CResponse
                 {
                     EmpresaId = p.EmpresaId,
-                    ContratoId = p.ContratoId,
+                    ObjetoContrato = p.Contrato?.ObjetoContrato,
                     FechaCalculo = p.FechaCalculo,
                     SaldoPendienteEjec = p.SaldoPendienteEjec,
                     FechaInicioReinicio = p.FechaInicioReinicio,

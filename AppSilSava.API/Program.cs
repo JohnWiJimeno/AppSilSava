@@ -42,8 +42,7 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer(); //registar api
 builder.Services.AddSwaggerGen(); //registar swagger
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+
 //registro de repositorios
 builder.Services.AddScoped<IAccionistaRepositorio, AccionistaRepositorio>();
 builder.Services.AddScoped<IAnalisisFinancieroRespositorio, AnalisisFinancieroRepositorio>();
@@ -89,18 +88,34 @@ builder.Services.AddScoped<IUsuarioNegocio, UsuarioNegocio>();
 
 var app = builder.Build();
 
+
+
+
 app.UseCors(NombrePolitica); //aplicar la politica de cors a la api
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
+//if (app.Environment.IsDevelopment())
+//{
+    
     app.UseSwagger();
     app.UseSwaggerUI(); // para ver la api visualmente
-}
+//}
 
+// --- Blazor WebAssembly servido desde la misma API (un solo sitio en Somee) ---
+app.UseBlazorFrameworkFiles();   // entrega los archivos _framework del cliente Blazor
+app.UseStaticFiles();            // entrega wwwroot (css, js, imagenes, index.html)
+app.UseRouting();
 app.UseAuthorization();
 
+
+
+
+app.MapStaticAssets();
 app.MapControllers();
+
+
+// Cualquier ruta que no sea de la API (ej. /empresas, /login) carga la app Blazor
+app.MapFallbackToFile("index.html");
+
 
 app.Run();
