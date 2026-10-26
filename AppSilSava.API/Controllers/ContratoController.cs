@@ -23,6 +23,8 @@ namespace AppSilSava.API.Controllers
 
         // 👇 NUEVO ENDPOINT AÑADIDO:
         // La URL para consumirlo será: GET api/Contrato/por-empresa/{id_de_la_empresa}
+
+
         [HttpGet("por-empresa/{empresaId}")]
         public async Task<IActionResult> ListarPorEmpresa(string empresaId)
         {

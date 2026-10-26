@@ -15,12 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
 
-
-    <!--link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-
-    <!--<link rel="stylesheet" href="css/bootstrap-icons.min.css">-->
 
     <link href="AppSilSava.Cliente.styles.css" rel="stylesheet" />
     <!-- <script type="importmap"></script>  -->
@@ -40,9 +35,17 @@
         <a href="." class="reload">Reload</a>
         <span class="dismiss">🗙</span>
     </div>
+
     <script src="_content/CurrieTechnologies.Razor.SweetAlert2/sweetAlert2.min.js"></script>
-    <!-- <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>   -->
+
+    <!-- CAMBIO 1: marcador en vez del código escrito a mano (antes: blazor.webassembly.w3qd1tpl0e.js).
+         .NET reemplaza #[.{fingerprint}] por el código correcto al compilar,
+         gracias a <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders> del .csproj -->
+    <!--<script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>-->
     <script src="_framework/blazor.webassembly.w3qd1tpl0e.js"></script>
+    <!-- CAMBIO 2: JavaScript de MudBlazor. Va DESPUÉS de Blazor porque lo necesita ya cargado -->
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+
     <script src="js/Bootstrap.js"></script>
 </body>
 </html>

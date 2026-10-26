@@ -11,5 +11,7 @@ namespace AppSilSava.Negocio.Interfaces
         Task<RepuestaBase<List<ContratoResponse>>> Listar();
         // Nuevo método:
         Task<RepuestaBase<List<ContratoResponse>>> ListarPorEmpresa(string empresaId);
+
+
     }
 }

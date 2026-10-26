@@ -1,34 +1,47 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
-	  <WasmFingerprintAssets>false</WasmFingerprintAssets>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+		<WasmFingerprintAssets>false</WasmFingerprintAssets>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CurrieTechnologies.Razor.SweetAlert2" Version="5.6.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.12" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.12" PrivateAssets="all" />
-    <PackageReference Include="MudBlazor" Version="9.5.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CurrieTechnologies.Razor.SweetAlert2" Version="5.6.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.14" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.14" PrivateAssets="all" />
+		<PackageReference Include="MudBlazor" Version="9.11.0" />
 
-  <ItemGroup>
-    <Folder Include="Pages\Analisis Ffinanciero\" />
-    <Folder Include="Pages\Contrato Aporte\" />
-    <Folder Include="Pages\Usuario\" />
-    <Folder Include="Pages\Tipo Pliego\" />
-    <Folder Include="Pages\Permiso Rol\" />
-    <Folder Include="Pages\Rol\" />
-    <Folder Include="Pages\Permiso\" />
-  </ItemGroup>
+		<!-- QUITADO: Microsoft.AspNetCore.Components.WebAssembly.Server
+         Es para el proyecto que HOSPEDA el Blazor (la API), no para el que corre en el navegador.
+         Trae Microsoft.AspNetCore.App, que no existe para browser-wasm (era tu NETSDK1082). -->
 
-  <ItemGroup>
-    <ProjectReference Include="..\AppSilSava.DTO\AppSilSava.DTO.csproj" />
-    <ProjectReference Include="..\AppSilSava.Negocio\AppSilSava.Negocio.csproj" />
-    <ProjectReference Include="..\AppSilSava.Repositorio\AppSilSava.Repositorio.csproj" />
-  </ItemGroup>
+		<!-- REVISAR: System.Security.Cryptography.Pkcs
+         Casi todo este paquete no funciona en el navegador. Si ninguna página del Cliente lo usa,
+         bórralo. Si sí lo usa, ese código probablemente debería estar en la API. -->
+		<!--<PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />-->
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Pages\Analisis Ffinanciero\" />
+		<Folder Include="Pages\Contrato Aporte\" />
+		<Folder Include="Pages\Usuario\" />
+		<Folder Include="Pages\Tipo Pliego\" />
+		<Folder Include="Pages\Permiso Rol\" />
+		<Folder Include="Pages\Rol\" />
+		<Folder Include="Pages\Permiso\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- El Cliente solo comparte los DTO con la API -->
+		<ProjectReference Include="..\AppSilSava.DTO\AppSilSava.DTO.csproj" />
+
+		<!-- QUITADOS: Negocio y Repositorio
+         Llevan (a través de AccesoDatos) a Entity Framework y SQL Server.
+         El navegador no debe hablar con la base de datos: eso lo hace la API,
+         y el Cliente le pide los datos por HTTP con HttpClient. -->
+	</ItemGroup>
 
 </Project>
