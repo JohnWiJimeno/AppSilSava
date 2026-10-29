@@ -31,7 +31,8 @@ namespace AppSilSava.Negocio.Implementaciones
                     NombreCompleto = x.NombreCompleto,
                     NombreUsuario = x.NombreUsuario,
                     Correo = x.Correo,
-                    PasswordHash = x.PasswordHash,
+                    // CORREGIDO (seguridad): ya no se envía PasswordHash. GET api/Usuario es público
+                    // y cualquiera podía descargar los hashes de las contraseñas.
                     FechaRegistro = x.FechaRegistro,
                     UltimoAcceso = x.UltimoAcceso,
                 }).ToList();

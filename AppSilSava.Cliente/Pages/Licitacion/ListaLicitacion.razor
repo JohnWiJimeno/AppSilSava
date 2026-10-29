@@ -1,7 +1,103 @@
 ﻿@page "/licitaciones"
+@inject ILicitacionProxy LicitacionProxy
 
-<h3>ListaLicitacion</h3>
+<h3>Información de Licitaciones</h3>
+
+
+
+<div>
+    <CardInfo Titulo="Licitaciones" >
+    <Content>
+        <div>
+                <table class="table table-sm tabla-contratos align-middle">
+                <thead>
+                    <tr>
+                        <th>Tipo de Pliego</th>
+                        <th>No de Proceso</th>
+                        <th>Objeto</th>
+                        <th>Valor del proceso</th>
+                        <th>Plazo de Meses</th>
+                        <th>Estado Contrato</th>
+                        <th>Fecha Apertura</th>
+                        <th>Fecha Cierre</th>
+                        <th>Smmlv</th>
+                        <th>Anticipo</th>
+                        <th>Patromonio</th>
+                        <th>Capital de Trabajo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        @if (ListaLicitaciones != null && ListaLicitaciones.Any())
+                        {
+                            @foreach (var licitacion in ListaLicitaciones)
+                            {
+                                <tr>
+                                    <td>@licitacion.NombreTipoPliego</td>
+                                    <td>@licitacion.NoProceso</td>
+                                    <td>@licitacion.Objeto</td>
+                                    <td>@licitacion.ValorProceso?.ToString("C", CultureInfo.CreateSpecificCulture("es-CO"))</td>
+                                    <td>@licitacion.PlazoMeses</td>
+                                    <td>@licitacion.NombreEstadoContrato</td>
+                                    <td>@licitacion.FechaApertura?.ToString("dd/MM/yyyy")</td>
+                                    <td>@licitacion.FechaCierre?.ToString("dd/MM/yyyy")</td>
+                                    <td>@licitacion.Smmlv?.ToString("C", CultureInfo.CreateSpecificCulture("es-CO"))</td>
+                                    <td>@licitacion.Anticipo?.ToString("C", CultureInfo.CreateSpecificCulture("es-CO"))</td>
+                                    <td>@licitacion.Patrimonio?.ToString("C", CultureInfo.CreateSpecificCulture("es-CO"))</td>
+                                    <td>@licitacion.CapitalTrabajo?.ToString("C", CultureInfo.CreateSpecificCulture("es-CO"))</td>
+                                    <td>
+                                        <ButtonsActions OnEditar="() => editar(licitacion.LicitacionId)" OnEliminar="() => eliminar(licitacion.LicitacionId)" OnVerDetalles="() => verDetalles(licitacion.LicitacionId)" />
+
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="12">No hay licitaciones disponibles.</td>
+                            </tr>
+                        }
+                                       
+                </tbody>
+            </table>
+        </div>
+
+
+    </Content>
+
+
+    </CardInfo>
+
+</div>
 
 @code {
 
+    public List<LicitacionResponse> ListaLicitaciones { get; set; } = new List<LicitacionResponse>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Aquí puedes agregar la lógica para cargar las licitaciones desde un servicio o API
+        // Por ejemplo:
+        // ListaLicitaciones = await LicitacionService.ObtenerLicitaciones();
+        var rpta = await LicitacionProxy.Listar();
+        ListaLicitaciones = rpta.Data ?? new List<LicitacionResponse>();
+
+    }
+
+
+    private async Task eliminar(int ContratoId)
+    {
+
+    }
+
+    private async Task editar(int ContratoId)
+    {
+
+    }
+
+    private async Task verDetalles(int ContratoId)
+    {
+
+    }
 }

@@ -20,7 +20,11 @@ namespace AppSilSava.Repositorio.Implementaciones
         public async Task<List<SaldoContratosEjec5C>> Listar()
         {
             //se conencta a la base de datos y trae la lista 
-            return await _bd.SaldoContratosEjec5Cs.ToListAsync();
+            // CORREGIDO: sin .Include(Contrato), p.Contrato llegaba null al Negocio y
+            // NoContrato, ObjetoContrato, Plazo, etc. salían vacíos. EF no carga relaciones solo.
+            return await _bd.SaldoContratosEjec5Cs
+                .Include(x => x.Contrato)
+                .ToListAsync();
         }
 
         //NUEVO METODO AÑADIDO:

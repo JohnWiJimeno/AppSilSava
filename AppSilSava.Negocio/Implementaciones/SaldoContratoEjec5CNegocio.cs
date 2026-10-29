@@ -26,7 +26,8 @@ namespace AppSilSava.Negocio.Implementaciones
                 var listaSCE = lista.Select(p => new SaldoContratoEjec5CResponse
                 {
                     EmpresaId = p.EmpresaId,
-                    NoContrato =p.Contrato?.NoContrato, 
+                    ContratoId = p.ContratoId, // CORREGIDO: el DTO lo tiene pero nunca se llenaba (llegaba 0)
+                    NoContrato =p.Contrato?.NoContrato,
                     ObjetoContrato = p.Contrato?.ObjetoContrato,
                     EntidadContratante = p.Contrato?.EntidadContratante, 
                     Plazo = p.Contrato?.Plazo,
@@ -69,7 +70,15 @@ namespace AppSilSava.Negocio.Implementaciones
                 var listaSCE = saldoContrato.Select(p => new SaldoContratoEjec5CResponse
                 {
                     EmpresaId = p.EmpresaId,
+                    ContratoId = p.ContratoId,
+                    // CORREGIDO: SCETab muestra estas 5 columnas, pero aquí solo se mapeaba ObjetoContrato,
+                    // así que en pantalla salían vacías.
+                    NoContrato = p.Contrato?.NoContrato,
                     ObjetoContrato = p.Contrato?.ObjetoContrato,
+                    EntidadContratante = p.Contrato?.EntidadContratante,
+                    Plazo = p.Contrato?.Plazo,
+                    ValorContrato = p.Contrato?.ValorContrato,
+                    PorcentajePart = p.Contrato?.PorcentajePart,
                     FechaCalculo = p.FechaCalculo,
                     SaldoPendienteEjec = p.SaldoPendienteEjec,
                     FechaInicioReinicio = p.FechaInicioReinicio,

@@ -72,7 +72,7 @@
     <div class="emp-filters">
         <div class="fg">
             <label class="fl">🔍 Buscar</label>
-            <input class="fi" type="text" placeholder="Razón social, NIT, ciudad…" @bind="NombreCompleto" @bind:event="oninput">
+            <input class="fi" type="text" placeholder="Razón social, NIT, ciudad…" @bind="NombreCompleto" @bind:event="oninput" @bind:after="ReiniciarPagina">
         </div>
         <div class="fg">
             <label class="fl">🏭 Tipo empresa</label>
@@ -315,7 +315,8 @@
         {
             //logica para cargar la lista de empresas
             var rpta = await EmpresaProxy.Listar();
-            ListaEmpresas = rpta.Data;
+            // CORREGIDO: si la API falla, Data viene null y EmpresasPaginadas lanzaba NullReferenceException
+            ListaEmpresas = rpta.Data ?? new List<EmpresaResponse>();
 
             // 2. Cargamos la lista para el Combobox de Tipo de Empresa
             // (Asegúrate de cambiar 'TipoEmpresaNegocio' por tu HttpClient/Proxy si ya estás en el Cliente)
@@ -422,8 +423,7 @@
             if (!string.IsNullOrWhiteSpace(NombreCompleto))
             {
                 empresasFiltradas = empresasFiltradas
-                    .Where(c => c.EmpresaId != null &&
-                                c.EmpresaId.Contains(NombreCompleto, StringComparison.OrdinalIgnoreCase));
+                    .Where(c => CoincideBusqueda(c, NombreCompleto));
             }
 
             // 3. Filtro por Tipo de Empresa (Combobox alimentado por TipoEmpresaResponse)
@@ -451,8 +451,7 @@
             if (!string.IsNullOrWhiteSpace(NombreCompleto))
             {
                 empresasFiltradas = empresasFiltradas
-                    .Where(c => c.EmpresaId != null &&
-                                c.EmpresaId.Contains(NombreCompleto, StringComparison.OrdinalIgnoreCase));
+                    .Where(c => CoincideBusqueda(c, NombreCompleto));
             }
 
             // Acumula el filtro por combobox
@@ -468,6 +467,17 @@
         }
     }
 
+
+    // CORREGIDO: el buscador dice "Razón social, NIT, ciudad…" pero solo filtraba por NIT.
+    // Además el mismo filtro estaba copiado en dos sitios; ahora vive en un solo método.
+    private static bool CoincideBusqueda(EmpresaResponse c, string texto) =>
+        (c.EmpresaId?.Contains(texto, StringComparison.OrdinalIgnoreCase) ?? false) ||
+        (c.RazonSocial?.Contains(texto, StringComparison.OrdinalIgnoreCase) ?? false) ||
+        (c.Ciudad?.Contains(texto, StringComparison.OrdinalIgnoreCase) ?? false);
+
+    // CORREGIDO: al escribir en el buscador hay que volver a la página 1; si estabas en la
+    // página 3 y el filtro deja una sola página, la tabla se quedaba vacía.
+    private void ReiniciarPagina() => paginaActual = 1;
 
     // Método para saltar entre páginas
     private void CambiarPagina(int nuevaPagina)

@@ -75,7 +75,15 @@
 
             </thead>
             <tbody>
-                @if (SaldosEjecucion != null)
+                @* CORREGIDO: antes el mensaje "No hay datos" salía mientras cargaba (lista null)
+                   y nunca salía cuando la empresa no tenía saldos (lista vacía). *@
+                @if (SaldosEjecucion == null)
+                {
+                    <tr>
+                        <td colspan="13" class="text-center">Cargando...</td>
+                    </tr>
+                }
+                else if (SaldosEjecucion.Any())
                 {
                     @foreach (var item in SaldosEjecucion)
                     {

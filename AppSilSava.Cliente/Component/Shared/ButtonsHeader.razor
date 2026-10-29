@@ -1,6 +1,7 @@
-﻿<div class="text-center>">
+﻿<div class="text-center">
     <button class="btn btn-primary" @onclick="() => buscar()">Buscar</button>
-    <buttton class="btn btn-danger" @onclick="() => limpiar()">Limpiar</buttton>
+    @* CORREGIDO: decía <buttton> (tres t). El navegador lo trataba como etiqueta desconocida, no como botón *@
+    <button class="btn btn-danger" @onclick="() => limpiar()">Limpiar</button>
     <button class="btn btn-success" @onclick="() => Nuevo()">Nuevo</button>
 
 </div>

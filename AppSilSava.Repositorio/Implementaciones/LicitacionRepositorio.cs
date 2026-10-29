@@ -20,7 +20,10 @@ namespace AppSilSava.Repositorio.Implementaciones
         public async Task<List<Licitacion>> Listar()
         {
             //se conencta a la base de datos y trae la lista 
-            return await _bd.Licitacions.ToListAsync();
+            return await _bd.Licitacions
+                .Include(p => p.TipoPliego)
+                .Include(p => p.EstadoContrato)
+                .ToListAsync();
         }
     }
 }

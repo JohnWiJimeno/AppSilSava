@@ -33,6 +33,7 @@ builder.Services.AddScoped<IInfoFinancieraProxy, InfoFinancieraProxy>();
 builder.Services.AddScoped<IAccionistaProxy, AccionistaProxy>();
 builder.Services.AddScoped<ICapacidadTecnica5BProxy, CapacidadTecnica5BProxy>();
 builder.Services.AddScoped<ISaldoContratoEjec5CProxy, SaldoContratoEjec5CProxy>();
+builder.Services.AddScoped<ILicitacionProxy, LicitacionProxy>();
 
 
 builder.Services.AddMudServices();

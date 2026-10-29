@@ -6,9 +6,11 @@ namespace AppSilSava.DTO.Response.Licitacion
 {
     public class LicitacionResponse
     {
-        //public int LicitacionId { get; set; }
+        public int LicitacionId { get; set; }
 
-        public int TipoPliegoId { get; set; }
+        //public int TipoPliegoId { get; set; }
+
+        public string? NombreTipoPliego { get; set; } = null; // busca el nombre del tipo de pliego en lugar del id para mostrarlo en la consulta
 
         public string? NoProceso { get; set; }
 
@@ -18,7 +20,9 @@ namespace AppSilSava.DTO.Response.Licitacion
 
         public int? PlazoMeses { get; set; }
 
-        public int? EstadoContratoId { get; set; }
+        //public int? EstadoContratoId { get; set; }
+
+        public string? NombreEstadoContrato { get; set; } = null; // busca el nombre del estado del contrato en lugar del id para mostrarlo en la consulta
 
         public DateOnly? FechaApertura { get; set; }
 

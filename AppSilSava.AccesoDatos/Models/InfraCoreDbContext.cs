@@ -358,7 +358,7 @@ public partial class InfraCoreDbContext : DbContext
         {
             entity.ToTable("Licitacion");
 
-            entity.HasIndex(e => e.TipoPliegoId, "IX_TipoPliegoID").IsUnique();
+            entity.HasIndex(e => e.TipoPliegoId, "IX_TipoPliegoID");
 
             entity.Property(e => e.LicitacionId).HasColumnName("LicitacionID");
             entity.Property(e => e.Anticipo).HasColumnType("decimal(18, 2)");
@@ -402,8 +402,8 @@ public partial class InfraCoreDbContext : DbContext
                 .HasForeignKey(d => d.EstadoContratoId)
                 .HasConstraintName("FK_Licitacion_EstadoContrato");
 
-            entity.HasOne(d => d.TipoPliego).WithOne(p => p.Licitacion)
-                .HasForeignKey<Licitacion>(d => d.TipoPliegoId)
+            entity.HasOne(d => d.TipoPliego).WithMany(p => p.Licitacions)
+                .HasForeignKey(d => d.TipoPliegoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Licitacion_TipoPliego");
         });

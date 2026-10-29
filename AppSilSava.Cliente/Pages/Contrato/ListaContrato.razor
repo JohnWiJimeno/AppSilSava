@@ -14,7 +14,8 @@
                        id="basic-url"
                        aria-describedby="basic-addon3"
                        @bind="NombreCompleto"
-                       @bind:event="oninput">
+                       @bind:event="oninput"
+                       @bind:after="ReiniciarPagina">
 
 
             </div>
@@ -215,7 +216,8 @@
     {
         //logica para cargar lista de contratos
         var rpta = await ContratoProxy.Listar();
-        Listacontrato = rpta.Data;
+        // CORREGIDO: si la API falla, Data viene null y ContratosPaginados lanzaba NullReferenceException
+        Listacontrato = rpta.Data ?? new List<ContratoResponse>();
     }
 
 
@@ -264,7 +266,12 @@
     private void limpiar()
     {
         NombreCompleto = string.Empty;
+        paginaActual = 1; // CORREGIDO: al limpiar también hay que volver a la primera página
     }
+
+    // CORREGIDO: al escribir en el buscador se vuelve a la página 1; si no, al filtrar
+    // desde la página 3 a un resultado de una sola página la tabla quedaba vacía.
+    private void ReiniciarPagina() => paginaActual = 1;
 
 
     // paginacion de los contratos, se muestra 5 por pagina, se puede cambiar el tamaño de pagina modificando la variable tamañoPagina

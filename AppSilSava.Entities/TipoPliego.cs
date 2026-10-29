@@ -11,5 +11,5 @@ public partial class TipoPliego
 
     public string Descripcion { get; set; } = null!;
 
-    public virtual Licitacion? Licitacion { get; set; }
+    public virtual ICollection<Licitacion>? Licitacions { get; set; }
 }

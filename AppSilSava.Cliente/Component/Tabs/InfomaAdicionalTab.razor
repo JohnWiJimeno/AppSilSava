@@ -49,7 +49,7 @@
         try
         {
             var rpta = await EmpresaProxy.Listar();
-            ListaEmpresas = rpta.Data;
+            ListaEmpresas = rpta.Data ?? new List<EmpresaResponse>(); // CORREGIDO: Data puede venir null si la API falla
 
             // 2. Buscamos la empresa correspondiente al EmpresaId recibido
             if (!string.IsNullOrEmpty(EmpresaId) && ListaEmpresas != null)

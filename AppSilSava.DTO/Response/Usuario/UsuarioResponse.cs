@@ -18,7 +18,7 @@ namespace AppSilSava.DTO.Response.Usuario
 
         public string Correo { get; set; } = null!;
 
-        public string PasswordHash { get; set; } = null!;
+        // QUITADO: PasswordHash. Un DTO de respuesta nunca debe llevar la contraseña (ni su hash) al cliente.
 
         // public bool Activo { get; set; } / no se incluye en la respuesta, ya que no es necesario mostrarlo al cliente si esta activo
 

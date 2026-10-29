@@ -101,21 +101,25 @@ app.UseCors(NombrePolitica); //aplicar la politica de cors a la api
     app.UseSwaggerUI(); // para ver la api visualmente
 //}
 
-// --- Blazor WebAssembly servido desde la misma API (un solo sitio en Somee) ---
-app.UseBlazorFrameworkFiles();   // entrega los archivos _framework del cliente Blazor
-app.UseStaticFiles();            // entrega wwwroot (css, js, imagenes, index.html)
+
+// --- Blazor servido desde la API (solo publicado). En Development el Cliente corre aparte. ---
+if (!app.Environment.IsDevelopment())
+{
+    app.UseBlazorFrameworkFiles();   // entrega los archivos _framework del cliente Blazor
+    app.UseStaticFiles();            // entrega wwwroot (css, js, imagenes, index.html)
+}
+
 app.UseRouting();
 app.UseAuthorization();
 
-
-
-
-app.MapStaticAssets();
 app.MapControllers();
 
-
-// Cualquier ruta que no sea de la API (ej. /empresas, /login) carga la app Blazor
-app.MapFallbackToFile("index.html");
+if (!app.Environment.IsDevelopment())
+{
+    app.MapStaticAssets();
+    // Cualquier ruta que no sea de la API (ej. /empresas) carga la app Blazor
+    app.MapFallbackToFile("index.html");
+}
 
 
 app.Run();

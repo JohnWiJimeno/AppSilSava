@@ -74,6 +74,9 @@
 <div class="nav-wrap @(Collapsed ? "collapsed" : "")">
     <div class="nav-scroll">
 
+        @* CORREGIDO: varios botones iban a rutas que no existen (/analisis/financiero, /salarios,
+           /tipo-obra, ...) y caían en "Not Found". Ahora apuntan al @page real de cada página.
+           Siguen sin página: /capacidad-tecnica, /tipo-pliego, /roles, /usuarios, /permisos, /perfil. *@
         <!-- ══ PRINCIPAL ══ -->
         <div class="nav-section @(Collapsed ? "hidden" : "")">Principal</div>
 
@@ -127,24 +130,24 @@
             <span class="nav-tooltip">Análisis</span>
         </button>
         <div class="nav-sub @(analisisOpen ? "open" : "")">
-            <button class="nav-sub-item @(EsActiva("/analisis/financiero") ? "active" : "")"
-                    @onclick='() => Ir("/analisis/financiero")'>
+            <button class="nav-sub-item @(EsActiva("/ListaFinanciera") ? "active" : "")"
+                    @onclick='() => Ir("/ListaFinanciera")'>
                 <span class="sub-dot"></span>
                 💹 Financiero
             </button>
-            <button class="nav-sub-item @(EsActiva("/analisis/tecnico") ? "active" : "")"
-                    @onclick='() => Ir("/analisis/tecnico")'>
+            <button class="nav-sub-item @(EsActiva("/ListaTecnica") ? "active" : "")"
+                    @onclick='() => Ir("/ListaTecnica")'>
                 <span class="sub-dot"></span>
                 🔧 Técnico
             </button>
-            <button class="nav-sub-item @(EsActiva("/analisis/puntuable") ? "active" : "")"
-                    @onclick='() => Ir("/analisis/puntuable")'>
+            <button class="nav-sub-item @(EsActiva("/ListaPuntuable") ? "active" : "")"
+                    @onclick='() => Ir("/ListaPuntuable")'>
                 <span class="sub-dot"></span>
                 🎯 Puntuable
             </button>
         </div>
 
-        <button class="nav-item @(EsActiva("/accionistas") ? "active" : "")" @onclick='() => Ir("/ListaAccionista")'>
+        <button class="nav-item @(EsActiva("/ListaAccionista") ? "active" : "")" @onclick='() => Ir("/ListaAccionista")'>
             <span class="nav-icon">👥</span>
             <span class="nav-label">Accionistas</span>
             <span class="nav-tooltip">Accionistas</span>
@@ -162,8 +165,8 @@
         <!-- ══ ADMINISTRACIÓN ══ -->
         <div class="nav-section @(Collapsed ? "hidden" : "")">Administración</div>
 
-        <button class="nav-item @(EsActiva("/salarios") ? "active" : "")"
-                @onclick='() => Ir("/salarios")'>
+        <button class="nav-item @(EsActiva("/tabla-salario") ? "active" : "")"
+                @onclick='() => Ir("/tabla-salario")'>
             <span class="nav-icon">💰</span>
             <span class="nav-label">Tabla salarios</span>
             <span class="nav-tooltip">Tabla salarios</span>
@@ -183,18 +186,18 @@
                 <span class="sub-dot"></span>
                 📁 Tipos de pliego
             </button>
-            <button class="nav-sub-item @(EsActiva("/tipo-obra") ? "active" : "")"
-                    @onclick='() => Ir("/tipo-obra")'>
+            <button class="nav-sub-item @(EsActiva("/ListaTipoObra") ? "active" : "")"
+                    @onclick='() => Ir("/ListaTipoObra")'>
                 <span class="sub-dot"></span>
                 🏛 Tipos de obra
             </button>
-            <button class="nav-sub-item @(EsActiva("/tipo-empresa") ? "active" : "")"
-                    @onclick='() => Ir("/tipo-empresa")'>
+            <button class="nav-sub-item @(EsActiva("/ListaTipoEmpresa") ? "active" : "")"
+                    @onclick='() => Ir("/ListaTipoEmpresa")'>
                 <span class="sub-dot"></span>
                 🏭 Tipos de empresa
             </button>
-            <button class="nav-sub-item @(EsActiva("/estado-contrato") ? "active" : "")"
-                    @onclick='() => Ir("/estado-contrato")'>
+            <button class="nav-sub-item @(EsActiva("/ListaEstadoContrato") ? "active" : "")"
+                    @onclick='() => Ir("/ListaEstadoContrato")'>
                 <span class="sub-dot"></span>
                 📌 Estados contrato
             </button>

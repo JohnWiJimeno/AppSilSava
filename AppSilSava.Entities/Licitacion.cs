@@ -19,6 +19,8 @@ public partial class Licitacion
 
     public int? EstadoContratoId { get; set; }
 
+    //public string? NombreEstadoContrato { get; set; } = null; // busca el nombre del estado del contrato en lugar del id para mostrarlo en la consulta
+
     public DateOnly? FechaApertura { get; set; }
 
     public DateOnly? FechaCierre { get; set; }

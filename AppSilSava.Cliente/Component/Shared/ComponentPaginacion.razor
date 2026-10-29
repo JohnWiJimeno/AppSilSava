@@ -22,12 +22,13 @@
             }
 
             @* Botón Siguiente *@
-            <li class="page-item @(PaginaActual == TotalPaginas ? "disabled" : "")">
+            @* CORREGIDO: se usa >= porque cuando no hay resultados TotalPaginas es 0 y con == el botón quedaba activo *@
+            <li class="page-item @(PaginaActual >= TotalPaginas ? "disabled" : "")">
                 <button class="page-link" @onclick="() => SeleccionarPagina(PaginaActual + 1)">&raquo;</button>
             </li>
 
             @* Ir a la Última Página *@
-            <li class="page-item @(PaginaActual == TotalPaginas ? "disabled" : "")">
+            <li class="page-item @(PaginaActual >= TotalPaginas ? "disabled" : "")">
                 <button class="page-link" @onclick="() => SeleccionarPagina(TotalPaginas)">&raquo;&raquo;</button>
             </li>
         </ul>

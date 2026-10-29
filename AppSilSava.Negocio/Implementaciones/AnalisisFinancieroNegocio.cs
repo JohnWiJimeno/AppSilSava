@@ -30,6 +30,7 @@ namespace AppSilSava.Negocio.Implementaciones
                     EmpresaId = p.EmpresaId,
                     IndicadorId = p.IndicadorId,
                     IndiceLiquidez = p.IndiceLiquidez,
+                    IndiceEndeudamiento = p.IndiceEndeudamiento, // CORREGIDO: faltaba este campo, siempre llegaba null al cliente
                     RazonCobertura = p.RazonCobertura,
                     CapitalTrabajo = p.CapitalTrabajo,
                     Patrimonio = p.Patrimonio,

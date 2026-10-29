@@ -24,12 +24,12 @@ namespace AppSilSava.Negocio.Implementaciones
                 var lista = await _repositorio.Listar();
                 var ListaLicitacion= lista.Select(p => new LicitacionResponse
                 {
-                    TipoPliegoId = p.TipoPliegoId,
+                    NombreTipoPliego = p.TipoPliego?.NombreTipoPliego,
                     NoProceso = p.NoProceso,
                     Objeto = p.Objeto,
                     ValorProceso = p.ValorProceso,
                     PlazoMeses = p.PlazoMeses,
-                    EstadoContratoId = p.EstadoContratoId,
+                    NombreEstadoContrato = p.EstadoContrato?.Codigo,
                     FechaApertura = p.FechaApertura,
                     FechaCierre = p.FechaCierre,
                     Smmlv = p.Smmlv,
@@ -53,7 +53,7 @@ namespace AppSilSava.Negocio.Implementaciones
             catch (Exception ex)
             {
                 rpta.Mensaje = ex.Message;
-                //rpta.Exito = false;
+               
 
             }
             return rpta;

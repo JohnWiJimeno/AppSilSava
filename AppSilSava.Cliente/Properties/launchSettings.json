@@ -5,7 +5,11 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      
+      // DESACTIVADO (29/10/2026): "inspectUri" conecta el depurador de Visual Studio con Blazor WebAssembly en el navegador.
+      // Con .NET 10 + VS 18 ese depurador tiene un bug que pausa en debug.ts (debugger;) y llena la consola de "[MONO] Assertion".
+      // Sin esta linea: los breakpoints de la API (C#) siguen funcionando, pero los de los .razor del Cliente NO se detienen.
+      // Para volver a depurar el Cliente, quita las // de la linea de abajo.
+      //"inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
       "applicationUrl": "http://localhost:5110",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -13,4 +17,3 @@
     }
   }
 }
-//"inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",

@@ -55,7 +55,8 @@
     {
         
             var rpta = await AccionistaProxy.Listar();
-            ListaInfoAccionista = rpta.Data;
+            // CORREGIDO: si la API falla, Data es null y el @foreach lanzaba NullReferenceException
+            ListaInfoAccionista = rpta.Data ?? new List<AccionistaResponse>();
         
     }
 

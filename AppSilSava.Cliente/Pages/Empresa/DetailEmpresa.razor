@@ -114,6 +114,12 @@
                     NombreEmpresa = EmpresaId;
                 }
             }
+            else
+            {
+                // CORREGIDO: si la API respondía con Exito = false, NombreEmpresa quedaba null
+                // y el título se quedaba en "Cargando detalle..." para siempre.
+                NombreEmpresa = EmpresaId;
+            }
         }
         catch (Exception ex)
         {
